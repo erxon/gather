@@ -21,7 +21,10 @@ const userSchema = mongoose.Schema({
    contacts: [mongoose.Schema.Types.ObjectId],
    firstName: String,
    lastName: String,
-   MiddleName: String
+   MiddleName: String,
+   createdAt: Date,
+   salt: String,
+   hash: String
 });
 
 const User = mongoose.models.User || mongoose.model('User', userSchema);
