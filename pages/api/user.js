@@ -2,7 +2,7 @@ import nextConnect from 'next-connect'
 import auth from '../../middleware/auth'
 import { deleteUser, createUser, updateUserByUsername } from '../../lib/db'
 
-const handler = nextConnect();
+const handler = nextConnect()
 
 handler
   .use(auth)
@@ -11,33 +11,49 @@ handler
     // because it may contain sensitive field such as !!password!! Only return what needed
     // const { name, username, favoriteColor } = req.user
     // res.json({ user: { name, username, favoriteColor } })
-    console.log(req.user);
-    const {username, email} = req.user;
-    res.json({ user: {username, email}});
+    if (req.user) {
+      const user = req.user;
+      user.then((data) => {
+        res.json({user: data})
+      })
+    } else {
+      res.json({user: {}});
+    }
+    
   })
   .post((req, res) => {
-    const { username, password, email } = req.body
-    createUser(req, { username, password, email })
+    const { username, password, name } = req.body
+    createUser(req, { username, password, name })
     res.status(200).json({ success: true, message: 'created new user' })
   })
   .use((req, res, next) => {
     // handlers after this (PUT, DELETE) all require an authenticated user
     // This middleware to check if user is authenticated before continuing
-    if (!req.user) {
-      res.status(401).send('unauthenticated')
-    } else {
-      next()
-    }
+    const user = req.user;
+    user.then((data) => {
+      if (!data) {
+        res.status(401).send('unauthenticated')
+      } else {
+        next()
+      }
+    });
+    
   })
   .put((req, res) => {
+    const user = req.user;
     const { email } = req.body
-    const user = updateUserByUsername(req, req.user.username, { email })
-    res.json({ user })
+    user.then((user) => {
+      updateUserByUsername(req, user.username, { email }).then((data) => {
+        res.json({data})
+      })
+    })
+    
   })
   .delete((req, res) => {
-    deleteUser(req)
-    req.logOut()
-    res.status(204).end()
+    deleteUser(req).then(() => {
+      req.logOut()
+      res.status(204).end()
+    });
   })
 
 export default handler

@@ -8,8 +8,6 @@ const userSchema = mongoose.Schema({
    },
    password: {
     type: String,
-    required: true,
-    minLength: [8, 'Password should have minimum 8 characters']
    },
    email: {
     type: String,
