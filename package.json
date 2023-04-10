@@ -10,16 +10,29 @@
   },
   "dependencies": {
     "@hapi/iron": "^7.0.1",
+    "axios": "^1.3.5",
     "cookie": "^0.5.0",
     "eslint": "8.37.0",
     "eslint-config-next": "13.2.4",
     "mongoose": "^7.0.3",
+    "net": "^1.0.2",
     "next": "13.2.4",
     "next-connect": "^0.13.0",
     "passport": "^0.5.3",
     "passport-local": "^1.0.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "socket.io": "^4.6.1",
+    "socket.io-client": "^4.6.1",
+    "swr": "^2.1.2",
     "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "18.0.33"
+  },
+  "browser": {
+    "tls": false,
+    "net": false,
+    "fs": false
   }
 }

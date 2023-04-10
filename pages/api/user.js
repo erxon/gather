@@ -16,8 +16,6 @@ handler
       user.then((data) => {
         res.json({user: data})
       })
-    } else {
-      res.json({user: {}});
     }
     
   })
