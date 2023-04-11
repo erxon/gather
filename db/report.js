@@ -5,7 +5,6 @@ const reportSchema = mongoose.Schema({
     status: String,
     photo: {
         type: String,
-        required: true
     },
     firstName: {
         type: String,
