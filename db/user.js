@@ -21,6 +21,7 @@ const userSchema = mongoose.Schema({
    lastName: String,
    MiddleName: String,
    createdAt: Date,
+   updatedAt: Date,
    salt: String,
    hash: String
 });

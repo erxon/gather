@@ -15,6 +15,9 @@ const reportSchema = mongoose.Schema({
         required: true
     },
     reportedAt: Date,
+    updatedAt: Date,
+    updatedByReporter: {type: mongoose.Schema.Types.ObjectId, ref: 'Reporter'},
+    updatedByAuthority: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
     lastSeen: {
         type: String,
         required: true

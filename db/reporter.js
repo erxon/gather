@@ -19,7 +19,9 @@ const reporterSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    socialMediaAccount: [String]
+    socialMediaAccount: [String],
+    createdAt: Date,
+    updatedAt: Date
 });
 
 const Reporter =  mongoose.models.Reporter || mongoose.model('Reporter', reporterSchema);
