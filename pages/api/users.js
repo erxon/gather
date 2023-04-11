@@ -9,7 +9,10 @@ handler
   .get((req, res) => {
     // For demo purpose only. You will never have an endpoint which returns all users.
     // Remove this in production
-    res.json({ users: getAllUsers(req) })
+    getAllUsers(req).then((response) => {
+      res.json({ users: response})
+    })
+    
   })
   .post((req, res) => {
     const { username, password, email } = req.body

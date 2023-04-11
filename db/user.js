@@ -16,7 +16,7 @@ const userSchema = mongoose.Schema({
    contactNumber: String,
    socialMediaAccounts: [String],
    type: String,
-   contacts: [mongoose.Schema.Types.ObjectId],
+   contacts: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
    firstName: String,
    lastName: String,
    MiddleName: String,
