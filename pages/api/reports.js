@@ -14,7 +14,7 @@ handler.post((req, res) => {
     }
 
     createReport(data).then((response) => {
-        res.json({message: 'successfully uploaded'})
+        res.status(200).json({message: 'successfully uploaded'})
     }).catch(err => {
         res.json({error: err})
     })

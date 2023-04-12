@@ -1,84 +1,67 @@
-import { useUser, fetcher } from '../lib/hooks'
-import useSWR from 'swr'
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
+import Router from "next/router";
+import Alert from 'react-bootstrap/Alert';
 
-
-function UserList() {
-    const { data: { users } = {} } = useSWR('/api/users', fetcher)
-    return (
-        <>
-            <h2>All users</h2>
-            {!!users?.length && (
-                <ul>
-                    {users.map((user) => (
-                        <li key={user.username}>
-                            <pre>{JSON.stringify(user, null, 2)}</pre>
-                        </li>
-                    ))}
-
-                    <style jsx>{`
-            pre {
-              white-space: pre-wrap;
-              word-wrap: break-word;
-            }
-          `}</style>
-                </ul>
-            )}
-        </>
-    )
-}
 
 export default function HomePage() {
-    const [user] = useUser()
-    return (
-        <>
-            <h1>
-                <a href="http://www.passportjs.org/">Passport.js</a> +{' '}
-                <a href="https://github.com/hoangvvo/next-connect">next-connect</a>{' '}
-                Example
-            </h1>
-            <h2>Steps to test the example:</h2>
-            <h3>Sign up</h3>
-            <ol>
-                <li>Click Sign up and enter a username and password.</li>
-                <li>You will be logged in and redirected home.</li>
-                <li>Click Logout. You will be redirected home.</li>
-                <li>
-                    Try sign up again with the same username, you will see an error.
-                </li>
-            </ol>
-            <h3>Sign in</h3>
-            <ol>
-                <li>Click Login and login again using the same credential.</li>
-                <li>You will see an error if you use incorrect credential.</li>
-                <li>Otherwise, you will be authenticated and redirected home.</li>
-            </ol>
-            <h3>Edit profile</h3>
-            <ol>
-                <li>Click Profile</li>
-                <li>Enter a new name and click Update profile.</li>
-                <li>Notice how the name in Your profile has changed.</li>
-                <li>Click Delete profile</li>
-                <li>
-                    The user is removed and is no longer shown in All users section in
-                    Home
-                </li>
-            </ol>
-            {user && (
-                <>
-                    <p>Currently logged in as:</p>
-                    <pre>{JSON.stringify(user, null, 2)}</pre>
-                </>
-            )}
-            <UserList />
-            <style jsx>{`
-        li {
-          margin-bottom: 0.5rem;
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        const body = {
+            firstName: e.currentTarget.firstName.value,
+            lastName: e.currentTarget.lastName.value,
+            lastSeen: e.currentTarget.lastSeen.value,
+            age: e.currentTarget.age.value,
+            gender: e.currentTarget.gender.value
         }
-        pre {
-          white-space: pre-wrap;
-          word-wrap: break-word;
+
+        const res = await fetch('/api/reports', {
+            method: 'POST',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+        })
+
+        if(res.status === 200){
+            Router.push('/reporter');
+        } else {
+            return <Alert variant="warning">Something went wrong</Alert>
         }
-      `}</style>
-        </>
-    )
+    }
+  return (
+    <>
+      <div className="w-50 mt-5">
+        <div className="mb-3">
+          <h1>Report</h1>
+          <p>Report a case to authorities.</p>
+        </div>
+
+        <form onSubmit={handleSubmit}>
+          <Form.Group>
+            <Form.Label htmlFor="firstName">First Name</Form.Label>
+            <Form.Control id="firstName" name="firstName" type="text" />
+          </Form.Group>
+          <Form.Group>
+            <Form.Label htmlFor="lastName">Last Name</Form.Label>
+            <Form.Control id="lastName" name="lastName" type="text" />
+          </Form.Group>
+          <Form.Group>
+            <Form.Label htmlFor="lastSeen">Last seen</Form.Label>
+            <Form.Control id="lastSeen" name="lastSeen" type="text" />
+          </Form.Group>
+          <Form.Group>
+            <Form.Label htmlFor="age">Age</Form.Label>
+            <Form.Control id="age" name="age" type="text" />
+          </Form.Group>
+          <Form.Group>
+            <Form.Label htmlFor="age">Gender</Form.Label>
+            <Form.Control id="gender" name="gender" type="text" />
+          </Form.Group>
+          <Button className="mt-3" variant="primary" type="submit">
+            Report
+          </Button>
+        </form>
+      </div>
+    </>
+  );
 }

@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import Router from 'next/router'
 import Link from 'next/link'
 import { useUser } from '@/lib/hooks'
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
 
 export default function Login() {
     const [user, { mutate }] = useUser()
@@ -37,26 +39,32 @@ export default function Login() {
 
     return (
         <>
-            <div>
+            <div className="w-25 mt-5">
+                <h1>Login</h1>
                 <form onSubmit={onSubmit}>
-                    <div>
-                        <label>Username</label>
-                        <input
+                    <Form.Group className="mt-3">
+                        <Form.Label htmlFor="username">Username</Form.Label>
+                        <Form.Control
                             name="username"
+                            id="username"
                             type="text"
                         />
-                    </div>
-                    <div>
-                        <label>Password</label>
-                        <input
+                    </Form.Group>
+                    <Form.Group className="mt-3">
+                        <Form.Label htmlFor="password">Password</Form.Label>
+                        <Form.Control
+                            id="password"
                             name="password"
                             type="password"
                         />
-                    </div>
-                    <div>
-                        <button type="submit">Login</button>
-                        <Link href="/signup">Signup</Link>
-                    </div>
+                    </Form.Group>
+                    <Form.Group className="mt-3">
+                        <Button className="me-3 mb-3" variant="primary" type="submit">Login</Button>
+                        
+                    </Form.Group>
+                    <Form.Text id="passwordHelpBlock" muted>No Account Yet?</Form.Text>{" "}
+                    <Link href="/signup">Signup</Link>
+                    
                 </form>
             </div>
 
