@@ -16,17 +16,10 @@ export default function HomePage() {
             gender: e.currentTarget.gender.value
         }
 
-        const res = await fetch('/api/reports', {
-            method: 'POST',
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body),
-        })
-
-        if(res.status === 200){
-            Router.push('/reporter');
-        } else {
-            return <Alert variant="warning">Something went wrong</Alert>
-        }
+        Router.push({
+          pathname: "/reporter",
+          query: body
+        });
     }
   return (
     <>
