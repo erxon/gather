@@ -21,16 +21,19 @@ handler.use(auth).get((req, res) => {
         next()
       }
     });
-}).use((req, res, next) => {
-    const user = req.user
-    user.then((data) => {
-        if(data.type === "Authority"){
+}).use(async (req, res, next) => {
+    const user = await req.user
+    const { rid } = req.query
+    getReportById(rid).then((data) => {
+        if(user.type === "Authority" || data.username === user.username){
             next()
         } else {
             res.status(400).send('unauthorized')
         }
-    })
-
+    }).catch(err => {
+        res.json(err)
+    });
+    
 }).put((req, res) => {
     //edit report
     const {rid} = req.query
