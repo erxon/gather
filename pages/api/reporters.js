@@ -5,7 +5,7 @@ const handler = nextConnect();
 handler.post((req, res) => {
     const data = req.body;
     addReporter(data).then((response) => {
-        res.json({data: response, message: "successfully added"});
+        res.status(200).json({data: response, message: "successfully added"});
     }).catch(err => {
         res.json(err);
     })

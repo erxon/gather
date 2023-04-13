@@ -17,6 +17,7 @@ export default function ComponentNavbar() {
           <Nav className="me-auto">
             <Navbar.Brand>Gather</Navbar.Brand>
             <Nav.Link href="/">Home</Nav.Link>
+            <Nav.Link href="/reports">Reports</Nav.Link>
             {user ? (
               <>
                 <Nav.Link href="/profile">

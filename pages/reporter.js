@@ -2,25 +2,88 @@ import { useState } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { useRouter } from "next/router";
+import Router from "next/router";
 import { v4 as uuidv4 } from 'uuid';
+import { useUser } from "@/lib/hooks";
 
 export default function Reporter() {
   //form for reporter
   //form for the report editing
+  const [user, {mutate}] = useUser();
   const router = useRouter();
-
   const {
-    firstName, 
-    lastName, 
-    lastSeen, 
-    age, 
-    gender } = router.query;
+    firstName,
+    lastName,
+    lastSeen,
+    age,
+    gender,
+    status
+  } = router.query;
   const [image, setImage] = useState({ file: "" });
   const handleChange = (event) => {
     setImage({
       file: URL.createObjectURL(event.target.files[0]),
     });
   };
+
+  const handleSubmit = async (e) =>{
+    e.preventDefault();
+    const report = {
+        username: e.target.username.value,
+        firstName: firstName,
+        lastName: lastName,
+        lastSeen: lastSeen,
+        age: age,
+        gender: gender,
+    }
+    const signup = {
+        username: e.target.username.value,
+        email: e.target.email.value,
+        password: e.target.password.value
+    }
+    console.log(report)
+    console.log(signup)
+    const resSignup = await fetch('/api/users', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(signup)
+    })
+    if (resSignup.status === 201) {
+      const userObj = await resSignup.json();
+      // set user to useSWR state
+      const resReport = await fetch('/api/reports', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(report)
+      });
+      
+      if (resReport.status === 200) {
+        Router.push('/reportDashboard');
+      }
+      mutate(userObj);
+    }
+
+    // if (resSignup.status === 201){
+    //     Promise.all(
+    //         [
+    //             fetch('/api/reporters', {
+    //                 method: 'POST', 
+    //                 headers: {'Content-Type': 'application/json'},
+    //                 body: JSON.stringify(reporter)
+    //             }),
+    //             fetch('/api/reports', {
+    //                 method: 'POST',
+    //                 headers: {'Content-Type': 'application/json'},
+    //                 body: JSON.stringify(report)
+    //             })
+    //         ]
+    //     ).then(([reporterData, reportData]) => {
+    //         if (reporterData.status === 200 && reportData.status === 200) {
+    //             Router.push("/reportDashboard");
+    //         }
+    //     })
+    // }
+  }
   
   return (
     <>
@@ -54,9 +117,9 @@ export default function Reporter() {
         </div>
         <input type="file" onChange={handleChange} />
         <div>
-          <form>
-            <div className="row pt-5">
-              <div className="col-lg-6 col-md-12 col-sm-12">
+          <form onSubmit={handleSubmit}>
+            <div>
+              {/* <div className="col-lg-6 col-md-12 col-sm-12">
                 <div className="pe-5">
                   <h2>Information</h2>
                   <p>Please provide your basic information here</p>
@@ -87,23 +150,23 @@ export default function Reporter() {
                     />
                   </Form.Group>
                 </div>
-              </div>
+              </div> */}
 
-              <div className="col-lg-6 col-md-12 col-sm-12">
-                <div className="pe-5">
+              <div>
+                <div className="w-50">
                   <h2>Signup</h2>
                   <p>Please create an account as a concerned citizen</p>
+                  <Form.Group>
+                    <Form.Label htmlFor="username">Username</Form.Label>
+                    <Form.Control id="username" name="username" type="text" />
+                  </Form.Group>
                   <Form.Group className="mt-3">
-                    <Form.Label htmlFor="firstName">First name</Form.Label>
-                    <Form.Control name="firstName" type="text" />
+                    <Form.Label htmlFor="email">Email</Form.Label>
+                    <Form.Control name="email" type="email" />
                   </Form.Group>
                   <Form.Group>
-                    <Form.Label htmlFor="lastName">Last name</Form.Label>
-                    <Form.Control id="lastName" name="lastName" type="text" />
-                  </Form.Group>
-                  <Form.Group>
-                    <Form.Label htmlFor="lastName">Last name</Form.Label>
-                    <Form.Control id="lastName" name="lastName" type="text" />
+                    <Form.Label htmlFor="password">Password</Form.Label>
+                    <Form.Control id="password" name="password" type="password" />
                   </Form.Group>
                 </div>
               </div>

@@ -5,11 +5,7 @@ const handler = nextConnect();
 
 handler.post((req, res) => {
     const data = {
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        lastSeen: req.body.lastSeen,
-        gender: req.body.gender,
-        age: req.body.age,
+        ...req.body,
         reportedAt: new Date()
     }
 

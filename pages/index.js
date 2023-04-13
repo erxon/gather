@@ -13,13 +13,15 @@ export default function HomePage() {
             lastName: e.currentTarget.lastName.value,
             lastSeen: e.currentTarget.lastSeen.value,
             age: e.currentTarget.age.value,
-            gender: e.currentTarget.gender.value
+            gender: e.currentTarget.gender.value,
+            status: "validating"
         }
 
         Router.push({
           pathname: "/reporter",
           query: body
         });
+
     }
   return (
     <>
