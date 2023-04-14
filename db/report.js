@@ -9,11 +9,11 @@ const reportSchema = mongoose.Schema({
     },
     firstName: {
         type: String,
-        required: true
+        required: [true, 'First name is required']
     },
     lastName: {
         type: String,
-        required: true
+        required: [true, 'Last name is required']
     },
     reportedAt: Date,
     updatedAt: Date,
@@ -21,15 +21,15 @@ const reportSchema = mongoose.Schema({
     updatedByAuthority: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
     lastSeen: {
         type: String,
-        required: true
+        required: [true, 'Please indicate where the person was last seen']
     },
     age: {
         type: String,
-        required: true
+        required: [true, 'Please indicate the age of the person']
     },
     gender: {
         type: String,
-        required: true
+        required: [true, 'Please indicate the gender of the person']
     },
     features: [String],
     email: String,

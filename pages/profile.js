@@ -16,6 +16,7 @@ function ProfileEdit() {
 
         const body = {
             email: emailRef.current.value,
+            type: e.target.type.value
         }
         const res = await fetch(`/api/user`, {
             method: 'PUT',
@@ -45,6 +46,8 @@ function ProfileEdit() {
                     <label>
                         <span>Email</span>
                         <input type="email" ref={emailRef} required />
+                        <span>Type</span>
+                        <input type="text" placeholder={user.type} name="type" required />
                     </label>
                     <div className="submit">
                         <button type="submit">Update profile</button>

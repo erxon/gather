@@ -37,22 +37,22 @@ handler.use(auth).get((req, res) => {
 }).put((req, res) => {
     //edit report
     const {rid} = req.query
-    const update = req.body;
+    const update = req.body
     updateReport(rid, update).then((data) => {
-        res.json({
+        res.status(200).json({
             data: data, 
             update: update,  
             message: 'updated successfully'
         })
     }).catch(err => {
-        res.json({err})
+        res.status(400).json({err})
     })
 }).delete((req, res) => {
     const {rid} = req.query
     deleteReport(rid).then((data) => {
-        res.json({data: data, message: 'successfully deleted'})
+        res.status(200).json({data: data, message: 'successfully deleted'})
     }).catch(err => {
-        res.json(err)
+        res.status(400).json(err)
     })
 })
 
