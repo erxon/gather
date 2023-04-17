@@ -123,6 +123,7 @@ export default function EditReport({ data }) {
           <br />
           <br />
           <input type="file" onChange={handleChange} />
+          <Button variant="primary">Upload</Button>
           <div className="row">
             <div
               style={{ marginTop: "auto", marginBottom: "auto" }}

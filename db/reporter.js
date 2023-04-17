@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const reporterSchema = mongoose.Schema({
     photo: Buffer,
     username: {type: String, ref: 'User'},
+    user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
     firstName: {
         type: String,
         required: true

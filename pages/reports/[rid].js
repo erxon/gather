@@ -82,7 +82,6 @@ export const getServerSideProps = async ({ params }) => {
   const res = await fetch(`http://localhost:3000/api/reports/${rid}`);
 
   const data = await res.json();
-    console.log(data)
   return {
     props: { data },
   };

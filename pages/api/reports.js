@@ -14,7 +14,7 @@ handler.post((req, res) => {
         if (response && response.errors) {
             res.json({error: "Important fields are missing"})
         } 
-        res.status(200).json({message: 'successfully uploaded'})
+        res.status(200).json({data: response, message: 'successfully uploaded'})
         
     }).catch(err => {
         res.json({error: err})

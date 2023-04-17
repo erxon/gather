@@ -1,35 +1,30 @@
 import mongoose from "mongoose";
 
 const reportSchema = mongoose.Schema({
-    reporter: mongoose.Schema.Types.ObjectId,
+    reporter: {type: mongoose.Schema.Types.ObjectId, ref: 'Reporter'},
     status: String,
     username: {type: String, ref: 'User'},
     photo: {
         type: String,
     },
     firstName: {
-        type: String,
-        required: [true, 'First name is required']
+        type: String
     },
     lastName: {
-        type: String,
-        required: [true, 'Last name is required']
+        type: String
     },
     reportedAt: Date,
     updatedAt: Date,
     updatedByReporter: {type: mongoose.Schema.Types.ObjectId, ref: 'Reporter'},
     updatedByAuthority: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
     lastSeen: {
-        type: String,
-        required: [true, 'Please indicate where the person was last seen']
+        type: String
     },
     age: {
-        type: String,
-        required: [true, 'Please indicate the age of the person']
+        type: String
     },
     gender: {
-        type: String,
-        required: [true, 'Please indicate the gender of the person']
+        type: String
     },
     features: [String],
     email: String,
