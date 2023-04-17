@@ -1,17 +1,28 @@
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
+import { CloudinaryImage } from "@cloudinary/url-gen";
+import { AdvancedImage } from "@cloudinary/react";
+import { fill } from "@cloudinary/url-gen/actions/resize";
 
 function Report(props){
     const route = `/reports/${props.id}`;
+    let image;
+    if(props.photo) {
+      image = new CloudinaryImage(props.photo, {
+        cloudName: "dg0cwy8vx",
+        apiKey: process.env.CLOUDINARY_KEY,
+        apiSecret: process.env.CLOUDINARY_SECRET,
+      }).resize(fill().width(200).height(200));
+    }
   return (
     <>
       <div className="col-lg-3 col-md-4 col-sm-12">
         <div className="my-5">
         <Card style={{ width: "100%" }}>
-          {props.photo === "" ? (
-            <Card.Img variant="top" src="https://placehold.co/50" />
+          {image ? (
+            <AdvancedImage cldImg={image} />
           ) : (
-            <Card.Img variant="top" src={props.photo} />
+            <Card.Img variant="top" src="https://placehold.co/50" />
           )}
           <Card.Body>
             <Card.Title>
@@ -44,7 +55,7 @@ export default function ReportPage({data}){
                 return <Report
                     key={report._id}
                     id={report._id}
-                    photo=""
+                    photo={report.photo}
                     firstName={report.firstName}
                     lastName={report.lastName}
                     lastSeen={report.lastSeen}
