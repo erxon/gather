@@ -15,7 +15,7 @@ handler
     
   })
   .post((req, res) => {
-    const { username, password, email } = req.body
+    const { username, password, email, type } = req.body
     if (!username || !password || !email) {
       return res.status(400).send('Missing fields')
     }
@@ -30,15 +30,20 @@ handler
         res.status(409).send('The username has already been used');
 
       } else {
-        const user = { username, password, email }
-        createUser(req, user)
-        req.logIn(user, (err) => {
-          if (err) throw err
-          // Log the signed up user in
-          res.status(201).json({
-            user,
+        const userLogin = { username, password, email }
+        const userSignup = {username, password, email, type}
+        createUser(req, userSignup).then((data) => {
+          req.logIn(userLogin, (err) => {
+            if (err) throw err
+            // Log the signed up user in
+            res.status(201).json({
+              username: userLogin.username,
+              email: userLogin.email,
+              userId: data._id
+            })
           })
         })
+        
       }
     });
     

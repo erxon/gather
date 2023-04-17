@@ -4,6 +4,7 @@ const reportSchema = mongoose.Schema({
     reporter: {type: mongoose.Schema.Types.ObjectId, ref: 'Reporter'},
     status: String,
     username: {type: String, ref: 'User'},
+    account: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
     photo: {
         type: String,
     },

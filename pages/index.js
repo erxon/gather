@@ -17,13 +17,18 @@ export default function HomePage() {
       lastSeen: e.currentTarget.lastSeen.value,
       age: e.currentTarget.age.value,
       gender: e.currentTarget.gender.value,
-      status: "validating",
+      status: "pending",
     };
 
-    Router.push({
-      pathname: "/reporter",
-      query: body,
-    });
+    const res = await fetch('/api/reports', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(body)
+    })
+    const data = await res.json();
+    if(data){
+      Router.push(`/reports/create-account/${data.data._id}`)
+    }
   };
   const handleChange = (changeEvent) => {
     const reader = new FileReader();
@@ -99,23 +104,23 @@ export default function HomePage() {
         <form onSubmit={handleSubmit}>
           <Form.Group>
             <Form.Label htmlFor="firstName">First Name</Form.Label>
-            <Form.Control id="firstName" name="firstName" type="text" />
+            <Form.Control id="firstName" name="firstName" type="text" required/>
           </Form.Group>
           <Form.Group>
             <Form.Label htmlFor="lastName">Last Name</Form.Label>
-            <Form.Control id="lastName" name="lastName" type="text" />
+            <Form.Control id="lastName" name="lastName" type="text" required/>
           </Form.Group>
           <Form.Group>
             <Form.Label htmlFor="lastSeen">Last seen</Form.Label>
-            <Form.Control id="lastSeen" name="lastSeen" type="text" />
+            <Form.Control id="lastSeen" name="lastSeen" type="text" required/>
           </Form.Group>
           <Form.Group>
             <Form.Label htmlFor="age">Age</Form.Label>
-            <Form.Control id="age" name="age" type="text" />
+            <Form.Control id="age" name="age" type="text" required/>
           </Form.Group>
           <Form.Group>
             <Form.Label htmlFor="age">Gender</Form.Label>
-            <Form.Control id="gender" name="gender" type="text" />
+            <Form.Control id="gender" name="gender" type="text" required/>
           </Form.Group>
           <Button className="mt-3" variant="primary" type="submit">
             Report
