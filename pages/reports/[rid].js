@@ -2,11 +2,24 @@ import Router from "next/router";
 import { useEffect, useState } from "react";
 import { useUser } from "@/lib/hooks";
 import { Button, Form } from "react-bootstrap";
+import { CloudinaryImage } from "@cloudinary/url-gen";
+import { AdvancedImage } from "@cloudinary/react";
+import { fill } from "@cloudinary/url-gen/actions/resize";
 
 export default function ReportPage({ data }) {
   const reportedAt = new Date(data.reportedAt)
   const [user, { mutate }] = useUser();
   const [authorized, isAuthorized] = useState(false);
+  let image;
+  if(data.photo) {
+    image = new CloudinaryImage(data.photo, {
+      cloudName: "dg0cwy8vx",
+      apiKey: process.env.CLOUDINARY_KEY,
+      apiSecret: process.env.CLOUDINARY_SECRET,
+    }).resize(fill().width(250).height(250));
+  }
+  
+
   useEffect(() => {
     if(!user){
       return
@@ -40,7 +53,9 @@ export default function ReportPage({ data }) {
         </div>
         <div>Reported at: {reportedAt.toDateString()}</div>
         <div>
-            <img src="https://placehold.co/250" /> <br />
+            { image ?
+              (<AdvancedImage cldImg={image} />) :
+              (<div><img src="https://placehold.co/250" /> <br /></div>)}
             {authorized && <input type="file"/>}
         </div>
         <div>
