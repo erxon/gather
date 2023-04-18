@@ -12,20 +12,27 @@ function ProfileEdit() {
     }, [user])
 
     async function handleEditProfile(e) {
-        e.preventDefault()
+        e.preventDefault();
 
         const body = {
             email: emailRef.current.value,
             type: e.target.type.value
         }
+
         const res = await fetch(`/api/user`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body),
-        })
-        const updatedUser = await res.json()
+        });
 
-        mutate(updatedUser)
+        const updatedUser = await res.json()
+        if (updatedUser){
+            Router.push('/authority/profile')
+        }
+        
+        
+
+        
     }
 
     async function handleDeleteProfile() {

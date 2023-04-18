@@ -25,7 +25,7 @@ handler.use(auth).get((req, res) => {
     const user = await req.user
     const { rid } = req.query
     getReportById(rid).then((data) => {
-        if(user.type === "Authority" || data.username === user.username){
+        if(user.type === "authority" || data.username === user.username){
             next()
         } else {
             res.status(400).send('unauthorized')

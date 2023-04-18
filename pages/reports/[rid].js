@@ -24,7 +24,7 @@ export default function ReportPage({ data }) {
     if(!user){
       return
     } else {
-      if(user.username === data.username || user.type === 'Authority') {
+      if(user.username === data.username || user.type === 'authority') {
         isAuthorized(true);
       } else {
         isAuthorized(false);

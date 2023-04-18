@@ -24,7 +24,7 @@ handler
     // if (usernameExisted) {
     //   return res.status(409).send('The username has already been used')
     // }
-    findUserByUsername(req, username).then((data) => {
+    findUserByUsername(req, username).then(async (data) => {
       const usernameExisted = !!data;
       if(usernameExisted) {
         res.status(409).send('The username has already been used');
@@ -32,15 +32,14 @@ handler
       } else {
         const userLogin = { username, password, email }
         const userSignup = {username, password, email, type}
-        createUser(req, userSignup).then((data) => {
-          req.logIn(userLogin, (err) => {
-            if (err) throw err
-            // Log the signed up user in
-            res.status(201).json({
-              username: userLogin.username,
-              email: userLogin.email,
-              userId: data._id
-            })
+        const user = await createUser(req, userSignup)
+        req.logIn(userLogin, (err) => {
+          if (err) throw err
+          // Log the signed up user in
+          res.status(201).json({
+            username: userLogin.username,
+            email: userLogin.email,
+            userId: user._id
           })
         })
         

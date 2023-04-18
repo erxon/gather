@@ -37,6 +37,15 @@ export default function ComponentNavbar() {
                 </Nav.Link>
               </>
             )}
+            {
+              user && user.type === 'authority' && (
+                <>
+                  <Nav.Link href="/authority/upload">
+                    Create Report
+                  </Nav.Link>
+                </>
+              )
+            }
           </Nav>
         </Container>
       </Navbar>

@@ -18,6 +18,7 @@ export default function Signup() {
       username: e.currentTarget.username.value,
       password: e.currentTarget.password.value,
       email: e.currentTarget.email.value,
+      type: 'authority',
     };
 
     if (body.password !== e.currentTarget.rpassword.value) {
@@ -41,9 +42,8 @@ export default function Signup() {
   }
 
   useEffect(() => {
-    // redirect to home if user is authenticated
     if (user) {
-      Router.push("/");
+      Router.push('/profile');
     }
   }, [user]);
 
@@ -70,7 +70,7 @@ export default function Signup() {
           </Form.Group>
           <Form.Group className="mt-2">
             <Button variant="primary" type="submit">
-              Signup
+              Signup as an authority
             </Button>
           </Form.Group>
           <Link href="/login">Login</Link>
