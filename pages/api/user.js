@@ -39,10 +39,13 @@ handler
   })
   .put((req, res) => {
     const user = req.user;
-    const { email } = req.body
+    const update = req.body
     user.then((user) => {
-      updateUserByUsername(req, user.username, { email }).then((data) => {
-        res.json({data})
+      updateUserByUsername(req, user.username, update).then((data) => {
+        if (data && data.errors){
+          res.json({message: 'Something went wrong'})
+        }
+        res.json({data, message: "Successfully updated"})
       })
     })
     

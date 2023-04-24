@@ -3,8 +3,10 @@ import Router from "next/router";
 import { useState } from "react";
 import { useUser } from "@/lib/hooks";
 import { useEffect } from "react";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
+import TextField from "@mui/material/TextField";
+import { Box, Stack, Typography } from "@mui/material";
+import Button from "@mui/material/Button";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 export default function Signup() {
   const [user, { mutate }] = useUser();
@@ -18,7 +20,7 @@ export default function Signup() {
       username: e.currentTarget.username.value,
       password: e.currentTarget.password.value,
       email: e.currentTarget.email.value,
-      type: 'authority',
+      type: "authority",
     };
 
     if (body.password !== e.currentTarget.rpassword.value) {
@@ -43,39 +45,78 @@ export default function Signup() {
 
   useEffect(() => {
     if (user) {
-      Router.push('/profile');
+      Router.push("/profile");
     }
   }, [user]);
 
   return (
     <>
-      <div className="w-25 mt-5">
-        <h2>Signup</h2>
+      <Box
+        sx={{
+          backgroundColor: "#f2f4f4",
+          marginTop: "100px",
+          padding: "30px",
+          borderRadius: "20px",
+          height: "25%",
+          padding: {xs: "10%", md:"5%"},
+        }}
+      >
+        <Stack
+          direction="row"
+          alignItems="center"
+          spacing={1}
+          sx={{ marginBottom: "16px" }}
+        >
+          <AccountCircleIcon />
+          <Typography variant="h6">Signup</Typography>
+        </Stack>
+
         <form onSubmit={onSubmit}>
-          <Form.Group className="mt-2">
-            <Form.Label htmlFor="username">Username</Form.Label>
-            <Form.Control id="username" type="text" name="username" />
-          </Form.Group>
-          <Form.Group className="mt-2">
-            <Form.Label htmlFor="email">Email</Form.Label>
-            <Form.Control id="email" type="email" name="email" />
-          </Form.Group>
-          <Form.Group className="mt-2">
-            <Form.Label htmlFor="password">Password</Form.Label>
-            <Form.Control id="password" type="password" name="password" />
-          </Form.Group>
-          <Form.Group className="mt-2">
-            <Form.Label htmlFor="rpassword">Repeat Password</Form.Label>
-            <Form.Control id="rpassword" type="password" name="rpassword" />
-          </Form.Group>
-          <Form.Group className="mt-2">
-            <Button variant="primary" type="submit">
-              Signup as an authority
-            </Button>
-          </Form.Group>
-          <Link href="/login">Login</Link>
+          <Stack
+            sx={{
+              '& .MuiTextField-root': { width:{xs: "100%", md: "50%"} },
+              mb: '10px'
+            }}
+          >
+            <TextField 
+              label="username"
+              variant="filled" 
+              id="username" 
+              type="text" 
+              name="username"
+              margin="dense"
+               />
+            <TextField 
+              label="email"
+              variant="filled" 
+              id="email" 
+              type="email" 
+              name="email"
+              margin="dense"
+               />
+            <TextField 
+              label="password"
+              variant="filled" 
+              id="password" 
+              type="password" 
+              name="password"
+              margin="dense"
+               />
+            <TextField 
+              label="repeat password"
+              variant="filled" 
+              id="rpassword" 
+              type="password" 
+              name="rpassword"
+              margin="dense"
+               />
+          </Stack>
+
+          <Button variant="contained" type="submit">
+            Signup
+          </Button>
         </form>
-      </div>
+      </Box>
     </>
   );
 }

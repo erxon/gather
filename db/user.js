@@ -1,7 +1,10 @@
 import mongoose from "mongoose";
 
 const userSchema = mongoose.Schema({
-   photo:  Buffer,
+   photo: {
+      data: Buffer,
+      contentType:String
+   },
    username: {
     type: String,
     required: true
@@ -14,7 +17,11 @@ const userSchema = mongoose.Schema({
     required: true
    },
    contactNumber: String,
-   socialMediaAccounts: [String],
+   socialMediaAccounts:{
+      facebook: String,
+      twitter: String,
+      instagram: String
+   },
    type: String,
    contacts: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
    firstName: String,

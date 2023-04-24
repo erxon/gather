@@ -1,8 +1,12 @@
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
 import Router from "next/router";
-import Alert from "react-bootstrap/Alert";
 import { useState } from "react";
+import { Box, Stack, Typography } from "@mui/material";
+import Grid from "@mui/material/Grid";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
+import ArticleIcon from "@mui/icons-material/Article";
+import DataSaverOffIcon from '@mui/icons-material/DataSaverOff';
 
 export default function HomePage() {
   const [imageSrc, setImageSrc] = useState();
@@ -20,14 +24,14 @@ export default function HomePage() {
       status: "pending",
     };
 
-    const res = await fetch('/api/reports', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(body)
-    })
+    const res = await fetch("/api/reports", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
     const data = await res.json();
-    if(data){
-      Router.push(`/reports/create-account/${data.data._id}`)
+    if (data) {
+      Router.push(`/reports/create-account/${data.data._id}`);
     }
   };
   const handleChange = (changeEvent) => {
@@ -62,71 +66,169 @@ export default function HomePage() {
         body: formData,
       }
     ).then((r) => r.json());
-    
-    console.log(data)
+
+    console.log(data);
     const publicId = data.public_id.substring(11, 31);
-    if(data){
-      Router.push(`/reports/upload/${publicId}`)
+    if (data) {
+      Router.push(`/reports/upload/${publicId}`);
     }
   };
+
   return (
     <>
-      <div className="w-50 mt-5">
-        <div className="mb-3">
-          <h1>Report</h1>
-          <p>Report a case to nearby authorities.</p>
-        </div>
-        <form
-          method="post"
-          onChange={handleChange}
-          onSubmit={handleImageSubmit}
-        >
-          <p>
-            <input type="file" name="file" />
-          </p>
-          <img src={imageSrc} />
-          {imageSrc && !uploadData && (
-            <p>
-              <button>upload files</button>
-            </p>
-          )}
-          {uploadData && (
-            <code>
-              <pre>{JSON.stringify(uploadData, null, 2)}</pre>
-            </code>
-          )}
-        </form>
-        <div className="mb-3">
-          <h1>Report</h1>
-          <p>Report a case to authorities.</p>
-        </div>
+      <Box
+        sx={{
+          backgroundColor: "#f2f4f4",
+          marginTop: "100px",
+          padding: "30px",
+          borderRadius: "20px",
+          height: "50%",
+        }}
+      >
+        <Box>
+          <form
+            method="post"
+            onChange={handleChange}
+            onSubmit={handleImageSubmit}
+          >
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6}>
+                <Stack spacing={1} alignItems="center" direction="row" sx={{marginBottom: '16px'}}>
+                  <InsertPhotoIcon />
+                  <Typography variant="h6">Report with Photo</Typography>
+                </Stack>
+                <Typography variant="body1">
+                  Report a missing person with an image. The image will be
+                  searched in the collections of images from past reports.
+                </Typography>
+                <p>
+                  <input type="file" name="file" />
+                </p>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <img
+                  style={{ width: "auto", height: "250px" }}
+                  src={imageSrc}
+                />
+                {imageSrc && !uploadData && (
+                  <p>
+                    <Button variant="contained" size="small">
+                      upload files
+                    </Button>
+                  </p>
+                )}
+                {uploadData && (
+                  <code>
+                    <pre>{JSON.stringify(uploadData, null, 2)}</pre>
+                  </code>
+                )}
+              </Grid>
+            </Grid>
+          </form>
+        </Box>
+      </Box>
+      <Grid container spacing={2} sx={{ marginTop: "5%" }}>
+        <Grid item xs={12} md={6}>
+          {/*Recent Report*/}
+          <Box
+            sx={{
+              backgroundColor: "#f2f4f4",
+              padding: "5%",
+              borderRadius: "20px",
+            }}
+          >
+            <Stack spacing={1} alignItems="center" direction="row" sx={{marginBottom: '16px'}}>
+              <DataSaverOffIcon />
+              <Typography variant="h6">Data</Typography>
+            </Stack>
+            
+          </Box>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          {/*Report a Case*/}
+          <Box
+            sx={{
+              backgroundColor: "#f2f4f4",
+              padding: "5%",
+              borderRadius: "20px",
+            }}
+          >
+            <Stack spacing={1} alignItems="center" direction="row" sx={{marginBottom: '16px'}}>
+              <ArticleIcon />
+              <Typography variant="h6">
+                Report and manage
+              </Typography>
+            </Stack>
+            
+            <form onSubmit={handleSubmit}>
+              <TextField
+                sx={{ marginTop: "5px" }}
+                id="firstName"
+                label="First Name"
+                variant="outlined"
+                name="firstName"
+                type="text"
+                size="small"
+                fullWidth
+                required
+              />
+              <TextField
+                sx={{ marginTop: "5px" }}
+                id="lastName"
+                label="Last Name"
+                variant="outlined"
+                name="lastName"
+                type="text"
+                size="small"
+                fullWidth
+                required
+              />
+              <TextField
+                sx={{ marginTop: "5px" }}
+                id="lastSeen"
+                label="Last Seen"
+                variant="outlined"
+                name="lastSeen"
+                type="text"
+                size="small"
+                fullWidth
+                required
+              />
 
-        <form onSubmit={handleSubmit}>
-          <Form.Group>
-            <Form.Label htmlFor="firstName">First Name</Form.Label>
-            <Form.Control id="firstName" name="firstName" type="text" required/>
-          </Form.Group>
-          <Form.Group>
-            <Form.Label htmlFor="lastName">Last Name</Form.Label>
-            <Form.Control id="lastName" name="lastName" type="text" required/>
-          </Form.Group>
-          <Form.Group>
-            <Form.Label htmlFor="lastSeen">Last seen</Form.Label>
-            <Form.Control id="lastSeen" name="lastSeen" type="text" required/>
-          </Form.Group>
-          <Form.Group>
-            <Form.Label htmlFor="age">Age</Form.Label>
-            <Form.Control id="age" name="age" type="text" required/>
-          </Form.Group>
-          <Form.Group>
-            <Form.Label htmlFor="age">Gender</Form.Label>
-            <Form.Control id="gender" name="gender" type="text" required/>
-          </Form.Group>
-          <Button className="mt-3" variant="primary" type="submit">
-            Report
-          </Button>
-        </form>
-      </div>
+              <TextField
+                sx={{ marginTop: "5px" }}
+                id="age"
+                label="Age"
+                name="age"
+                variant="outlined"
+                type="text"
+                size="small"
+                fullWidth
+                required
+              />
+
+              <TextField
+                sx={{ marginTop: "5px" }}
+                id="gender"
+                label="Gender"
+                name="gender"
+                variant="outlined"
+                type="text"
+                size="small"
+                fullWidth
+                required
+              />
+              <Button
+                sx={{ marginTop: "5px" }}
+                type="submit"
+                variant="contained"
+              >
+                Report
+              </Button>
+            </form>
+          </Box>
+        </Grid>
+      </Grid>
     </>
   );
 }
