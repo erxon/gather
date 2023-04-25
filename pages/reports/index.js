@@ -32,7 +32,7 @@ function Report(props) {
   }
   return (
     <>
-      <Box sx={{mt: 3}}>
+      <Box sx={{ mt: 3 }}>
         <Card style={{ maxWidth: "300px" }}>
           {image ? (
             <CardMedia>
@@ -45,17 +45,27 @@ function Report(props) {
             />
           )}
           <CardContent>
-            <Typography>
+            <Typography gutterBottom variant="h5" component="div">
               {props.firstName} {props.lastName}
             </Typography>
+            
+
             <Typography>
               <strong>Last seen: </strong> {props.lastSeen} <br />
               <strong>Age: </strong> {props.age} <br />
               <strong>Gender: </strong> {props.gender} <br />
-              <Chip sx={{mt: 2}} label={props.status} />
             </Typography>
-            <CardActions>
-              <Button href={route}>View</Button>
+            <Chip
+              sx={{ mt: 2 }}
+              variant="outlined"
+              color="primary"
+              label={props.status}
+            />
+
+            <CardActions sx={{p: 0, mt: 2}}>
+              <Button variant="contained" disableElevation fullWidth href={route}>
+                View
+              </Button>
             </CardActions>
           </CardContent>
         </Card>
@@ -129,7 +139,7 @@ export default function ReportPage({ data }) {
               );
             })
           ) : (
-            <Typography sx={{mt: 3}}>Nothing to show</Typography>
+            <Typography sx={{ mt: 3 }}>Nothing to show</Typography>
           )}
         </Grid>
       </div>

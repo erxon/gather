@@ -1,7 +1,7 @@
 import Router from "next/router";
 import { useEffect, useState } from "react";
 import { useUser } from "@/lib/hooks";
-import ReportPhoto from "@/components/ReportPhoto";
+import ReportPhoto from "@/components/photo/ReportPhoto";
 import { Box, Typography, Button, TextField, Grid, Stack } from "@mui/material";
 import Link from "next/link";
 

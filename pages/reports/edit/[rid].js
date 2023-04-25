@@ -20,7 +20,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from '@mui/icons-material/Close';
 import React, { useState } from "react";
 import { useUser } from "@/lib/hooks";
-import ReportPhoto from "@/components/ReportPhoto";
+import ReportPhoto from "@/components/photo/ReportPhoto";
 
 export default function EditReport({ data }) {
   const [user] = useUser();

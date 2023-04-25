@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import GroupIcon from "@mui/icons-material/Group";
-import ProfilePhoto from "@/components/ProfilePhoto";
+import ProfilePhoto from "@/components/photo/ProfilePhoto";
 import Image from "next/image";
 import { BungalowTwoTone } from "@mui/icons-material";
 //display all users

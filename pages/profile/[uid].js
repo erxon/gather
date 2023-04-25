@@ -8,7 +8,7 @@ import {
     Chip,
     Button,
   } from "@mui/material";
-  import ProfilePhoto from "@/components/ProfilePhoto";
+  import ProfilePhoto from "@/components/photo/ProfilePhoto";
   
   //Hooks
   import { useUser } from "@/lib/hooks";
