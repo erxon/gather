@@ -23,6 +23,7 @@ const userSchema = mongoose.Schema({
       instagram: String
    },
    type: String,
+   about: String,
    contacts: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
    firstName: String,
    lastName: String,

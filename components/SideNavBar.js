@@ -24,7 +24,7 @@ function MainListItems(){
       </ListItemIcon>
       <ListItemText primary="Dashboard" />
     </ListItemButton>
-    <ListItemButton sx={styles}>
+    <ListItemButton href="/reports" sx={styles}>
       <ListItemIcon>
         <ArticleIcon />
       </ListItemIcon>

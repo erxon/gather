@@ -1,8 +1,36 @@
-import { useState } from "react";
-import { Form, Button, Alert } from "react-bootstrap";
+import {
+  TextField,
+  Typography,
+  Button,
+  Box,
+  Stack,
+  InputAdornment,
+  IconButton,
+  Paper,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Snackbar
+} from "@mui/material";
+import FacebookIcon from "@mui/icons-material/Facebook";
+import TwitterIcon from "@mui/icons-material/Twitter";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
+import CloseIcon from '@mui/icons-material/Close';
+import React, { useState } from "react";
+import { useUser } from "@/lib/hooks";
+import ReportPhoto from "@/components/ReportPhoto";
 
 export default function EditReport({ data }) {
-  const [image, setImage] = useState({ file: "" });
+  const [user] = useUser();
+  const [image, setImage] = useState({ renderImage: "", file: null });
+  const [status, setStatus] = useState(data.status);
+  //for snackbar
+  const [snackbarValues, setSnackbarValues] = useState({
+    open: false,
+    message: ''
+  })
   const [body, setBody] = useState({
     firstName: data.firstName,
     lastName: data.lastName,
@@ -10,211 +38,370 @@ export default function EditReport({ data }) {
     age: data.age,
     gender: data.gender,
     email: data.email,
-    contactNumber: data.contactNumber
-  })
-  const [accounts, setAccounts] = useState([...data.socialMediaAccount]);
+    contactNumber: data.contactNumber,
+    photo: data.photo
+  });
   const [features, setFeatures] = useState([...data.features]);
   const [value, setValue] = useState({
-    account: "",
-    feature: ""
+    facebook: Object.hasOwn(data, 'socialMediaAccounts') ? data.socialMediaAccounts.facebook : "",
+    twitter: Object.hasOwn(data, 'socialMediaAccounts') ? data.socialMediaAccounts.twitter: "",
+    feature: "",
   });
 
+  //Snackbar 
+  const handleClose = () => {
+    setSnackbarValues((prev) => {
+      return {...prev, open: false}
+    })
+  }
 
+  //Image
   const handleChange = (event) => {
     setImage({
-      file: URL.createObjectURL(event.target.files[0]),
+      renderImage: URL.createObjectURL(event.target.files[0]),
+      file: event.target.files[0]
     });
   };
-  const handleInputChange = (e) => {
-    const {value, name} = e.target;
-    setValue((prev) => {
-      return {...prev, [name]: value}
+
+  //Status
+  const handleStatusChange = (event) => {
+    setStatus(event.target.value);
+  }
+
+  //Features
+  const handleDeleteFeatures = (feature) => {
+    setFeatures((prev) => {
+      return prev.filter((item) => {return item !== feature});
     });
   }
+
+  const handleInputChange = (e) => {
+    const { value, name } = e.target;
+    setValue((prev) => {
+      return { ...prev, [name]: value };
+    });
+  };
+
   const handleFormChange = (e) => {
-    const {value, name} = e.target;
+    const { value, name } = e.target;
     setBody((prev) => {
-      return {...prev, [name]: value}
-    })
-  }
+      return { ...prev, [name]: value };
+    });
+  };
+
   const handleInputSubmit = (typeOfInput) => {
     if (typeOfInput === "account") {
-      setAccounts((prev) => {return [...prev, value.account]})
-    } else if (typeOfInput === "features"){
-      setFeatures((prev) => {return [...prev, value.feature]})
+      setAccounts((prev) => {
+        return [...prev, value.account];
+      });
+    } else if (typeOfInput === "features") {
+      setFeatures((prev) => {
+        return [...prev, value.feature];
+      });
     }
-    
+
     setValue({
       account: "",
-      feature: ""
-    })
-  }
+      feature: "",
+    });
+  };
 
-  const [alert, setAlert] = useState({
-    show: false,
-    message: "",
-    variant: ""
-  });
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+    //Upload photo to cloud
+    //Add the public id to photo property in update
+    if (image.file){
+      const formData = new FormData();
+      formData.append('file', image.file)
+      formData.append("upload_preset", "report-photos");
+  
+      const photoUpload = await fetch(
+        "https://api.cloudinary.com/v1_1/dg0cwy8vx/image/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      ).then((r) => r.json());
+
+      body.photo = photoUpload.public_id
+      
+    }
+    
     const update = {
       ...body,
-      socialMediaAccount: [...accounts],
-      features: [...features]
-    }
+      updatedBy: user._id,
+      updatedAt: new Date(),
+      status: status,
+      socialMediaAccounts: {facebook: value.facebook, twitter: value.twitter},
+      features: [...features],
+    };
 
     const res = await fetch(`/api/reports/${data._id}`, {
-      method: 'PUT',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(update)
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(update),
     });
-    const message = await res.json()
-    if (res.status === 200){
-      setAlert({
-        show: true,
-        message: message.message,
-        variant: "success"
-      })
-    } else {
-      setAlert({
-        show: true,
-        message: message.message,
-        variant: "warning"
-      })
-    }
-  }
-
-  //timer for alert
-  setTimeout(() => {
-    setAlert((prev) => {
-      return {...prev, show: false}
-    })
-  }, 20000)
+    const message = await res.json();
+    setSnackbarValues({open: true, message: message.message})
+  };
+  const actions = (
+    <React.Fragment>
+      <Button href={`/reports/${data._id}`} color="secondary" size="small" onClick={handleClose}>
+        BACK
+      </Button>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        onClick={handleClose}
+      >
+        <CloseIcon fontSize="small" />
+      </IconButton>
+    </React.Fragment>
+  );
+  const reportedDateAndTime = `${new Date(
+    data.reportedAt
+  ).toDateString()} ${new Date(data.reportedAt).toLocaleTimeString()}`;
+  const updatedDateAndTime = `${new Date(
+    data.updatedAt
+  ).toDateString()} ${new Date(data.updatedAt).toLocaleTimeString()}`;
 
   return (
     <>
       <div>
+      <Snackbar
+        open={snackbarValues.open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        message={snackbarValues.message}
+        action={actions}
+      />
         <form onSubmit={handleFormSubmit}>
-          {alert.show && (
-          <Alert variant={alert.variant}>
-            {alert.message}
-          </Alert>
+          <Typography variant="h6">Report</Typography>
+          <Typography variant="body2">
+            Reported At: {reportedDateAndTime}
+          </Typography>
+          <Typography variant="body2">
+            Last update: {updatedDateAndTime}
+          </Typography>
+
+          {user && user.type === "authority" && (
+            <Box sx={{my: 3, width: '300px'}}>
+              <FormControl fullWidth>
+                <InputLabel>
+                  Set Status
+                </InputLabel>
+                <Select
+                  value={status}
+                  label="Set Status"
+                  onChange={handleStatusChange}
+                >
+                  <MenuItem value="pending">Pending</MenuItem>
+                  <MenuItem value="active">Active</MenuItem>
+                  <MenuItem value="closed">Closed</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
           )}
-          <h3>Photo</h3>
-          {image.file ? (
-            <img
-              src={image.file}
-              style={{
-                borderRadius: "20px",
-                border: "1px solid #000",
-                width: "250px",
-                height: "250px",
-              }}
-            />
+          
+          {data.photo ? (
+            <ReportPhoto publicId={data.photo} />
           ) : (
             <img
               style={{
                 borderRadius: "20px",
-                border: "1px solid #000",
               }}
               src="https://placehold.co/250"
             />
           )}
           <br />
           <br />
-          <input type="file" onChange={handleChange} />
-          <Button variant="primary">Upload</Button>
-          <div className="row">
-            <div
-              style={{ marginTop: "auto", marginBottom: "auto" }}
-              className="col-3"
-            >
-              <p style={{ marginTop: "auto", marginBottom: "auto" }}>Name</p>
-            </div>
-            <div className="col-3">
-              <Form.Group>
-                <Form.Label id="firstName">First Name</Form.Label>
-                <input onChange={handleFormChange} value={body.firstName} id="firstName" name="firstName" type="text" />
-              </Form.Group>
-            </div>
-            <div className="col-3">
-              <Form.Group>
-                <Form.Label id="lastName">Last Name</Form.Label>
-                <input onChange={handleFormChange} value={body.lastName} id="lastName" name="lastName" type="text" />
-              </Form.Group>
-            </div>
-          </div>
-          <div className="row">
-            <div
-              style={{ marginTop: "auto", marginBottom: "auto" }}
-              className="col-3"
-            >
-              <p style={{ marginTop: "auto", marginBottom: "auto" }}>
-                Information
-              </p>
-            </div>
-            <div className="col-3">
-              <Form.Group>
-                <Form.Label id="age">Age</Form.Label>
-                <input onChange={handleFormChange} value={body.age} id="age" name="age" type="age" />
-              </Form.Group>
-            </div>
-            <div className="col-3">
-              <Form.Group>
-                <Form.Label id="gender">Gender</Form.Label>
-                <input onChange={handleFormChange} value={body.gender} id="gender" name="gender" type="text" />
-              </Form.Group>
-            </div>
-            <div className="col-3">
-              <Form.Group>
-                <Form.Label id="lastSeen">Last seen</Form.Label>
-                <input onChange={handleFormChange} value={body.lastSeen} id="lastSeen" name="lastSeen" type="text" />
-              </Form.Group>
-            </div>
-          </div>
-          <div className="row">
-            <div
-              style={{ marginTop: "auto", marginBottom: "auto" }}
-              className="col-3"
-            >
-              <p style={{ marginTop: "auto", marginBottom: "auto" }}>
-                Contact Information
-              </p>
-            </div>
-          <div className="col-3">
-              <Form.Group>
-                <Form.Label id="email">Email of the missing</Form.Label>
-                <input onChange={handleFormChange} value={body.email} id="email" name="email" type="age" />
-              </Form.Group>
-            </div>
-            <div className="col-3">
-              <Form.Group>
-                <Form.Label id="contactNumber">Contact Number of the missing</Form.Label>
-                <input onChange={handleFormChange} value={body.contactNumber} id="contactNumber" name="contactNumber" type="text" />
-              </Form.Group>
-            </div>
-            <div className="col-3"></div>
-          </div>
-          <div>
+          <Stack direction="row" spacing={1}>
+            <Button component="label" size="small" variant="outlined">
+              Choose File
+              <input hidden type="file" onChange={handleChange} />
+            </Button>
+            <Button variant="contained" onClick={handleFormSubmit}>
+              Save
+            </Button>
+          </Stack>
+          {/*Image file name*/}
+          {image.file && <Typography>{image.file.name}</Typography>}
 
-            <p><strong>Social Media Accounts</strong></p>
-            {accounts.map((account) => {
-                return <p>{account}</p>
-            })}
-            <input name="account" value={value.account} onChange={handleInputChange} />
-            <Button size="sm" onClick={() => {handleInputSubmit("account")}}><i className="bi bi-plus-lg"></i></Button>
-          </div>
-          <div>
-            <p><strong>Features</strong></p>
-            {features.map((feature) => {
-                return <p>{feature}</p>
-            })}
-            <input name="feature" value={value.feature} onChange={handleInputChange} />
-            <Button size="sm" onClick={() => {handleInputSubmit("features")}}><i className="bi bi-plus-lg"></i></Button>
-          </div>
-          <Button onClick={handleFormSubmit}>Save</Button>
+          <Box>
+            <Box sx={{ my: 3 }}>
+              <Typography variant="body1">
+                <strong>Basic Information</strong>
+              </Typography>
+            </Box>
+            <Stack direction="row" spacing={2}>
+              <TextField
+                label="First name"
+                onChange={handleFormChange}
+                value={body.firstName}
+                id="firstName"
+                name="firstName"
+                type="text"
+                variant="filled"
+              />
+              <TextField
+                label="Last name"
+                onChange={handleFormChange}
+                value={body.lastName}
+                id="lastName"
+                name="lastName"
+                type="text"
+                variant="filled"
+              />
+            </Stack>
+          </Box>
+          <Box sx={{ mt: 3 }}>
+            <Stack direction="row" spacing={2}>
+              <TextField
+                label="age"
+                onChange={handleFormChange}
+                value={body.age}
+                id="age"
+                name="age"
+                type="age"
+                variant="filled"
+              />
+              <TextField
+                label="Gender"
+                onChange={handleFormChange}
+                value={body.gender}
+                id="gender"
+                name="gender"
+                type="text"
+                variant="filled"
+              />
+              <TextField
+                label="Last seen"
+                onChange={handleFormChange}
+                value={body.lastSeen}
+                id="lastSeen"
+                name="lastSeen"
+                type="text"
+                variant="filled"
+              />
+            </Stack>
+          </Box>
+          <Box sx={{ my: 3 }}>
+            <Typography sx={{ mb: 3 }} variant="body1">
+              <strong>Contact Information</strong>
+            </Typography>
+            <Stack direction="row" spacing={2}>
+              <TextField
+                label="Email"
+                onChange={handleFormChange}
+                value={body.email}
+                id="email"
+                name="email"
+                type="age"
+                variant="filled"
+              />
+              <TextField
+                label="Contact Number"
+                onChange={handleFormChange}
+                value={body.contactNumber}
+                id="contactNumber"
+                name="contactNumber"
+                type="text"
+                variant="filled"
+              />
+            </Stack>
+          </Box>
+          <Box sx={{ mt: 3 }}>
+            <Typography sx={{ mb: 3 }} variant="body1">
+              <strong>Social Media Accounts</strong>
+            </Typography>
+            <Stack direction="row" spacing={2}>
+              <TextField
+                label="Facebook"
+                variant="filled"
+                name="facebook"
+                value={value.facebook}
+                onChange={handleInputChange}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <FacebookIcon />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <TextField
+                label="Twitter"
+                name="twitter"
+                variant="filled"
+                value={value.twitter}
+                onChange={handleInputChange}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <TwitterIcon />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Stack>
+          </Box>
+          <Box sx={{ mt: 3 }}>
+            <Typography sx={{ mb: 3 }} variant="body1">
+              <strong>Features</strong>
+            </Typography>
+            <Stack spacing={2}>
+              {features.map((feature) => {
+                return (
+                  <Box>
+                    <Paper elevation={1} sx={{ maxWidth: "300px", p: 2 }}>
+                      <Stack direction="row" spacing={5} alignItems="center">
+                        <Box sx={{ maxWidth: "200px" }}>
+                          <Typography
+                            variant="body1"
+                            sx={{
+                              inlineSize: "200px",
+                              overflowWrap: "break-word",
+                            }}
+                          >
+                            {feature}
+                          </Typography>
+                        </Box>
+                        <IconButton onClick={() => {handleDeleteFeatures(feature)}}>
+                          <DeleteIcon />
+                        </IconButton>
+                      </Stack>
+                    </Paper>
+                  </Box>
+                );
+              })}
+            </Stack>
+            <Stack
+              sx={{ mt: 2 }}
+              direction="row"
+              spacing={1}
+              alignItems="center"
+            >
+              <TextField
+                multiline
+                rows={4}
+                label="feature"
+                variant="filled"
+                name="feature"
+                value={value.feature}
+                onChange={handleInputChange}
+              />
+              <IconButton
+                size="small"
+                onClick={() => {
+                  handleInputSubmit("features");
+                }}
+              >
+                <AddIcon />
+              </IconButton>
+            </Stack>
+          </Box>
         </form>
-
       </div>
     </>
   );

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { useUser } from "@/lib/hooks";
 import * as React from "react";
 import { styled, alpha } from "@mui/material/styles";
@@ -66,8 +67,7 @@ export default function ComponentNavbar(props) {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      <MenuItem onClick={handleMenuClose}><Link href="/profile" style={{textDecoration: "none", color: "#000"}}>Profile</Link></MenuItem>
       <MenuItem onClick={handleLogout}>Logout</MenuItem>
     </Menu>
   );

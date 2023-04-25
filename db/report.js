@@ -30,7 +30,10 @@ const reportSchema = mongoose.Schema({
     features: [String],
     email: String,
     contactNumber: String,
-    socialMediaAccount: [String]
+    socialMediaAccounts: {
+        facebook: String,
+        twitter: String
+    }
 });
 
 const Report =  mongoose.models.Report || mongoose.model('Report', reportSchema);

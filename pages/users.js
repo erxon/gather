@@ -1,6 +1,23 @@
 import { useState, useEffect } from "react";
 import { useUser, fetcher } from "../lib/hooks";
 import useSWR from "swr";
+import {
+  Typography,
+  Card,
+  Button,
+  CardContent,
+  CardActions,
+  CardMedia,
+  Grid,
+  Box,
+  Stack,
+  Chip,
+} from "@mui/material";
+import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
+import GroupIcon from "@mui/icons-material/Group";
+import ProfilePhoto from "@/components/ProfilePhoto";
+import Image from "next/image";
+import { BungalowTwoTone } from "@mui/icons-material";
 //display all users
 //display add contact if user is authenticated
 function User(props) {
@@ -12,6 +29,9 @@ function User(props) {
   // let contacts = [...props.contacts];
   const username = props.username;
   const email = props.email;
+  const publicId = props.publicId;
+  const type = props.type;
+
   const [added, isAdded] = useState(props.contacts.includes(props.id));
   const handleClick = () => {
     isAdded(!added);
@@ -23,11 +43,52 @@ function User(props) {
   };
   return (
     <>
-      <h2>{username}</h2>
-      <p>{email}</p>
-      <button onClick={handleClick}>
-        {added ? "Remove from contacts" : "Add as a contact"}
-      </button>
+      <Box>
+        <Card style={{ maxWidth: "200px", textAlign: "center" }}>
+          <Chip
+            sx={{ mt: 3 }}
+            color="primary"
+            size="small"
+            icon={<VerifiedUserIcon />}
+            label={`${type}`}
+          />
+          <CardMedia sx={{ p: 3 }}>
+            {publicId ? (
+              <ProfilePhoto publicId={publicId} />
+            ) : (
+              <img
+                style={{ width: "120px", height: "120px" }}
+                src="/assets/placeholder.png"
+              />
+            )}
+          </CardMedia>
+          <CardContent>
+            <Typography variant="subtitle1">{username}</Typography>
+            <Typography variant="subtitle2">{email}</Typography>
+          </CardContent>
+          <CardActions>
+              <Button
+                fullWidth
+                variant="contained"
+                size="small"
+                onClick={handleClick}
+              >
+                {added ? "Remove contact" : "Add"}
+              </Button>
+          </CardActions>
+          <CardActions>
+            <Button
+                fullWidth
+                variant="outlined"
+                size="small"
+                href={`profile/${props.id}`}
+              >
+                View Profile
+              </Button>
+          </CardActions>
+          
+        </Card>
+      </Box>
     </>
   );
 }
@@ -62,8 +123,7 @@ function UserList() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
-    console.log(res)
-
+    console.log(res);
   };
   const handleDeleteContact = async (contact) => {
     let array = contacts;
@@ -75,14 +135,14 @@ function UserList() {
     }
 
     const body = {
-          id: contact
-    }
-    const res = await fetch('/api/contacts', {
-          method: 'PUT',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(body)
+      id: contact,
+    };
+    const res = await fetch("/api/contacts", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
     });
-    console.log(res)
+    console.log(res);
     // setContacts((current) => {
     //     current.filter((data) => {return data !== contact})
     // });
@@ -121,32 +181,28 @@ function UserList() {
   return (
     <>
       <div>
-        {!!users?.length &&
-          users.map((user) => {
-            if (user.username !== currentUser.username) {
-              return (
-                <div>
-                  {/* <h2>{user.username}</h2>
-                            <p>{user.email}</p>
-                            {currentUser && (
-                                currentUser.username !== user.username && 
-                                (!!contacts?.length && contacts.includes(user._id) ? 
-                                (<button onClick={() => {handleDeleteContact(user._id)}}>Remove from contacts</button>) :
-                                (<button onClick={() => {handleAddContact(user._id)}}>Add as a Contact</button>))
-                            )} */}
-                  <User
-                    key={user._id}
-                    id={user._id}
-                    username={user.username}
-                    email={user.email}
-                    contacts={contacts}
-                    onAdd={handleAddContact}
-                    onDelete={handleDeleteContact}
-                  />
-                </div>
-              );
-            }
-          })}
+        <Grid container spacing={3}>
+          {!!users?.length &&
+            users.map((user) => {
+              if (user.username !== currentUser.username) {
+                return (
+                  <Grid item xs={12} md={3} sm={4}>
+                    <User
+                      key={user._id}
+                      id={user._id}
+                      publicId={user.photo && user.photo}
+                      username={user.username}
+                      type={user.type}
+                      email={user.email}
+                      contacts={contacts}
+                      onAdd={handleAddContact}
+                      onDelete={handleDeleteContact}
+                    />
+                  </Grid>
+                );
+              }
+            })}
+        </Grid>
       </div>
     </>
   );
@@ -156,7 +212,11 @@ export default function Users() {
   return (
     <>
       <div>
-        <h1>Users</h1>
+        <Stack direction="row" alignItems="center" spacing={2}>
+          <GroupIcon />
+          <Typography variant="h6">Users</Typography>
+        </Stack>
+
         <UserList />
         {/* <ContactList /> */}
       </div>

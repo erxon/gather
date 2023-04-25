@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import Router from "next/router";
-import { useUser } from "../lib/hooks";
+import { useUser } from "@/lib/hooks";
 //Material UI
 import {
   Box,
@@ -33,6 +33,7 @@ export default function ProfilePage() {
   //User
   const [user, { loading }] = useUser();
   const [userObj, setUserObj] = useState({
+    about: '',
     photo: '',
     socialMediaAccounts: {
       facebook:"",
@@ -44,7 +45,6 @@ export default function ProfilePage() {
   //Retrieve user
   useEffect(() => {
     // redirect user to login if not authenticated
-    if (!loading && !user) Router.replace("/login")
     if(user){ 
       setUserObj({...user})
     }
@@ -237,13 +237,7 @@ export default function ProfilePage() {
         onClose={handleClose}
         message={open.message}
       />
-      <Box
-        sx={{
-          marginTop: "50px",
-          padding: "30px",
-          borderRadius: "20px",
-        }}
-      >
+      <Box>
         <Stack
           direction="row"
           alignItems="center"
@@ -330,7 +324,18 @@ export default function ProfilePage() {
                     value={userObj.lastName}
                     onChange={handleChange}
                   />
+                  
                 </Stack>
+                <TextField 
+                    multiline 
+                    rows={4} 
+                    value={userObj.about} 
+                    onChange={handleChange}
+                    label="About" 
+                    name="about" 
+                    variant="filled"
+                    sx={{mt: 3}}
+                /><br />
                 <Button onClick={handleUpdate} sx={{ mt: 2 }} size="small">
                   Save
                 </Button>

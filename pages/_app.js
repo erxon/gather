@@ -4,6 +4,7 @@ import theme from "@/utils/theme";
 import SideNavBar from "@/components/SideNavBar";
 import { Box, Toolbar, Divider, Drawer } from "@mui/material";
 import { useState } from "react";
+import Layout from "@/utils/Layout";
 
 export default function MyApp({ Component, pageProps }) {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -63,11 +64,13 @@ export default function MyApp({ Component, pageProps }) {
               width: { sm: `calc(100% - ${240}px)` },
             }}
           >
+            <Layout>
             <main>
               <div className="container">
                 <Component {...pageProps} />
               </div>
             </main>
+            </Layout>
           </Box>
         </Box>
       </ThemeProvider>
