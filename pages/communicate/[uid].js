@@ -23,20 +23,28 @@ function Contact(props) {
       onClick={() => {
         props.onContactClick(props.username);
       }}
+      sx={{ minWidth: 100 }}
     >
-      <Stack direction={{xs: 'column', md: 'row'}} alignItems="center" spacing={2}>
-        <ListItemAvatar>
-          {props.photo ? (
-            <Avatar>
-              <ProfilePhotoAvatar publicId={props.photo} />
-            </Avatar>
-          ) : (
-            <Avatar>{props.username.slice(0, 1)}</Avatar>
-          )}
-        </ListItemAvatar>
-
-        <ListItemText primary={props.username} />
-      </Stack>
+      <Box sx={{ margin: { xs: "auto", md: 0, sm: "auto" } }}>
+        <Stack
+          direction={{ xs: "column", md: "row" }}
+          alignItems="center"
+          spacing={2}
+        >
+          <ListItemAvatar>
+            {props.photo ? (
+              <Avatar sx={{ margin: "auto" }}>
+                <ProfilePhotoAvatar publicId={props.photo} />
+              </Avatar>
+            ) : (
+              <Avatar sx={{ margin: "auto" }}>
+                {props.username.slice(0, 1)}
+              </Avatar>
+            )}
+          </ListItemAvatar>
+          <ListItemText primary={props.username} />
+        </Stack>
+      </Box>
     </ListItemButton>
   );
 }
@@ -56,8 +64,13 @@ export default function Communicate({ data }) {
         <Grid item xs={12} md={4}>
           <Box>
             <Typography variant="body1">Contacts</Typography>
-            <List sx={{maxHeight: '500px', maxWidth: '500px', overflowY: 'auto'}}>
-              <Stack direction={{ xs: "row", md: "column", sm: "row" }} spacing={{xs: 5, md: 1, sm: 5}}>
+            <List
+              sx={{ maxHeight: "500px", maxWidth: "500px", overflowY: "auto" }}
+            >
+              <Stack
+                direction={{ xs: "row", md: "column", sm: "row" }}
+                spacing={{ xs: 2, md: 1, sm: 1 }}
+              >
                 {contacts.map((contact) => {
                   return (
                     <Contact
@@ -76,7 +89,7 @@ export default function Communicate({ data }) {
             <Typography>{displayContact}</Typography>
           </Box>
           <Divider />
-          <Box sx={{ height: "500px", maxWidth: '300px' }}>
+          <Box sx={{ height: "500px", maxWidth: "300px" }}>
             <Typography>Conversations will go here</Typography>
           </Box>
           <Box>
