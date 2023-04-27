@@ -36,7 +36,7 @@ export default function Login() {
 
   useEffect(() => {
     // redirect to home if user is authenticated
-    if (user) Router.push("/");
+    if (user) Router.push("/dashboard");
   }, [user]);
 
   return (

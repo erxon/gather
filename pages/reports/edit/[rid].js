@@ -11,19 +11,20 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Snackbar
+  Snackbar,
+  CircularProgress
 } from "@mui/material";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from '@mui/icons-material/Close';
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useUser } from "@/lib/hooks";
 import ReportPhoto from "@/components/photo/ReportPhoto";
 
 export default function EditReport({ data }) {
-  const [user] = useUser();
+  const [user, {loading}] = useUser();
   const [image, setImage] = useState({ renderImage: "", file: null });
   const [status, setStatus] = useState(data.status);
   //for snackbar
@@ -47,6 +48,12 @@ export default function EditReport({ data }) {
     twitter: Object.hasOwn(data, 'socialMediaAccounts') ? data.socialMediaAccounts.twitter: "",
     feature: "",
   });
+
+  if (!user){
+    return <CircularProgress />
+  }
+
+  
 
   //Snackbar 
   const handleClose = () => {

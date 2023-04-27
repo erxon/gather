@@ -6,6 +6,7 @@ import { Box, Typography, Button, TextField, Grid, Stack } from "@mui/material";
 import Link from "next/link";
 
 export default function ReportPage({ data }) {
+  console.log(data);
   const reportedAt = new Date(data.reportedAt);
   const [user, { mutate }] = useUser();
   const [authorized, isAuthorized] = useState(false);
@@ -35,6 +36,11 @@ export default function ReportPage({ data }) {
     <Box>
       <div>
         <Typography variant="body1"> Reported by: </Typography>{" "}
+        {data.reporter && <Box>
+            <Typography variant="body2">{data.reporter.firstName} {data.reporter.lastName}</Typography>
+            <Typography variant="body2">{data.reporter.contactNumber}</Typography>
+            <Typography variant="body2">{data.reporter.email}</Typography>
+          </Box>}
         {Object.hasOwn(data, "username") && (
           <Box sx={{ mt: 0.5 }}>
             <Typography variant="body2">
@@ -44,13 +50,13 @@ export default function ReportPage({ data }) {
         )}
       </div>
       <Typography sx={{ mt: 2 }} variant="body2">
-        Reported at: {reportedAt.toDateString()}
+        Reported at: {reportedAt.toDateString()} {reportedAt.toLocaleTimeString()}
       </Typography>
       <Stack direction="row" spacing={2}>
         <Box>
           <div>
             {data.photo ? (
-              <ReportPhoto publicId={data.photo}/>
+              <ReportPhoto publicId={data.photo} />
             ) : (
               <div>
                 <img src="https://placehold.co/250" /> <br />
@@ -120,8 +126,12 @@ export default function ReportPage({ data }) {
             </Typography>
             {data.socialMediaAccounts && (
               <Box>
-                <Typography>Facebook: {data.socialMediaAccounts.facebook}</Typography>
-                <Typography>Twitter: {data.socialMediaAccounts.twitter}</Typography>
+                <Typography>
+                  Facebook: {data.socialMediaAccounts.facebook}
+                </Typography>
+                <Typography>
+                  Twitter: {data.socialMediaAccounts.twitter}
+                </Typography>
               </Box>
             )}
           </Box>
@@ -136,6 +146,7 @@ export const getServerSideProps = async ({ params }) => {
   const res = await fetch(`http://localhost:3000/api/reports/${rid}`);
 
   const data = await res.json();
+
   return {
     props: { data },
   };

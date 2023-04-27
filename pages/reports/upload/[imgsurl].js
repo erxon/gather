@@ -3,11 +3,16 @@ import { fill } from "@cloudinary/url-gen/actions/resize";
 import { CloudinaryImage } from "@cloudinary/url-gen";
 import { AdvancedImage } from "@cloudinary/react";
 import { useState } from "react";
+import { Button, Typography } from "@mui/material";
 
 export default function Upload() {
-  const [submitted, isSubmitted] = useState(false);
   const router = useRouter();
   const { imgsurl } = router.query;
+  const [submitted, isSubmitted] = useState(false);
+  const [reportId, setReportId] = useState(null);
+  
+  
+  
   const publicId = `my-uploads/${imgsurl}`;
   const myImage = new CloudinaryImage(publicId, {
     cloudName: "dg0cwy8vx",
@@ -18,7 +23,7 @@ export default function Upload() {
   //uploaded photo
   //reporter information
   //report information
-  let message = "";
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     const body = {
@@ -39,16 +44,20 @@ export default function Upload() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
-    message = res.json().message;
+
+    const data = await res.json();
+
+    setReportId(data.data._id)
     isSubmitted(true);
   };
   return (
     <>
       {submitted ? (
         <div>
-          {message}
           <p>We will update you if there is a progress in your report.</p>
           <button>Home</button>
+          <Typography>If you want to manage this report with the authorities, signup for an account.</Typography>
+          <Button href={`/reports/create-account/${reportId}`}>Manage Report</Button>
         </div>
       ) : (
         <div>

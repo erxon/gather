@@ -112,7 +112,7 @@ export default function HomePage() {
                 />
                 {imageSrc && !uploadData && (
                   <p>
-                    <Button variant="contained" size="small">
+                    <Button type="submit" variant="contained" size="small">
                       upload files
                     </Button>
                   </p>

@@ -1,24 +1,28 @@
 import Router from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useUser } from "@/lib/hooks";
 //Signup user
 //Update the report
 
 export default function CreateAccount({data}){
+    //Initialize user using useUser hook
+    const [user, {mutate}] = useUser();
+    //Control input fields
     const [values, setValues] = useState({
         username: "",
         email: "",
         password: ""
     });
-
     const handleChange = (event) => {
         const {value, name} = event.target;
         setValues((prev) => {
             return {...prev, [name]: value}
         });
     };
-
+    //Handle submit for signup and report update.
     const handleSubmit = async () => {
-        const signup = await fetch('/api/users', {
+        //Signup the user first
+        const res = await fetch('/api/users', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
@@ -26,23 +30,36 @@ export default function CreateAccount({data}){
                 type: 'citizen'
             })
         })
+        //Get the data
+        const userObj = await res.json();
 
-        const userData = await signup.json();
-        console.log(userData)
-        if(userData){
+        //If the res.status is 201, add the username and account of the user in the report
+        if(res.status === 201){
             const updateReport = await fetch(`/api/reports/createAccount/${data._id}`, {
                 method: 'PUT',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
-                    username: userData.username,
-                    account: userData.userId
+                    username: userObj.username,
+                    account: userObj.userId
                 })
             })
+            //Get data from the updateReport request
             const response = await updateReport.json();
             console.log(response)
-            Router.push(`/reports/edit/${response.data._id}`)
+
+            //Update user
+            mutate(userObj)
+            // Router.push(`/reports/edit/${response.data._id}`)
         }
     }
+
+    //if the user is authenticated, redirect to "/myreport" page
+    useEffect(() => {
+        if(user) {
+            Router.push('/myreport')
+        } 
+    }, [user]);
+
 
     return <>
         <p>To manage this report, you need to create an account.</p>
