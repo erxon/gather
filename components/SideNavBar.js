@@ -8,6 +8,7 @@ import ArticleIcon from "@mui/icons-material/Article";
 import PeopleIcon from "@mui/icons-material/People";
 import HomeIcon from '@mui/icons-material/Home';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import { Box, Drawer } from "@mui/material";
 import { useUser } from "@/lib/hooks";
 
@@ -55,6 +56,12 @@ function MainListItems() {
                 <PeopleIcon />
               </ListItemIcon>
               <ListItemText primary="Users" />
+            </ListItemButton>
+            <ListItemButton href="/myreport" sx={styles}>
+              <ListItemIcon>
+                <AssignmentIndIcon />
+              </ListItemIcon>
+              <ListItemText primary="My report" />
             </ListItemButton>
           </List>
         )}

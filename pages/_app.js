@@ -44,8 +44,8 @@ export default function MyApp({ Component, pageProps }) {
             </Drawer>
             <Drawer
               sx={{
-                display: { xs: 'none', sm: 'block' },
-                '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 240 },
+                display: { xs: "none", sm: "block" },
+                "& .MuiDrawer-paper": { boxSizing: "border-box", width: 240 },
               }}
               variant="permanent"
               open
@@ -65,11 +65,11 @@ export default function MyApp({ Component, pageProps }) {
             }}
           >
             <Layout>
-            <main>
-              <div className="container">
-                <Component {...pageProps} />
-              </div>
-            </main>
+              <main>
+                <div className="container">
+                    <Component {...pageProps} />
+                </div>
+              </main>
             </Layout>
           </Box>
         </Box>

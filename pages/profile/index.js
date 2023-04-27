@@ -16,7 +16,7 @@ import ContactList from "@/components/ContactList";
 //Hooks
 import { useUser } from "@/lib/hooks";
 import { useEffect } from "react";
-
+import { useRouter } from "next/router";
 //MUI Icons
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
@@ -29,6 +29,16 @@ import Router from "next/router";
 
 export default function ProfileIndex() {
   const [user, { loading }] = useUser();
+  const router = useRouter();
+  useEffect(() => {
+    fetch("/api/user/checkAuth").then((response) => {
+        response.json().then((data) => {
+          if (!data.authenticated) {
+            return router.push("/login");
+          }
+        });
+      });
+  }, [user]);
 
   if (loading) {
     return <div>Loading...</div>;

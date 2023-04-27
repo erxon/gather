@@ -28,10 +28,22 @@ import { CloudinaryImage } from "@cloudinary/url-gen";
 import { AdvancedImage } from "@cloudinary/react";
 import { fill } from "@cloudinary/url-gen/actions/resize";
 import { max } from "@cloudinary/url-gen/actions/roundCorners";
-
+import { useRouter } from "next/router";
 export default function ProfilePage() {
   //User
   const [user, { loading }] = useUser();
+  const router = useRouter();
+
+  useEffect(() => {
+    fetch("/api/user/checkAuth").then((response) => {
+        response.json().then((data) => {
+          if (!data.authenticated) {
+            return router.push("/login");
+          }
+        });
+      });
+  }, [user]);
+  
   const [userObj, setUserObj] = useState({
     about: '',
     photo: '',
