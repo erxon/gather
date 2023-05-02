@@ -1,51 +1,65 @@
 import { useUser } from "@/lib/hooks";
 import { useEffect } from "react";
 import useSWR from "swr";
-import Button from "react-bootstrap/Button";
-import Card from "react-bootstrap/Card";
 import Router from "next/router";
+import {
+  Card,
+  CardContent,
+  Button,
+  Typography,
+  CardActions,
+  CardMedia,
+  Box,
+  CircularProgress,
+} from "@mui/material";
+import ReportPhoto from "@/components/photo/ReportPhoto";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
 function Report(props) {
-  const route = `/reports/${props.id}`;
   return (
     <>
       <div>
-        <Card style={{ width: "18rem" }}>
-          {props.photo === "" ? (
-            <Card.Img variant="top" src="https://placehold.co/50" />
+        <Card sx={{ maxWidth: "350px", maxHeight: "260" }} variant="outlined">
+          {props.photo ? (
+            <CardMedia sx={{ height: 200 }}>
+              <ReportPhoto publicId={props.photo} />
+            </CardMedia>
           ) : (
-            <Card.Img variant="top" src={props.photo} />
+            <Box
+              sx={{
+                backgroundColor: "#D9D9D9",
+                height: "200px",
+              }}
+            ></Box>
           )}
-          <Card.Body>
-            <Card.Title>
+          <CardContent>
+            <Typography>
               {props.firstName} {props.lastName}
-            </Card.Title>
-            <Card.Text>
-              Report ID: {props.id} <br />
+            </Typography>
+            <Typography>
               <strong>Last seen: </strong> {props.lastSeen} <br />
               <strong>Age: </strong> {props.age} <br />
               <strong>Gender: </strong> {props.gender}
-            </Card.Text>
-            <Button href={route} variant="primary">
-              View
-            </Button>
-          </Card.Body>
+            </Typography>
+          </CardContent>
+          <CardActions>
+            <Button href={`/reports/${props.id}`}>View</Button>
+          </CardActions>
         </Card>
       </div>
     </>
   );
 }
 
-function GetReports(props) {
-  const { data, error } = useSWR(
+function GetReport(props) {
+  const { data, error, isLoading } = useSWR(
     `/api/reports/user/${props.username}`,
     fetcher
   );
 
   if (error) return <div>failed to load </div>;
-  if (!data) return <div>loading</div>;
+  if (isLoading) return <CircularProgress />;
 
   return (
     <>
@@ -54,7 +68,7 @@ function GetReports(props) {
           <Report
             key={report._id}
             id={report._id}
-            photo=""
+            photo={report.photo}
             firstName={report.firstName}
             lastName={report.lastName}
             lastSeen={report.lastSeen}
@@ -73,18 +87,26 @@ export default function ReportDashboard() {
   const [user, { mutate }] = useUser();
 
   useEffect(() => {
-    if(!user){
-      return
+    if (!user) {
+      return;
     }
-  }, [user])
-  if (!user) return <div>Loading user...</div>
+  }, [user]);
+  
+  if (!user) return <div>Loading user...</div>;
   return (
     <>
-      <div className="my-5">
-        <p>Welcome {user.username}</p>
-        <h2>Your Reports</h2>
-        <GetReports username={user.username} />
-      </div>
+      <Box
+        sx={{
+          backgroundColor: "#F2F4F4",
+          padding: "28px 30px 28px 30px",
+          borderRadius: "20px",
+        }}
+      >
+        <Typography variant="h6">Your Reports</Typography>
+        <Box sx={{ my: 3 }}>
+          <GetReport username={user.username} />
+        </Box>
+      </Box>
     </>
   );
 }

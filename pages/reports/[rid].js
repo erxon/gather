@@ -50,7 +50,7 @@ export default function ReportPage({ data }) {
         )}
       </div>
       <Typography sx={{ mt: 2 }} variant="body2">
-        Reported at: {reportedAt.toDateString()} {reportedAt.toLocaleTimeString()}
+        {reportedAt.toDateString()} {reportedAt.toLocaleTimeString()}
       </Typography>
       <Stack direction="row" spacing={2}>
         <Box>

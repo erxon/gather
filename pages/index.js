@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
-import { Typography } from "@mui/material";
-import CheckAuth from "@/utils/checkAuth.util";
+import { CircularProgress } from "@mui/material";
 
 export default function Index(){
   const router = useRouter();
@@ -17,5 +16,5 @@ export default function Index(){
     })
   }, [])
   
-  return <Typography>Redirecting...</Typography>
+  return <CircularProgress />
 }

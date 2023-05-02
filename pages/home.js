@@ -4,15 +4,18 @@ import { Box, CircularProgress, Stack, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
+import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
 import ArticleIcon from "@mui/icons-material/Article";
-import DataSaverOffIcon from '@mui/icons-material/DataSaverOff';
+import DataSaverOffIcon from "@mui/icons-material/DataSaverOff";
 import { useUser } from "@/lib/hooks";
+import { useRouter } from "next/router";
 
 export default function HomePage() {
+  //Check if the user is authenticated
   const [imageSrc, setImageSrc] = useState();
   const [uploadData, setUploadData] = useState();
-
+  
+  //Handle submission of Report and Manage form
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -30,11 +33,15 @@ export default function HomePage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
+
     const data = await res.json();
     if (data) {
       Router.push(`/reports/create-account/${data.data._id}`);
     }
   };
+
+  //Handle change in image element to display the preview
+  //of the image before uploading
   const handleChange = (changeEvent) => {
     const reader = new FileReader();
 
@@ -45,6 +52,8 @@ export default function HomePage() {
 
     reader.readAsDataURL(changeEvent.target.files[0]);
   };
+
+  //Handle uploading of an image
   const handleImageSubmit = async (e) => {
     e.preventDefault();
     const form = e.currentTarget;
@@ -94,7 +103,12 @@ export default function HomePage() {
           >
             <Grid container spacing={2}>
               <Grid item xs={12} md={6}>
-                <Stack spacing={1} alignItems="center" direction="row" sx={{marginBottom: '16px'}}>
+                <Stack
+                  spacing={1}
+                  alignItems="center"
+                  direction="row"
+                  sx={{ marginBottom: "16px" }}
+                >
                   <InsertPhotoIcon />
                   <Typography variant="h6">Report with Photo</Typography>
                 </Stack>
@@ -138,11 +152,15 @@ export default function HomePage() {
               borderRadius: "20px",
             }}
           >
-            <Stack spacing={1} alignItems="center" direction="row" sx={{marginBottom: '16px'}}>
+            <Stack
+              spacing={1}
+              alignItems="center"
+              direction="row"
+              sx={{ marginBottom: "16px" }}
+            >
               <DataSaverOffIcon />
               <Typography variant="h6">Data</Typography>
             </Stack>
-            
           </Box>
         </Grid>
         <Grid item xs={12} md={6}>
@@ -154,13 +172,16 @@ export default function HomePage() {
               borderRadius: "20px",
             }}
           >
-            <Stack spacing={1} alignItems="center" direction="row" sx={{marginBottom: '16px'}}>
+            <Stack
+              spacing={1}
+              alignItems="center"
+              direction="row"
+              sx={{ marginBottom: "16px" }}
+            >
               <ArticleIcon />
-              <Typography variant="h6">
-                Report and manage
-              </Typography>
+              <Typography variant="h6">Report and manage</Typography>
             </Stack>
-            
+
             <form onSubmit={handleSubmit}>
               <TextField
                 sx={{ marginTop: "5px" }}

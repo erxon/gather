@@ -33,7 +33,7 @@ function Report(props) {
   return (
     <>
       <Box sx={{ mt: 3 }}>
-        <Card style={{ maxWidth: "300px" }}>
+        <Card style={{ maxWidth: "300px" }} variant="outlined">
           {image ? (
             <CardMedia>
               <AdvancedImage cldImg={image} />

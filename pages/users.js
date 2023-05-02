@@ -16,8 +16,6 @@ import {
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import GroupIcon from "@mui/icons-material/Group";
 import ProfilePhoto from "@/components/photo/ProfilePhoto";
-import Image from "next/image";
-import { BungalowTwoTone } from "@mui/icons-material";
 //display all users
 //display add contact if user is authenticated
 function User(props) {
@@ -41,10 +39,11 @@ function User(props) {
       props.onDelete(props.id);
     }
   };
+
   return (
     <>
       <Box>
-        <Card style={{ maxWidth: "200px", textAlign: "center" }}>
+        <Card style={{ maxWidth: "200px", textAlign: "center" }} variant="outlined">
           <Chip
             sx={{ mt: 3 }}
             color="primary"

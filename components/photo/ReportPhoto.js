@@ -7,7 +7,7 @@ export default function ReportPhoto(props) {
     cloudName: "dg0cwy8vx",
     apiKey: process.env.CLOUDINARY_KEY,
     apiSecret: process.env.CLOUDINARY_SECRET,
-  }).resize(fill().width(250).height(250));
+  }).resize(fill().width(350).height(200));
 
   return <AdvancedImage cldImg={image} />;
 }
