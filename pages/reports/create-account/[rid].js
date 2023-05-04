@@ -4,6 +4,7 @@ import { useUser } from "@/lib/hooks";
 import { Chip, Typography, Stack, Box, TextField, Button } from "@mui/material";
 import PlaceIcon from "@mui/icons-material/Place";
 import ReportPhoto from "@/components/photo/ReportPhoto";
+import { sendNotification } from "@/utils/notificationClient";
 //Signup user
 //Update the report
 
@@ -51,8 +52,14 @@ export default function CreateAccount({ data }) {
       );
       //Get data from the updateReport request
       const response = await updateReport.json();
-      console.log(response);
-
+      console.log(response)
+      await sendNotification({
+        firstName: data.firstName,
+        lastName: data.lastName,
+        lastSeen: data.lastSeen,
+        reportId: data._id,
+        reporter: userObj.username
+      })
       //Update user
       mutate(userObj);
       // Router.push(`/reports/edit/${response.data._id}`)

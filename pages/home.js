@@ -9,9 +9,11 @@ import ArticleIcon from "@mui/icons-material/Article";
 import DataSaverOffIcon from "@mui/icons-material/DataSaverOff";
 import { useUser } from "@/lib/hooks";
 import { useRouter } from "next/router";
+import { sendNotification } from "@/utils/notificationClient";
+
+
 
 export default function HomePage() {
-  //Check if the user is authenticated
   const [imageSrc, setImageSrc] = useState();
   const [uploadData, setUploadData] = useState();
   
@@ -28,6 +30,9 @@ export default function HomePage() {
       status: "pending",
     };
 
+    //Call a function to notify authorities about the new report
+    
+
     const res = await fetch("/api/reports", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -35,6 +40,7 @@ export default function HomePage() {
     });
 
     const data = await res.json();
+
     if (data) {
       Router.push(`/reports/create-account/${data.data._id}`);
     }
