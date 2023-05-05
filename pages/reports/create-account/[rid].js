@@ -5,6 +5,7 @@ import { Chip, Typography, Stack, Box, TextField, Button } from "@mui/material";
 import PlaceIcon from "@mui/icons-material/Place";
 import ReportPhoto from "@/components/photo/ReportPhoto";
 import { sendNotification } from "@/utils/notificationClient";
+import { getSingleReport, updateReportOnSignup } from "@/lib/api-lib/api-reports";
 //Signup user
 //Update the report
 
@@ -39,27 +40,20 @@ export default function CreateAccount({ data }) {
 
     //If the res.status is 201, add the username and account of the user in the report
     if (res.status === 201) {
-      const updateReport = await fetch(
-        `/api/reports/createAccount/${data._id}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            username: userObj.username,
-            account: userObj.userId,
-          }),
-        }
-      );
-      //Get data from the updateReport request
-      const response = await updateReport.json();
+      //update report (Add try catch)
+      const response = await updateReportOnSignup(data._id, {
+        username: userObj.username,
+        account: userObj.userId,
+      });
       console.log(response)
+      //send notification to the Notifications dashboard (Add try catch)
       await sendNotification({
         firstName: data.firstName,
         lastName: data.lastName,
         lastSeen: data.lastSeen,
         reportId: data._id,
-        reporter: userObj.username
-      })
+        reporter: userObj.username,
+      });
       //Update user
       mutate(userObj);
       // Router.push(`/reports/edit/${response.data._id}`)
@@ -169,9 +163,7 @@ export default function CreateAccount({ data }) {
 
 export async function getServerSideProps(context) {
   const { rid } = context.params;
-  const res = await fetch(`http://localhost:3000/api/reports/${rid}`);
-  const data = await res.json();
-
+  const data = await getSingleReport(rid);
   return {
     props: { data },
   };

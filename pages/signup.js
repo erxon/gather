@@ -7,6 +7,7 @@ import TextField from "@mui/material/TextField";
 import { Box, Stack, Typography } from "@mui/material";
 import Button from "@mui/material/Button";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import { signup } from "@/lib/api-lib/api-auth";
 
 export default function Signup() {
   const [user, { mutate }] = useUser();
@@ -27,12 +28,8 @@ export default function Signup() {
       setErrorMsg(`The passwords don't match`);
       return;
     }
-
-    const res = await fetch("/api/users", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
+    //Signup user
+    const res = await signup(body);
 
     if (res.status === 201) {
       const userObj = await res.json();

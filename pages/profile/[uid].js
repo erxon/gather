@@ -23,7 +23,7 @@ import {
   import FacebookIcon from "@mui/icons-material/Facebook";
   import TwitterIcon from "@mui/icons-material/Twitter";
   import Router from "next/router";
-  
+  import { getUser } from "@/lib/api-lib/api-users";
   
   export default function ProfileIndex({data}) {
     const [currentUser] = useUser(); 
@@ -127,11 +127,7 @@ import {
 
   export async function getServerSideProps({params}){
     const {uid} = params;
-
-    const res = await fetch(`http://localhost:3000/api/user/${uid}`)
-
-    const data = await res.json();
-
+    const data = await getUser(uid)
     return{
         props: {data}
     }

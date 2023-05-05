@@ -11,7 +11,7 @@ import { useUser } from "@/lib/hooks";
 import { useRouter } from "next/router";
 import { sendNotification } from "@/utils/notificationClient";
 
-
+import { createReport, uploadReportPhoto } from "@/lib/api-lib/api-reports";
 
 export default function HomePage() {
   const [imageSrc, setImageSrc] = useState();
@@ -29,17 +29,8 @@ export default function HomePage() {
       gender: e.currentTarget.gender.value,
       status: "pending",
     };
-
-    //Call a function to notify authorities about the new report
-    
-
-    const res = await fetch("/api/reports", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-
-    const data = await res.json();
+    //Create new report
+    const data = await createReport(body);
 
     if (data) {
       Router.push(`/reports/create-account/${data.data._id}`);
@@ -74,14 +65,9 @@ export default function HomePage() {
     }
 
     formData.append("upload_preset", "my-uploads");
-
-    const data = await fetch(
-      "https://api.cloudinary.com/v1_1/dg0cwy8vx/image/upload",
-      {
-        method: "POST",
-        body: formData,
-      }
-    ).then((r) => r.json());
+    
+    //Upload photo
+    const data = await uploadReportPhoto(formData)
 
     console.log(data);
     const publicId = data.public_id.substring(11, 31);

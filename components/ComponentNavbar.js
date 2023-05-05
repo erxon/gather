@@ -19,11 +19,12 @@ import MoreIcon from "@mui/icons-material/MoreVert";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import MenuIcon from "@mui/icons-material/Menu";
+import { logout } from "@/lib/api-lib/api-auth";
 
 export default function ComponentNavbar(props) {
   const [user, { mutate }] = useUser();
   const handleLogout = async () => {
-    await fetch("/api/logout");
+    await logout();
     mutate({ user: null });
   };
 

@@ -1,16 +1,23 @@
+/*
+This page renders a single report using report ID.
+It checks if the user owns the report or if the user.type is authority.
+If so, the user could edit or delete the report.
+*/
+
 import Router from "next/router";
 import { useEffect, useState } from "react";
 import { useUser } from "@/lib/hooks";
 import ReportPhoto from "@/components/photo/ReportPhoto";
 import { Box, Typography, Button, TextField, Grid, Stack } from "@mui/material";
 import Link from "next/link";
+import { getSingleReport, deleteReport } from "@/lib/api-lib/api-reports";
 
 export default function ReportPage({ data }) {
   console.log(data);
   const reportedAt = new Date(data.reportedAt);
   const [user, { mutate }] = useUser();
   const [authorized, isAuthorized] = useState(false);
-
+  //Checks if the user is authorized
   useEffect(() => {
     if (!user) {
       return;
@@ -22,16 +29,15 @@ export default function ReportPage({ data }) {
       }
     }
   }, [user]);
-
+  //Delete report
   const handleDelete = async () => {
-    const res = await fetch(`/api/reports/${data._id}`, {
-      method: "DELETE",
-    });
-    if (res.status === 200) {
+    const res = await deleteReport(data._id)
+    console.log(res)
+    if (res === 200) {
       Router.push("/reportDashboard");
     }
   };
-  //delete function
+  
   return (
     <Box>
       <div>
@@ -143,10 +149,8 @@ export default function ReportPage({ data }) {
 
 export const getServerSideProps = async ({ params }) => {
   const { rid } = params;
-  const res = await fetch(`http://localhost:3000/api/reports/${rid}`);
-
-  const data = await res.json();
-
+  //Get single report
+  const data = await getSingleReport(rid);
   return {
     props: { data },
   };

@@ -142,41 +142,9 @@ function UserList() {
       body: JSON.stringify(body),
     });
     console.log(res);
-    // setContacts((current) => {
-    //     current.filter((data) => {return data !== contact})
-    // });
   };
 
-  // const handleAddContact = async (id) => {
-  //     contacts.push(id);
-
-  //     const body = {
-  //         currentUser: currentUser.username,
-  //         newContact: id
-  //     }
-  //     const res = await fetch('/api/contacts', {
-  //         method: 'POST',
-  //         headers: { 'Content-Type': 'application/json' },
-  //         body: JSON.stringify(body)
-  //     });
-
-  //     console.log(res);
-  // }
-  // const handleDeleteContact = async (id) => {
-  //     contacts.pop(contacts.indexOf(id));
-
-  //     const body = {
-  //         id: id
-  //     }
-  //     const res = await fetch('/api/contacts', {
-  //         method: 'PUT',
-  //         headers: {'Content-Type': 'application/json'},
-  //         body: JSON.stringify(body)
-  //     });
-
-  //     console.log(res);
-
-  // }
+  
   return (
     <>
       <div>

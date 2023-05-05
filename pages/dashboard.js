@@ -16,7 +16,7 @@ import { useEffect } from "react";
 
 //components
 import ActiveReports from "@/components/reports/ActiveReports";
-import Notifications from "@/components/Notifications";
+import Notifications from "@/components/notifications/Notifications";
 
 export default function Dashboard() {
   const router = useRouter();

@@ -22,6 +22,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import React, { useState, useEffect } from "react";
 import { useUser } from "@/lib/hooks";
 import ReportPhoto from "@/components/photo/ReportPhoto";
+import { getSingleReport, updateReport, uploadReportPhoto } from "@/lib/api-lib/api-reports";
 
 export default function EditReport({ data }) {
   const [user, {loading}] = useUser();
@@ -121,14 +122,8 @@ export default function EditReport({ data }) {
       const formData = new FormData();
       formData.append('file', image.file)
       formData.append("upload_preset", "report-photos");
-  
-      const photoUpload = await fetch(
-        "https://api.cloudinary.com/v1_1/dg0cwy8vx/image/upload",
-        {
-          method: "POST",
-          body: formData,
-        }
-      ).then((r) => r.json());
+      //Upload photo
+      const photoUpload = await uploadReportPhoto(formData);
 
       body.photo = photoUpload.public_id
       
@@ -142,13 +137,8 @@ export default function EditReport({ data }) {
       socialMediaAccounts: {facebook: value.facebook, twitter: value.twitter},
       features: [...features],
     };
-
-    const res = await fetch(`/api/reports/${data._id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(update),
-    });
-    const message = await res.json();
+    //update report
+    const message = await updateReport(data._id, update);
     setSnackbarValues({open: true, message: message.message})
   };
   const actions = (
@@ -416,9 +406,8 @@ export default function EditReport({ data }) {
 
 export async function getServerSideProps({ params }) {
   const { rid } = params;
-  const res = await fetch(`http://localhost:3000/api/reports/${rid}`);
 
-  const data = await res.json();
+  const data = await getSingleReport(rid)
 
   if (!data) {
     return {

@@ -1,3 +1,7 @@
+/*
+This page displays all reports. Authorities could see
+all reports while citizens could only see active reports.
+*/
 import { CloudinaryImage } from "@cloudinary/url-gen";
 import { AdvancedImage } from "@cloudinary/react";
 import { fill } from "@cloudinary/url-gen/actions/resize";
@@ -19,6 +23,7 @@ import {
   Chip,
 } from "@mui/material";
 import ArticleIcon from "@mui/icons-material/Article";
+import { getReports } from "@/lib/api-lib/api-reports";
 
 function Report(props) {
   const route = `/reports/${props.id}`;
@@ -148,8 +153,7 @@ export default function ReportPage({ data }) {
 }
 
 export const getServerSideProps = async () => {
-  const res = await fetch("http://localhost:3000/api/reports");
-  const data = await res.json();
-
+  //Get all reports
+  const data = await getReports();
   return { props: { data } };
 };
