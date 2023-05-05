@@ -12,9 +12,7 @@ import {
 import CircleNotificationsIcon from "@mui/icons-material/CircleNotifications";
 
 import { useEffect, useState } from "react";
-import useSWR from "swr";
-import { fetcher } from "@/lib/hooks";
-import { removeNotification } from "@/utils/notificationClient";
+import { removeNotification, getNotifications } from "@/utils/notificationClient";
 
 function Notification(props) {
   //Handle removing of notification
@@ -61,11 +59,7 @@ function Notification(props) {
 export default function Notifications() {
   const [notifications, setNotifications] = useState([]);
   useEffect(() => {
-    fetch("/api/notification/reports").then((response) => {
-      response.json().then((data) => {
-        setNotifications([...data]);
-      });
-    });
+    getNotifications().then((data) => setNotifications(data))
     const channel = pusherJS.subscribe("notification");
     channel.bind("new-report", (data) => {
       setNotifications([data, ...notifications]);
