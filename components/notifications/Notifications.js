@@ -12,7 +12,7 @@ import {
 import CircleNotificationsIcon from "@mui/icons-material/CircleNotifications";
 
 import { useEffect, useState } from "react";
-import { removeNotification, getNotifications } from "@/utils/notificationClient";
+import { removeNotification, getNotifications } from "@/lib/api-lib/api-notifications";
 
 function Notification(props) {
   //Handle removing of notification

@@ -7,9 +7,7 @@ import Button from "@mui/material/Button";
 import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
 import ArticleIcon from "@mui/icons-material/Article";
 import DataSaverOffIcon from "@mui/icons-material/DataSaverOff";
-import { useUser } from "@/lib/hooks";
-import { useRouter } from "next/router";
-import { sendNotification } from "@/utils/notificationClient";
+
 
 import { createReport, uploadReportPhoto } from "@/lib/api-lib/api-reports";
 

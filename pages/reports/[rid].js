@@ -12,6 +12,10 @@ import { Box, Typography, Button, TextField, Grid, Stack } from "@mui/material";
 import Link from "next/link";
 import { getSingleReport, deleteReport } from "@/lib/api-lib/api-reports";
 
+//Share Buttons
+import FacebookButton from "@/components/socialMediaButtons/FacebookButton";
+import TwitterButton from "@/components/socialMediaButtons/TwitterButton";
+
 export default function ReportPage({ data }) {
   console.log(data);
   const reportedAt = new Date(data.reportedAt);
@@ -31,22 +35,28 @@ export default function ReportPage({ data }) {
   }, [user]);
   //Delete report
   const handleDelete = async () => {
-    const res = await deleteReport(data._id)
-    console.log(res)
+    const res = await deleteReport(data._id);
+    console.log(res);
     if (res === 200) {
       Router.push("/reportDashboard");
     }
   };
-  
+
   return (
     <Box>
       <div>
         <Typography variant="body1"> Reported by: </Typography>{" "}
-        {data.reporter && <Box>
-            <Typography variant="body2">{data.reporter.firstName} {data.reporter.lastName}</Typography>
-            <Typography variant="body2">{data.reporter.contactNumber}</Typography>
+        {data.reporter && (
+          <Box>
+            <Typography variant="body2">
+              {data.reporter.firstName} {data.reporter.lastName}
+            </Typography>
+            <Typography variant="body2">
+              {data.reporter.contactNumber}
+            </Typography>
             <Typography variant="body2">{data.reporter.email}</Typography>
-          </Box>}
+          </Box>
+        )}
         {Object.hasOwn(data, "username") && (
           <Box sx={{ mt: 0.5 }}>
             <Typography variant="body2">
@@ -142,6 +152,12 @@ export default function ReportPage({ data }) {
             )}
           </Box>
         </Box>
+        {data.status === "active" && authorized && (
+          <Stack>
+            <FacebookButton /> 
+            <TwitterButton />
+          </Stack>
+        )}
       </Stack>
     </Box>
   );

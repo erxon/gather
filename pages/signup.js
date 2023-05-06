@@ -9,6 +9,10 @@ import Button from "@mui/material/Button";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { signup } from "@/lib/api-lib/api-auth";
 
+//Social Authentication Buttons
+import FacebookAuthButton from "@/components/authSocialButtons/FacebookAuthButton";
+import TwitterAuthButton from "@/components/authSocialButtons/TwitterAuthButton";
+
 export default function Signup() {
   const [user, { mutate }] = useUser();
   console.log(user);
@@ -67,7 +71,10 @@ export default function Signup() {
           <AccountCircleIcon />
           <Typography variant="h6">Signup</Typography>
         </Stack>
-
+        {/*Social auth buttons*/}
+        <FacebookAuthButton authType="Signup" />
+        <TwitterAuthButton authType="Signup" />
+        
         <form onSubmit={onSubmit}>
           <Stack
             sx={{

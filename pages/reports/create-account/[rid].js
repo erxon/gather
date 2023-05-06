@@ -4,7 +4,7 @@ import { useUser } from "@/lib/hooks";
 import { Chip, Typography, Stack, Box, TextField, Button } from "@mui/material";
 import PlaceIcon from "@mui/icons-material/Place";
 import ReportPhoto from "@/components/photo/ReportPhoto";
-import { sendNotification } from "@/utils/notificationClient";
+import { sendNotification } from "@/lib/api-lib/api-notifications";
 import { getSingleReport, updateReportOnSignup } from "@/lib/api-lib/api-reports";
 //Signup user
 //Update the report
