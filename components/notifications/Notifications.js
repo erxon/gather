@@ -86,12 +86,12 @@ export default function Notifications() {
           {notifications.map((object) => {
             return (
               <Notification
-                name={`${object.firstName} ${object.lastName}`}
-                lastSeen={object.lastSeen}
-                reporter={object.reporter}
+                name={`${object.body.firstName} ${object.body.lastName}`}
+                lastSeen={object.body.lastSeen}
+                reporter={object.body.reporter}
                 id={object._id}
                 key={object._id}
-                reportId={object.reportId}
+                reportId={object.body.reportId}
                 onRemove={handleDelete}
               />
             );

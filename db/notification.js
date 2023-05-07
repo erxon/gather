@@ -5,10 +5,10 @@ import mongoose from "mongoose";
 const notificationSchema = new mongoose.Schema({
   channel: String,
   event: String,
-  firstName: String,
-  lastName: String,
-  reporter: String,
-  lastSeen: String,
+  body: {
+    type: Map,
+    of: String
+  },
   createdAt: Date,
   reportId: mongoose.Schema.Types.ObjectId
 });

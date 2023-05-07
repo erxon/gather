@@ -1,6 +1,10 @@
 //trigger a message to new-report event
 import nextConnect from "next-connect";
-import { saveNotification, getNotifications, removeNotification } from "@/lib/controllers/notificationController";
+import {
+  saveNotification,
+  getNotifications,
+  removeNotification,
+} from "@/lib/controllers/notificationController";
 import { pusher } from "@/utils/pusher";
 
 const handler = nextConnect();
@@ -8,18 +12,18 @@ const handler = nextConnect();
 handler
   .get(async (req, res) => {
     try {
-      const data = await getNotifications()
-      res.json(data)
+      const data = await getNotifications();
+      res.json(data);
     } catch (err) {
-      res.json(err)
+      res.json(err);
     }
   })
   .delete(async (req, res) => {
-    try{
-      const data = await removeNotification(req.body.id)
-      res.json(data)
-    } catch (err){
-      res.json(err)
+    try {
+      const data = await removeNotification(req.body.id);
+      res.json(data);
+    } catch (err) {
+      res.json(err);
     }
   })
   .use((req, res, next) => {
@@ -27,7 +31,7 @@ handler
 
     pusher
       .trigger("notification", "new-report", {
-        body
+        body,
       })
       .then(() => {
         next();
@@ -37,14 +41,16 @@ handler
       });
   })
   .post(async (req, res) => {
-    console.log(req.body)
+    console.log(req.body);
     try {
       const data = await saveNotification({
-        reporter: req.body.reporter,
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        lastSeen: req.body.lastSeen,
-        reportId: req.body.reportId,
+        body: {
+          reporter: req.body.reporter,
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
+          lastSeen: req.body.lastSeen,
+          reportId: req.body.reportId
+        },
         channel: "notification",
         event: "new-report",
       });
