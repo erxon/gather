@@ -16,6 +16,8 @@ import {
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import GroupIcon from "@mui/icons-material/Group";
 import ProfilePhoto from "@/components/photo/ProfilePhoto";
+import { addToContactRequest } from "@/lib/api-lib/api-notifications";
+
 //display all users
 //display add contact if user is authenticated
 function User(props) {
@@ -116,6 +118,11 @@ function UserList() {
       currentUser: currentUser.username,
       newContact: contact,
     };
+    
+    await addToContactRequest({
+      message: `${currentUser.username} wants to add you as a contact`,
+      userId: contact
+    });
 
     const res = await fetch("/api/contacts", {
       method: "POST",

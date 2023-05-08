@@ -12,7 +12,7 @@ const handler = nextConnect();
 handler
   .get(async (req, res) => {
     try {
-      const data = await getNotifications();
+      const data = await getNotifications('new-report');
       res.json(data);
     } catch (err) {
       res.json(err);

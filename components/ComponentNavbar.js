@@ -18,8 +18,10 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
+import { Popover } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { logout } from "@/lib/api-lib/api-auth";
+import ContactRequest from "./notifications/ContactRequest";
 
 export default function ComponentNavbar(props) {
   const [user, { mutate }] = useUser();
@@ -30,13 +32,23 @@ export default function ComponentNavbar(props) {
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+  const [notificationsAnchorEl, setNotifcationsAnchorEl] = React.useState(null);
 
+  const isNotificationsOpen = Boolean(notificationsAnchorEl);
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
+
+  const handleNotificationsOpen = (event) => {
+    setNotifcationsAnchorEl(event.currentTarget);
+  };
+
+  const handleNotificationsClose = () => {
+    setNotifcationsAnchorEl(null);
+  }
 
   const handleMobileMenuClose = () => {
     setMobileMoreAnchorEl(null);
@@ -68,9 +80,32 @@ export default function ComponentNavbar(props) {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}><Link href="/profile" style={{textDecoration: "none", color: "#000"}}>Profile</Link></MenuItem>
+      <MenuItem onClick={handleMenuClose}>
+        <Link href="/profile" style={{ textDecoration: "none", color: "#000" }}>
+          Profile
+        </Link>
+      </MenuItem>
       <MenuItem onClick={handleLogout}>Logout</MenuItem>
     </Menu>
+  );
+  const popoverId = "notifications"
+  const renderNotifications = (
+    <Popover
+      open={isNotificationsOpen}
+      onClose={handleNotificationsClose}
+      anchorEl={notificationsAnchorEl}
+      anchorOrigin={{
+        vertical: "bottom",
+        horizontal: "left",
+      }}
+      id={popoverId}
+      transformOrigin={{
+        vertical: "top",
+        horizontal: "left",
+      }}
+    >
+      {user && <ContactRequest userId={user._id}/>}
+    </Popover>
   );
 
   const mobileMenuId = "primary-search-account-menu-mobile";
@@ -98,7 +133,7 @@ export default function ComponentNavbar(props) {
         </IconButton>
         <p>Messages</p>
       </MenuItem>
-      <MenuItem>
+      <MenuItem onClick={handleNotificationsOpen}>
         <IconButton
           size="large"
           aria-label="show 17 new notifications"
@@ -191,6 +226,8 @@ export default function ComponentNavbar(props) {
                 size="large"
                 aria-label="show 17 new notifications"
                 color="inherit"
+                aria-controls={popoverId}
+                onClick={handleNotificationsOpen}
               >
                 <Badge badgeContent={17} color="error">
                   <NotificationsIcon />
@@ -241,6 +278,7 @@ export default function ComponentNavbar(props) {
       </AppBar>
       {renderMobileMenu}
       {renderMenu}
+      {renderNotifications}
     </Box>
   );
 
