@@ -1,15 +1,31 @@
 import nextConnect from "next-connect";
 import { pusher } from "@/utils/pusher";
-import { saveNotification } from "@/lib/controllers/notificationController";
+import {
+  saveNotification,
+  removeNotification,
+  getNotifications
+} from "@/lib/controllers/notificationController";
+
+import auth from "@/middleware/auth";
 const handler = nextConnect();
 
 handler
+  .use(auth)
+  .get(async (req, res) => {
+    const user = await req.user;
+    try {
+      const data = await getNotifications(`notification-${user._id}`, 'contact-requested');
+      res.json(data);
+    } catch (err) {
+      res.json(err);
+    }
+  })
   .use((req, res, next) => {
     //trigger a add to contact request notification to the receiving user
     const body = req.body;
     pusher
-      .trigger(`notification-${body.userId}`, 'contact-requested', { body })
-      .then((data) => {
+      .trigger(`notification-${body.userId}`, "contact-requested", { body })
+      .then(() => {
         next();
       })
       .catch((err) => {
@@ -17,18 +33,28 @@ handler
       });
   })
   .post(async (req, res) => {
-    try{
-        const data = await saveNotification({
-            body: {
-                message: req.body.message,
-                userId: req.body.userId
-            },
-            channel: `notification-${req.body.userId}`,
-            event: 'contact-requested'
-        })
-        res.json(data)
-    } catch(err){
-        res.json(err)
+    try {
+      const data = await saveNotification({
+        body: {
+          message: req.body.message,
+          userId: req.body.userId,
+          from: req.body.from,
+          photo: req.body.photo,
+        },
+        channel: `notification-${req.body.userId}`,
+        event: "contact-requested",
+      });
+      res.json(data);
+    } catch (err) {
+      res.json(err);
+    }
+  })
+  .delete(async (req, res) => {
+    try {
+      const data = await removeNotification(req.body.id);
+      res.json(data);
+    } catch (err) {
+      res.json(err);
     }
   });
 

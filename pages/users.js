@@ -113,23 +113,12 @@ function UserList() {
   //     setContacts((current) => [...current, ...userContacts])
   // }
   const handleAddContact = async (contact) => {
-    setContacts((current) => [...current, contact]);
-    const body = {
-      currentUser: currentUser.username,
-      newContact: contact,
-    };
-    
     await addToContactRequest({
       message: `${currentUser.username} wants to add you as a contact`,
-      userId: contact
+      userId: contact,
+      from: currentUser._id,
+      photo: currentUser.photo
     });
-
-    const res = await fetch("/api/contacts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    console.log(res);
   };
   const handleDeleteContact = async (contact) => {
     let array = contacts;
@@ -141,8 +130,9 @@ function UserList() {
     }
 
     const body = {
-      id: contact,
+      contactId: contact,
     };
+
     const res = await fetch("/api/contacts", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },

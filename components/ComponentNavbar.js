@@ -22,9 +22,11 @@ import { Popover } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { logout } from "@/lib/api-lib/api-auth";
 import ContactRequest from "./notifications/ContactRequest";
+import ContactAccepted from "./notifications/ContactAccepted";
 
 export default function ComponentNavbar(props) {
   const [user, { mutate }] = useUser();
+
   const handleLogout = async () => {
     await logout();
     mutate({ user: null });
@@ -48,7 +50,7 @@ export default function ComponentNavbar(props) {
 
   const handleNotificationsClose = () => {
     setNotifcationsAnchorEl(null);
-  }
+  };
 
   const handleMobileMenuClose = () => {
     setMobileMoreAnchorEl(null);
@@ -88,7 +90,7 @@ export default function ComponentNavbar(props) {
       <MenuItem onClick={handleLogout}>Logout</MenuItem>
     </Menu>
   );
-  const popoverId = "notifications"
+  const popoverId = "notifications";
   const renderNotifications = (
     <Popover
       open={isNotificationsOpen}
@@ -96,15 +98,22 @@ export default function ComponentNavbar(props) {
       anchorEl={notificationsAnchorEl}
       anchorOrigin={{
         vertical: "bottom",
-        horizontal: "left",
+        horizontal: "right",
       }}
       id={popoverId}
       transformOrigin={{
         vertical: "top",
-        horizontal: "left",
+        horizontal: "right",
       }}
     >
-      {user && <ContactRequest userId={user._id}/>}
+      {user && <Box>
+        <ContactRequest
+          userId={user._id}
+          username={user.username}
+          photo={user.photo}
+        />
+        <ContactAccepted userId={user._id} />
+      </Box>}
     </Popover>
   );
 
@@ -281,46 +290,4 @@ export default function ComponentNavbar(props) {
       {renderNotifications}
     </Box>
   );
-
-  // return (
-  //   <>
-  //     <Navbar bg="light" expand="lg">
-  //       <Container>
-  //         <Nav className="me-auto">
-  //           <Navbar.Brand>Gather</Navbar.Brand>
-  //           <Nav.Link href="/">Home</Nav.Link>
-  //           <Nav.Link href="/reports">Reports</Nav.Link>
-  //           {user ? (
-  //             <>
-  //               <Nav.Link href="/profile">
-  //                 Profile
-  //               </Nav.Link>
-  //               <Nav.Link onClick={handleLogout}>
-  //                 Logout
-  //               </Nav.Link>
-  //             </>
-  //           ) : (
-  //             <>
-  //               <Nav.Link href="/login">
-  //                   Login
-  //               </Nav.Link>
-  //               <Nav.Link href="/signup">
-  //                   Signup
-  //               </Nav.Link>
-  //             </>
-  //           )}
-  //           {
-  //             user && user.type === 'authority' && (
-  //               <>
-  //                 <Nav.Link href="/authority/upload">
-  //                   Create Report
-  //                 </Nav.Link>
-  //               </>
-  //             )
-  //           }
-  //         </Nav>
-  //       </Container>
-  //     </Navbar>
-  //   </>
-  // );
 }
