@@ -27,25 +27,41 @@ function User(props) {
   //
   // let id = props.id;
   // let contacts = [...props.contacts];
+
   const username = props.username;
   const email = props.email;
   const publicId = props.publicId;
   const type = props.type;
 
-  const [added, isAdded] = useState(props.contacts.includes(props.id));
-  const handleClick = () => {
-    isAdded(!added);
-    if (!added) {
+  // const [added, isAdded] = useState(props.contacts.includes(props.id));
+  const [buttonState, setButtonState] = useState(
+    props.contacts.includes(props.id) ? "requestAccepted" : "noCurrentAction"
+  );
+
+  const handleClick = (previousState) => {
+    if (previousState === "noCurrentAction") {
       props.onAdd(props.id);
-    } else {
+      setButtonState("disable");
+    } else if (previousState === "requestAccepted") {
+      setButtonState("noCurrentAction");
       props.onDelete(props.id);
     }
+
+    // isAdded(!added);
+    // if (!added) {
+    //   props.onAdd(props.id);
+    // } else {
+    //   props.onDelete(props.id);
+    // }
   };
 
   return (
     <>
       <Box>
-        <Card style={{ maxWidth: "200px", textAlign: "center" }} variant="outlined">
+        <Card
+          style={{ maxWidth: "200px", textAlign: "center" }}
+          variant="outlined"
+        >
           <Chip
             sx={{ mt: 3 }}
             color="primary"
@@ -68,26 +84,50 @@ function User(props) {
             <Typography variant="subtitle2">{email}</Typography>
           </CardContent>
           <CardActions>
-              <Button
+            {/* <Button
                 fullWidth
-                variant="contained"
+                variant="outlined"
                 size="small"
                 onClick={handleClick}
               >
                 {added ? "Remove contact" : "Add"}
-              </Button>
-          </CardActions>
-          <CardActions>
-            <Button
+              </Button> */}
+            {buttonState === "noCurrentAction" && (
+              <Button
                 fullWidth
                 variant="outlined"
                 size="small"
-                href={`profile/${props.id}`}
+                onClick={() => handleClick("noCurrentAction")}
               >
-                View Profile
+                Add Contact
               </Button>
+            )}
+            {buttonState === "disable" && (
+              <Button fullWidth variant="outlined" size="small" disabled>
+                Requested
+              </Button>
+            )}
+            {buttonState === "requestAccepted" && (
+              <Button
+                fullWidth
+                variant="outlined"
+                size="small"
+                onClick={() => handleClick("requestAccepted")}
+              >
+                Remove contact
+              </Button>
+            )}
           </CardActions>
-          
+          <CardActions>
+            <Button
+              fullWidth
+              variant="outlined"
+              size="small"
+              href={`profile/${props.id}`}
+            >
+              View Profile
+            </Button>
+          </CardActions>
         </Card>
       </Box>
     </>
@@ -101,23 +141,25 @@ function UserList() {
   const [contacts, setContacts] = useState([]);
   useEffect(() => {
     if (user) {
-      setContacts((current) => [...user.contacts, ...current]);
+      setContacts([...user.contacts]);
       setCurrentUser((prev) => {
         return { ...prev, ...user };
       });
     }
   }, [user]);
+  console.log(contacts);
 
   // if(currentUser) {
   //     let userContacts = currentUser.contacts;
   //     setContacts((current) => [...current, ...userContacts])
   // }
   const handleAddContact = async (contact) => {
+    setContacts((prev) => {return [...prev, contact]});
     await addToContactRequest({
       message: `${currentUser.username} wants to add you as a contact`,
       userId: contact,
       from: currentUser._id,
-      photo: currentUser.photo
+      photo: currentUser.photo,
     });
   };
   const handleDeleteContact = async (contact) => {
@@ -141,7 +183,6 @@ function UserList() {
     console.log(res);
   };
 
-  
   return (
     <>
       <div>
