@@ -4,7 +4,7 @@ import {
   getContacts,
   removeContact,
   removeUserFromContact,
-  addContactToOtherUser,
+  addToOtherUser,
 } from "@/lib/controllers/contactController";
 import auth from "@/middleware/auth";
 
@@ -38,7 +38,7 @@ handler
   })
   .post((req, res) => {
     const { currentUserId, newContact } = req.body;
-    addContactToOtherUser(currentUserId, newContact)
+    addToOtherUser(currentUserId, newContact)
       .then((response) => {
         res.json(response);
       })
