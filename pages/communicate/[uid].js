@@ -15,13 +15,29 @@ import {
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import ProfilePhotoAvatar from "@/components/photo/ProfilePhotoAvatar";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { pusherJS } from "@/utils/pusher";
+
+async function getChannel(contactId) {
+  const res = await fetch(`/api/communicate/${contactId}`);
+  const data = await res.json();
+  return data;
+}
+
+function Chat({ from, message }) {
+  return (
+    <>
+      <Typography variant="subtitle2">{from}</Typography>
+      <Typography variant="body1">{message}</Typography>
+    </>
+  );
+}
 
 function Contact(props) {
   return (
     <ListItemButton
       onClick={() => {
-        props.onContactClick(props.username);
+        props.onContactClick(props.id);
       }}
       sx={{ minWidth: 100 }}
     >
@@ -51,12 +67,52 @@ function Contact(props) {
 
 export default function Communicate({ data }) {
   const contacts = data.contacts;
-  const [displayContact, setDisplayContact] = useState(
-    data.contacts[0].username
-  );
+  const [contact, setContact] = useState(data.contacts[0]._id);
+  const [messageObj, setMessageObj] = useState({
+    message: "",
+    from: data.username,
+  });
+  const [conversation, setConversation] = useState([]);
 
-  const handleClick = (value) => {
-    setDisplayContact(value);
+  const [channel, setChannel] = useState("");
+  useEffect(() => {
+    getChannel(contact).then((data) => {
+      setConversation([...data[0].conversation]);
+    });
+    const subscribeChannel = pusherJS.subscribe(channel);
+    subscribeChannel.bind("chat", (data) => {
+      setConversation([...conversation, data.body]);
+    });
+    return () => {
+      subscribeChannel.unbind();
+      pusherJS.unsubscribe(channel);
+    };
+  }, [conversation]);
+
+  const handleClick = async (contactId) => {
+    const data = await getChannel(contactId);
+
+    setChannel(data[0]._id);
+    setContact(contactId);
+  };
+
+  const handleChange = (event) => {
+    setMessageObj((prev) => {
+      return { ...prev, message: event.target.value };
+    });
+  };
+
+  const handleSend = async () => {
+    await fetch("/api/communicate/conversation", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        channelId: channel,
+        ...messageObj,
+      }),
+    });
+
+    setConversation([...conversation, messageObj]);
   };
   return (
     <>
@@ -74,6 +130,8 @@ export default function Communicate({ data }) {
                 {contacts.map((contact) => {
                   return (
                     <Contact
+                      key={contact._id}
+                      id={contact._id}
                       onContactClick={handleClick}
                       photo={contact.photo}
                       username={contact.username}
@@ -86,11 +144,20 @@ export default function Communicate({ data }) {
         </Grid>
         <Grid item xs={12} md={8}>
           <Box>
-            <Typography>{displayContact}</Typography>
+            <Typography>
+              {contact} {channel}
+            </Typography>
           </Box>
           <Divider />
           <Box sx={{ height: "500px", maxWidth: "300px" }}>
             <Typography>Conversations will go here</Typography>
+            {conversation.map((data) => {
+              return (
+                <>
+                  <Chat from={data.from} message={data.message} />
+                </>
+              );
+            })}
           </Box>
           <Box>
             <Stack direction="row" spacing={4}>
@@ -98,9 +165,11 @@ export default function Communicate({ data }) {
                 fullWidth
                 size="small"
                 placeholder="Type your message here..."
+                value={messageObj.message}
+                onChange={handleChange}
               />
 
-              <IconButton color="primary">
+              <IconButton onClick={handleSend} color="primary">
                 <SendIcon />
               </IconButton>
             </Stack>
