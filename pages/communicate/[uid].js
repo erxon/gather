@@ -24,6 +24,18 @@ async function getChannel(contactId) {
   return data;
 }
 
+async function sendMessagage(channel, message){
+  const result = await fetch("/api/communicate/conversation", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      channelId: channel,
+      ...message,
+    }),
+  });
+  return result;
+}
+
 function Chat({ from, message }) {
   return (
     <>
@@ -75,6 +87,7 @@ export default function Communicate({ data }) {
   const [conversation, setConversation] = useState([]);
 
   const [channel, setChannel] = useState("");
+  
   useEffect(() => {
     getChannel(contact).then((data) => {
       setConversation([...data[0].conversation]);
@@ -103,17 +116,10 @@ export default function Communicate({ data }) {
   };
 
   const handleSend = async () => {
-    await fetch("/api/communicate/conversation", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        channelId: channel,
-        ...messageObj,
-      }),
-    });
-
+    await sendMessagage(channel, messageObj)
     setConversation([...conversation, messageObj]);
   };
+
   return (
     <>
       <Grid container spacing={3}>
