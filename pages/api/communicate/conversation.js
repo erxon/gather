@@ -7,7 +7,8 @@ handler.use((req, res, next) => {
   //channelId, from, message
   const body = {
     message: req.body.message,
-    from: req.body.from
+    from: req.body.from,
+    createdAt: req.body.date
   };
   pusher
     .trigger(req.body.channelId, "chat", { body })

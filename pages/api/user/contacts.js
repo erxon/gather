@@ -1,15 +1,16 @@
 import nextConnect from "next-connect";
 import { findUserById } from "@/lib/db";
+import auth from "@/middleware/auth";
 
 const handler = nextConnect();
 
-handler.get((req, res) => {
-    const {uid} = req.query;
-    findUserById(req, uid).then((data) => {
+handler.use(auth).get(async (req, res) => {
+    const user = await req.user;
+    findUserById(req, user._id).then((data) => {
         if (data && data.errors) {
             res.status(400).json({message: 'Cannot retrieve user'})
         }
-        res.json(data)
+        res.json(data.contacts)
     }).catch(err => {
         res.status(400).json({message: 'Something wrong happened'})
     })
