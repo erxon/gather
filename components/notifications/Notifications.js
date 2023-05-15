@@ -12,11 +12,14 @@ import {
 import CircleNotificationsIcon from "@mui/icons-material/CircleNotifications";
 
 import { useEffect, useState } from "react";
-import { removeNotification, getNotifications } from "@/lib/api-lib/api-notifications";
+import {
+  removeNotification,
+  getNotifications,
+} from "@/lib/api-lib/api-notifications";
+import useSWR from "swr";
+import { fetcher } from "@/lib/hooks";
 
 function Notification(props) {
-  //Handle removing of notification
-
   return (
     <>
       <Box sx={{ my: 2 }}>
@@ -35,7 +38,12 @@ function Notification(props) {
                 spacing={1}
                 alignItems="center"
               >
-                <Button href={`/reports/${props.reportId}`} disableElevation size="small" variant="contained">
+                <Button
+                  href={`/reports/${props.reportId}`}
+                  disableElevation
+                  size="small"
+                  variant="contained"
+                >
                   View
                 </Button>
                 <Button
@@ -56,10 +64,10 @@ function Notification(props) {
   );
 }
 
-export default function Notifications() {
-  const [notifications, setNotifications] = useState([]);
+function Notifications(props) {
+  const [notifications, setNotifications] = useState([...props.notifications]);
+
   useEffect(() => {
-    getNotifications().then((data) => setNotifications(data))
     const channel = pusherJS.subscribe("notification");
     channel.bind("new-report", (data) => {
       setNotifications([data, ...notifications]);
@@ -78,7 +86,6 @@ export default function Notifications() {
     });
     await removeNotification(id);
   };
-
   return (
     <>
       <Box>
@@ -98,6 +105,18 @@ export default function Notifications() {
           })}
         </pre>
       </Box>
+    </>
+  );
+}
+
+export default function NotificationsMain() {
+  const { data, error, isLoading } = useSWR("/api/notification/reports", fetcher);
+  if (error) return <Typography>Something went wrong</Typography>
+  if (isLoading) return <CircularProgress />
+  console.log(data)
+  return (
+    <>
+      <Notifications notifications={data} />
     </>
   );
 }

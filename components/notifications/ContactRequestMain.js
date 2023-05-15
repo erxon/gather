@@ -8,6 +8,7 @@ import {
   Paper,
   Button,
   Divider,
+  CircularProgress,
 } from "@mui/material";
 import ReportPhoto from "../photo/ReportPhoto";
 import {
@@ -15,6 +16,8 @@ import {
   removeContactNotification,
   requestAccepted,
 } from "@/lib/api-lib/api-notifications";
+import useSWR from "swr";
+import { fetcher } from "@/lib/hooks";
 
 function ContactRequestNotification(props) {
   return (
@@ -62,8 +65,9 @@ function ContactRequestNotification(props) {
   );
 }
 
-export default function ContactRequest({ userId, username, photo }) {
-  const [notifications, setNotifications] = useState([]);
+function ContactRequest({userId, username, photo, requests }) {
+  const [notifications, setNotifications] = useState([...requests]);
+  
   const handleAccept = async (from, notificationId) => {
     const body = {
       currentUserId: userId,
@@ -97,9 +101,9 @@ export default function ContactRequest({ userId, username, photo }) {
       userId: userId,
       contactId: body.newContact,
       photo: photo,
-      message: `${username} accepted your request`
+      message: `${username} accepted your request`,
     });
-    console.log(result)
+    console.log(result);
   };
 
   const handleRemove = async (id) => {
@@ -111,7 +115,6 @@ export default function ContactRequest({ userId, username, photo }) {
     await removeContactNotification(id);
   };
   useEffect(() => {
-    getContactRequests().then((data) => setNotifications(data));
     const channel = pusherJS.subscribe(`notification-${userId}`);
     channel.bind("contact-requested", (data) => {
       setNotifications([...notifications, data]);
@@ -121,7 +124,7 @@ export default function ContactRequest({ userId, username, photo }) {
       pusherJS.unsubscribe(`notification-${userId}`);
     };
   }, [notifications]);
-  
+
   return (
     <>
       <Box>
@@ -148,5 +151,22 @@ export default function ContactRequest({ userId, username, photo }) {
         )}
       </Box>
     </>
+  );
+}
+
+export default function ContactRequestMain({ userId, username, photo }) {
+  const { data, error, isLoading } = useSWR(
+    "/api/notification/contacts",
+    fetcher
+  );
+  if (error) return <Typography>Something went wrong</Typography>;
+  if (isLoading) return <CircularProgress />;
+  return (
+    <ContactRequest
+      userId={userId}
+      username={username}
+      photo={photo}
+      requests={data}
+    />
   );
 }

@@ -6,10 +6,10 @@ import { useEffect, useState } from "react";
 import useSWR from "swr";
 import { fetcher } from "@/lib/hooks";
 export default function Communicate() {
-  const [user, { loading }] = useUser();
+  const [user, { loading}] = useUser();
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!loading && user === {}) {
       Router.push("/login");
     }
   }, [user]);
@@ -17,10 +17,11 @@ export default function Communicate() {
   if (loading) {
     return <CircularProgress />;
   }
-
+  
   return (
     <>
-      <ChatMain user={user.username}/>
+      {user && <ChatMain user={user.username}/>}
+      
     </>
   );
 }

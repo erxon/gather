@@ -21,8 +21,8 @@ import Button from "@mui/material/Button";
 import { Popover } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { logout } from "@/lib/api-lib/api-auth";
-import ContactRequest from "./notifications/ContactRequest";
-import ContactAccepted from "./notifications/ContactAccepted";
+import ContactRequestMain from "./notifications/ContactRequestMain";
+import ContactAcceptedMain from "./notifications/ContactAcceptedMain";
 
 export default function ComponentNavbar(props) {
   const [user, { mutate }] = useUser();
@@ -107,12 +107,12 @@ export default function ComponentNavbar(props) {
       }}
     >
       {user && <Box>
-        <ContactRequest
+        <ContactRequestMain
           userId={user._id}
           username={user.username}
           photo={user.photo}
         />
-        <ContactAccepted userId={user._id} />
+        <ContactAcceptedMain userId={user._id} />
       </Box>}
     </Popover>
   );

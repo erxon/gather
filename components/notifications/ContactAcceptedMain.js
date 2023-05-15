@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { pusherJS } from "@/utils/pusher";
 import { acceptedRequestNotifications } from "@/lib/api-lib/api-notifications";
-import { Box, Typography, Button } from "@mui/material";
+import { Box, Typography, Button, CircularProgress } from "@mui/material";
+import { fetcher } from "@/lib/hooks";
+import useSWR from 'swr'
 
 function Notification(props) {
   return (
@@ -14,11 +16,10 @@ function Notification(props) {
   );
 }
 
-export default function ContactAccepted({ userId }) {
-  const [notifications, setNotifications] = useState([]);
+function ContactAccepted({ userId, data }) {
+  const [notifications, setNotifications] = useState([...data]);
 
   useEffect(() => {
-    acceptedRequestNotifications().then((data) => setNotifications(data));
     const channel = pusherJS.subscribe(`notification-accepted-${userId}`);
     channel.bind("request-accepted", (data) => {
       setNotifications([...notifications, data]);
@@ -42,4 +43,15 @@ export default function ContactAccepted({ userId }) {
       })}
     </>
   );
+}
+export default function ContactAcceptedMain({userId}){
+  const {data, error, isLoading} = useSWR('/api/notification/contactReqAccepted', fetcher)
+
+  if (error) return <Typography>Something went wrong</Typography>
+  if (isLoading) return <CircularProgress />
+  return (
+    <>
+      <ContactAccepted data={data} userId={userId}/>
+    </>
+  )
 }
