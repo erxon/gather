@@ -9,7 +9,7 @@ import {
   Divider,
 } from "@mui/material";
 import useSWR from "swr";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { fetcher } from "@/lib/hooks";
 import SendIcon from "@mui/icons-material/Send";
 import { pusherJS } from "@/utils/pusher";
@@ -99,38 +99,56 @@ function MessageContainer(props) {
 
 function Conversation(props) {
   const [conversation, setConversation] = useState([...props.conversation]);
+  const [channelId, setChannelId] = useState(props.channelId);
+  const chatLogRef = useRef(null);
+
+  if (channelId !== props.channelId) {
+    setConversation(props.conversation);
+    setChannelId(props.channelId);
+  }
+  
 
   useEffect(() => {
+    chatLogRef.current.scrollTop = chatLogRef.current.scrollHeight;
+
     const channel = pusherJS.subscribe(props.channelId);
     channel.bind("chat", (data) => {
-      setConversation([data.body, ...conversation]);
+      setConversation([...conversation, data.body]);
     });
     return () => {
       channel.unbind();
       pusherJS.unsubscribe(channel);
     };
-  }, [conversation]);
+  }, [conversation, chatLogRef]);
 
   return (
     <>
       <Box
         sx={{
           height: "500px",
-          overflowY: "scroll",
           display: "flex",
-          flexDirection: "column-reverse",
+          flexDirection: "column",
         }}
       >
-        {conversation.reverse().map((messageObj) => {
-          return (
-            <MessageContainer
-              currentUserUsername={props.user}
-              username={messageObj.from}
-              date={messageObj.createdAt}
-              message={messageObj.message}
-            />
-          );
-        })}
+        <Box
+          sx={{
+            overflowY: "auto",
+            flexGrow: 1,
+            marginBottom: '10px'
+          }}
+          ref={chatLogRef}
+        >
+          {conversation.map((messageObj) => {
+            return (
+              <MessageContainer
+                currentUserUsername={props.user}
+                username={messageObj.from}
+                date={messageObj.createdAt}
+                message={messageObj.message}
+              />
+            );
+          })}
+        </Box>
       </Box>
     </>
   );
@@ -157,16 +175,19 @@ export default function ConversationBox({ contactId, username, user }) {
     const res = await sendMessage(message, data[0]._id, user);
     console.log(res.status);
   };
+
   return (
     <>
       <Box>
         <Typography>{username}</Typography>
         <Divider />
-        <Conversation
-          channelId={data[0]._id}
-          conversation={data[0].conversation}
-          user={user}
-        />
+        {data && (
+          <Conversation
+            channelId={data[0]._id}
+            conversation={data[0].conversation}
+            user={user}
+          />
+        )}
         <Stack direction="row" spacing={2} alignItems="center">
           <TextField
             fullWidth

@@ -63,7 +63,7 @@ export default function ChatMain({user}) {
   if (error) return <Typography>Something went wrong</Typography>;
   if (isLoading) return <CircularProgress />;
 
-  const handleClick = async (contactId, username) => {
+  const handleClick = (contactId, username) => {
     setContact({
       id: contactId,
       username: username,

@@ -16,7 +16,7 @@ import { useEffect } from "react";
 
 //components
 import ActiveReports from "@/components/reports/ActiveReports";
-import Notifications from "@/components/notifications/Notifications";
+import NotificationsMain from "@/components/notifications/NotificationsMain";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -58,7 +58,7 @@ export default function Dashboard() {
                 <NotificationsIcon />
                 <Typography variant="h6">Notifications</Typography>
               </Stack>
-              <Notifications />
+              <NotificationsMain />
             </Box>
           </Grid>
           <Grid item xs={12}>

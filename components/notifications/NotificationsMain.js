@@ -113,7 +113,7 @@ export default function NotificationsMain() {
   const { data, error, isLoading } = useSWR("/api/notification/reports", fetcher);
   if (error) return <Typography>Something went wrong</Typography>
   if (isLoading) return <CircularProgress />
-  console.log(data)
+
   return (
     <>
       <Notifications notifications={data} />

@@ -5,8 +5,10 @@ import {
   removeContact,
   removeUserFromContact,
   addToOtherUser,
+  createChannel
 } from "@/lib/controllers/contactController";
 import auth from "@/middleware/auth";
+
 
 const handler = nextConnect();
 
@@ -36,15 +38,23 @@ handler
         res.json(err);
       });
   })
-  .post((req, res) => {
+  .post((req, res, next) => {
     const { currentUserId, newContact } = req.body;
     addToOtherUser(currentUserId, newContact)
       .then((response) => {
-        res.json(response);
+        next()
       })
       .catch((err) => {
         res.json(err);
       });
+  })
+  .post((req, res) => {
+    const {currentUserId, newContact} = req.body;
+    createChannel(currentUserId, newContact).then((response) => {
+      res.json(response)
+    }).catch((error) => {
+      res.json(error)
+    })
   })
   .put(async (req, res, next) => {
     req.currentUser = await req.user;
