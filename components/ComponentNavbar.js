@@ -7,12 +7,10 @@ import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
-import InputBase from "@mui/material/InputBase";
 import Badge from "@mui/material/Badge";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
-import SearchIcon from "@mui/icons-material/Search";
-import AccountCircle from "@mui/icons-material/AccountCircle";
+import MenuList from "@mui/material/MenuList";
 import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
@@ -106,14 +104,16 @@ export default function ComponentNavbar(props) {
         horizontal: "right",
       }}
     >
-      {user && <Box>
-        <ContactRequestMain
-          userId={user._id}
-          username={user.username}
-          photo={user.photo}
-        />
-        <ContactAcceptedMain userId={user._id} />
-      </Box>}
+      {user && (
+        <Box>
+          <ContactRequestMain
+            userId={user._id}
+            username={user.username}
+            photo={user.photo}
+          />
+          <ContactAcceptedMain userId={user._id} />
+        </Box>
+      )}
     </Popover>
   );
 
@@ -183,12 +183,14 @@ export default function ComponentNavbar(props) {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem>
-        <p>Signup</p>
-      </MenuItem>
-      <MenuItem>
-        <p>Login</p>
-      </MenuItem>
+      <MenuList dense>
+        <MenuItem>
+          <p>Signup</p>
+        </MenuItem>
+        <MenuItem>
+          <p>Login</p>
+        </MenuItem>
+      </MenuList>
     </Menu>
   );
 
@@ -255,17 +257,27 @@ export default function ComponentNavbar(props) {
               </IconButton>
             </Box>
           ) : (
-            <Box sx={{ display: { xs: "none", md: "flex" } }}>
-              <Stack spacing={2} direction="row">
+            <Box
+              sx={{
+                display: { xs: "none", md: "flex", backgroundColor: "primary" },
+              }}
+            >
+              <Stack spacing={2} direction="row" alignItems="center">
                 <Button
                   color="primary"
                   href="/login"
                   variant="contained"
+                  size="small"
                   disableElevation
                 >
                   Login
                 </Button>
-                <Button href="/signup" variant="contained" disableElevation>
+                <Button
+                  size="small"
+                  href="/signup"
+                  variant="contained"
+                  disableElevation
+                >
                   Signup
                 </Button>
               </Stack>
