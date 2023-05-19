@@ -20,24 +20,7 @@ const theme = createTheme({
           fontSize: "12px",
         },
       },
-    },
-    MuiCard: {
-      variants: [
-        {
-          props: { variant: "outlined" },
-          style: {
-            border: 0,
-          },
-        },
-      ],
-      styleOverrides: {
-        root: {
-          backgroundColor: "#ECEEEE",
-          borderRadius: "20px",
-          border: 0,
-        },
-      },
-    },
+    }
   },
 });
 

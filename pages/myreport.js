@@ -19,8 +19,8 @@ const fetcher = (...args) => fetch(...args).then((res) => res.json());
 function Report(props) {
   return (
     <>
-      <div>
-        <Card sx={{ maxWidth: "350px", maxHeight: "260" }} variant="outlined">
+      <Box>
+        <Card sx={{ maxWidth: "350px", maxHeight: "260" }}>
           {props.photo ? (
             <CardMedia sx={{ height: 200 }}>
               <ReportPhoto publicId={props.photo} />
@@ -44,10 +44,10 @@ function Report(props) {
             </Typography>
           </CardContent>
           <CardActions>
-            <Button href={`/reports/${props.id}`}>View</Button>
+            <Button fullWidth variant="contained" href={`/reports/${props.id}`}>View</Button>
           </CardActions>
         </Card>
-      </div>
+      </Box>
     </>
   );
 }
@@ -91,17 +91,11 @@ export default function ReportDashboard() {
       return;
     }
   }, [user]);
-  
+
   if (!user) return <div>Loading user...</div>;
   return (
     <>
-      <Box
-        sx={{
-          backgroundColor: "#F2F4F4",
-          padding: "28px 30px 28px 30px",
-          borderRadius: "20px",
-        }}
-      >
+      <Box>
         <Typography variant="h6">Your Reports</Typography>
         <Box sx={{ my: 3 }}>
           <GetReport username={user.username} />

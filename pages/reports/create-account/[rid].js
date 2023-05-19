@@ -1,11 +1,23 @@
 import Router from "next/router";
 import { useEffect, useState } from "react";
 import { useUser } from "@/lib/hooks";
-import { Chip, Typography, Stack, Box, TextField, Button } from "@mui/material";
+import {
+  Chip,
+  Typography,
+  Stack,
+  Box,
+  TextField,
+  Button,
+  Paper,
+  Grid,
+} from "@mui/material";
 import PlaceIcon from "@mui/icons-material/Place";
 import ReportPhoto from "@/components/photo/ReportPhoto";
 import { sendNotification } from "@/lib/api-lib/api-notifications";
-import { getSingleReport, updateReportOnSignup } from "@/lib/api-lib/api-reports";
+import {
+  getSingleReport,
+  updateReportOnSignup,
+} from "@/lib/api-lib/api-reports";
 //Signup user
 //Update the report
 
@@ -45,7 +57,7 @@ export default function CreateAccount({ data }) {
         username: userObj.username,
         account: userObj.userId,
       });
-      console.log(response)
+      console.log(response);
       //send notification to the Notifications dashboard (Add try catch)
       await sendNotification({
         firstName: data.firstName,
@@ -70,92 +82,93 @@ export default function CreateAccount({ data }) {
   const reportedAt = new Date(data.reportedAt);
   return (
     <>
-      <Typography variant="h6">Report</Typography>
-      <Typography variant="body1">
-        To manage this report, you need to create an account.
-      </Typography>
+    <Box sx={{margin: 'auto', width: {xs: '100%', md: '50%'}}}>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h5">Create your account</Typography>
+      </Box>
+      
       {data.photo ? (
         <ReportPhoto publicId={data.photo} />
       ) : (
-        <Box sx={{ my: 2 }}>
-          <Stack direction="row" alignItems="center" spacing={1}>
-            <Typography variant="h5">
-              {data.firstName} {data.lastName}
-            </Typography>
-            <Chip
-              size="small"
-              color="primary"
-              variant="outlined"
-              label={data.status}
-            />
+        <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
+          <Typography variant="body1" sx={{mb: 1}}>Your report</Typography>
+          <Stack direction="row" spacing={2} alignItems="center">
+            <Box>
+              <Typography variant="h4">
+                {data.firstName} {data.lastName}
+              </Typography>
+              <Chip
+                size="small"
+                color="primary"
+                variant="outlined"
+                label={data.status}
+              />
+            </Box>
+            <Box>
+              <Stack spacing={0.5}>
+                <Typography variant="body1">{data.lastSeen}</Typography>
+                <Typography variant="body2">
+                  {data.gender}, {data.age} years old
+                </Typography>
+                <Stack>
+                  <Typography variant="body2">
+                    {reportedAt.toDateString()}{" "}
+                    {reportedAt.toLocaleTimeString()}
+                  </Typography>
+                </Stack>
+              </Stack>
+            </Box>
           </Stack>
-          <Stack
-            sx={{ mb: 2 }}
-            direction="row"
-            alignItems="center"
-            spacing={0.5}
-          >
-            <Typography variant="body2">{data.lastSeen}</Typography>
-            <PlaceIcon color="primary" />
-          </Stack>
-
-          <Typography variant="body2">
-            {data.gender}, {data.age} years old
-          </Typography>
-          <Stack>
-            <Typography variant="body2">
-              {reportedAt.toDateString()} {reportedAt.toLocaleTimeString()}
-            </Typography>
-          </Stack>
-        </Box>
+        </Paper>
       )}
-      <Box>
+      <Paper sx={{ p: 3 }} elevation={2}>
         <Typography sx={{ mb: 2 }} variant="h6">
           Signup
         </Typography>
         <TextField
-          variant="filled"
-          size="small"
+          variant="outlined"
           label="username"
           type="text"
           name="username"
           value={values.username}
           onChange={handleChange}
           required
+          fullWidth
         />
         <br />
         <TextField
           margin="dense"
-          variant="filled"
-          size="small"
+          variant="outlined"
           label="email"
           type="email"
           name="email"
           value={values.email}
           onChange={handleChange}
           required
+          fullWidth
         />
         <br />
         <TextField
           margin="dense"
-          variant="filled"
-          size="small"
+          variant="outlined"
           label="password"
           type="password"
           name="password"
           value={values.password}
           onChange={handleChange}
           required
+          fullWidth
         />
         <br />
         <Button
           sx={{ mt: 2 }}
-          size="small"
+          fullWidth
           variant="contained"
           onClick={handleSubmit}
         >
           Signup
         </Button>
+      </Paper>
       </Box>
     </>
   );
