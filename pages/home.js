@@ -1,12 +1,24 @@
 import Router from "next/router";
 import { useEffect, useState } from "react";
-import { Box, CircularProgress, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  CircularProgress,
+  Paper,
+  Stack,
+  Typography,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Divider,
+} from "@mui/material";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
 import ArticleIcon from "@mui/icons-material/Article";
-import DataSaverOffIcon from "@mui/icons-material/DataSaverOff";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
+import AttachFileIcon from "@mui/icons-material/AttachFile";
+import Data from "@/components/Data";
 
 
 import { createReport, uploadReportPhoto } from "@/lib/api-lib/api-reports";
@@ -14,7 +26,8 @@ import { createReport, uploadReportPhoto } from "@/lib/api-lib/api-reports";
 export default function HomePage() {
   const [imageSrc, setImageSrc] = useState();
   const [uploadData, setUploadData] = useState();
-  
+  const [gender, setGender] = useState('');
+
   //Handle submission of Report and Manage form
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,7 +37,7 @@ export default function HomePage() {
       lastName: e.currentTarget.lastName.value,
       lastSeen: e.currentTarget.lastSeen.value,
       age: e.currentTarget.age.value,
-      gender: e.currentTarget.gender.value,
+      gender: gender,
       status: "pending",
     };
     //Create new report
@@ -63,9 +76,9 @@ export default function HomePage() {
     }
 
     formData.append("upload_preset", "my-uploads");
-    
+
     //Upload photo
-    const data = await uploadReportPhoto(formData)
+    const data = await uploadReportPhoto(formData);
 
     console.log(data);
     const publicId = data.public_id.substring(11, 31);
@@ -76,171 +89,175 @@ export default function HomePage() {
 
   return (
     <>
-      <Box
-        sx={{
-          backgroundColor: "#f2f4f4",
-          marginTop: "100px",
-          padding: "30px",
-          borderRadius: "20px",
-          height: "50%",
-        }}
-      >
-        <Box>
-          <form
-            method="post"
-            onChange={handleChange}
-            onSubmit={handleImageSubmit}
-          >
-            <Grid container spacing={2}>
-              <Grid item xs={12} md={6}>
+      <Box>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={8}>
+            <Paper
+              sx={{
+                p: 3,
+                mb: 3,
+              }}
+              elevation={2}
+            >
+              <form
+                method="post"
+                onChange={handleChange}
+                onSubmit={handleImageSubmit}
+              >
+                <Grid container spacing={2}>
+                  <Grid item xs={12} md={6}>
+                    <Stack
+                      spacing={1}
+                      alignItems="center"
+                      direction="row"
+                      sx={{ marginBottom: "16px" }}
+                    >
+                      <Typography variant="h6">Report with Photo</Typography>
+                    </Stack>
+                    <Typography variant="body1">
+                      Report a missing person with only an image at hand.
+                    </Typography>
+                    <Button
+                      startIcon={<AttachFileIcon />}
+                      sx={{ mt: 2 }}
+                      variant="contained"
+                      component="label"
+                      size="small"
+                    >
+                      Select file
+                      <input hidden type="file" name="file" />
+                    </Button>
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <img
+                      style={{ maxWidth: "100%", height: "auto" }}
+                      src={imageSrc}
+                    />
+                    {imageSrc && !uploadData && (
+                      <p>
+                        <Button
+                          startIcon={<FileUploadIcon />}
+                          type="submit"
+                          variant="contained"
+                          size="small"
+                        >
+                          upload files
+                        </Button>
+                      </p>
+                    )}
+                    {uploadData && (
+                      <code>
+                        <pre>{JSON.stringify(uploadData, null, 2)}</pre>
+                      </code>
+                    )}
+                  </Grid>
+                </Grid>
+              </form>
+            </Paper>
+            {/*Report and manage*/}
+            <Paper elevation={2} sx={{ p: 3 }}>
+              <Typography variant="h6">Report and manage</Typography>
+              <Typography sx={{ my: 2 }} variant="body1">
+                Manage, and keep updated on the report you have filed.
+              </Typography>
+              <form onSubmit={handleSubmit}>
+                <Stack
+                  sx={{ mb: 3 }}
+                  direction="row"
+                  spacing={1}
+                  alignItems="center"
+                >
+                  <TextField
+                    id="age"
+                    label="Age"
+                    name="age"
+                    variant="outlined"
+                    type="text"
+                    size="small"
+                    required
+                  />
+                  <FormControl size="small" sx={{ minWidth: 120 }}>
+                    <InputLabel>Gender</InputLabel>
+                    <Select
+                      onChange={(event) => {
+                        setGender(event.target.value);
+                      }}
+                      value={gender}
+                      label="Gender"
+                    >
+                      <MenuItem value={"male"}>Male</MenuItem>
+                      <MenuItem value={"female"}>Female</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Stack>
+                <Divider sx={{ mb: 3 }} />
+                <Stack
+                  sx={{ mb: 2 }}
+                  direction="row"
+                  spacing={1}
+                  alignItems="center"
+                >
+                  <TextField
+                    id="firstName"
+                    label="First Name"
+                    variant="outlined"
+                    name="firstName"
+                    type="text"
+                    size="small"
+                    fullWidth
+                    required
+                  />
+                  <TextField
+                    id="lastName"
+                    label="Last Name"
+                    variant="outlined"
+                    name="lastName"
+                    type="text"
+                    size="small"
+                    fullWidth
+                    required
+                  />
+                </Stack>
+                <TextField
+                  id="lastSeen"
+                  label="Last Seen"
+                  variant="outlined"
+                  name="lastSeen"
+                  type="text"
+                  size="small"
+                  fullWidth
+                  required
+                />
+                <Button
+                  startIcon={<ArticleIcon />}
+                  size="small"
+                  sx={{ my: 2 }}
+                  type="submit"
+                  variant="contained"
+                >
+                  Report
+                </Button>
+              </form>
+            </Paper>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            {/*Data*/}
+            <Box>
+              <Paper elevation={2} sx={{ p: 3 }}>
                 <Stack
                   spacing={1}
                   alignItems="center"
                   direction="row"
                   sx={{ marginBottom: "16px" }}
                 >
-                  <InsertPhotoIcon />
-                  <Typography variant="h6">Report with Photo</Typography>
+                  <Typography variant="h6">Data</Typography>
                 </Stack>
-                <Typography variant="body1">
-                  Report a missing person with an image. The image will be
-                  searched in the collections of images from past reports.
-                </Typography>
-                <p>
-                  <input type="file" name="file" />
-                </p>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <img
-                  style={{ width: "auto", height: "250px" }}
-                  src={imageSrc}
-                />
-                {imageSrc && !uploadData && (
-                  <p>
-                    <Button type="submit" variant="contained" size="small">
-                      upload files
-                    </Button>
-                  </p>
-                )}
-                {uploadData && (
-                  <code>
-                    <pre>{JSON.stringify(uploadData, null, 2)}</pre>
-                  </code>
-                )}
-              </Grid>
-            </Grid>
-          </form>
-        </Box>
+                <Data />
+              </Paper>
+            </Box>
+          </Grid>
+        </Grid>
       </Box>
-      <Grid container spacing={2} sx={{ marginTop: "5%" }}>
-        <Grid item xs={12} md={6}>
-          {/*Recent Report*/}
-          <Box
-            sx={{
-              backgroundColor: "#f2f4f4",
-              padding: "5%",
-              borderRadius: "20px",
-            }}
-          >
-            <Stack
-              spacing={1}
-              alignItems="center"
-              direction="row"
-              sx={{ marginBottom: "16px" }}
-            >
-              <DataSaverOffIcon />
-              <Typography variant="h6">Data</Typography>
-            </Stack>
-          </Box>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          {/*Report a Case*/}
-          <Box
-            sx={{
-              backgroundColor: "#f2f4f4",
-              padding: "5%",
-              borderRadius: "20px",
-            }}
-          >
-            <Stack
-              spacing={1}
-              alignItems="center"
-              direction="row"
-              sx={{ marginBottom: "16px" }}
-            >
-              <ArticleIcon />
-              <Typography variant="h6">Report and manage</Typography>
-            </Stack>
-
-            <form onSubmit={handleSubmit}>
-              <TextField
-                sx={{ marginTop: "5px" }}
-                id="firstName"
-                label="First Name"
-                variant="outlined"
-                name="firstName"
-                type="text"
-                size="small"
-                fullWidth
-                required
-              />
-              <TextField
-                sx={{ marginTop: "5px" }}
-                id="lastName"
-                label="Last Name"
-                variant="outlined"
-                name="lastName"
-                type="text"
-                size="small"
-                fullWidth
-                required
-              />
-              <TextField
-                sx={{ marginTop: "5px" }}
-                id="lastSeen"
-                label="Last Seen"
-                variant="outlined"
-                name="lastSeen"
-                type="text"
-                size="small"
-                fullWidth
-                required
-              />
-
-              <TextField
-                sx={{ marginTop: "5px" }}
-                id="age"
-                label="Age"
-                name="age"
-                variant="outlined"
-                type="text"
-                size="small"
-                fullWidth
-                required
-              />
-
-              <TextField
-                sx={{ marginTop: "5px" }}
-                id="gender"
-                label="Gender"
-                name="gender"
-                variant="outlined"
-                type="text"
-                size="small"
-                fullWidth
-                required
-              />
-              <Button
-                sx={{ marginTop: "5px" }}
-                type="submit"
-                variant="contained"
-              >
-                Report
-              </Button>
-            </form>
-          </Box>
-        </Grid>
-      </Grid>
     </>
   );
 }

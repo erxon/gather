@@ -9,13 +9,15 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 export default function Login() {
   const [user, { mutate }] = useUser();
-  const [errorMes, setErrorMes] = useState({
-    field: "",
-    error: true,
-    message: "",
-  });
 
-  const loginUser = async (body) => {
+  async function onSubmit(e) {
+    e.preventDefault();
+
+    const body = {
+      username: e.currentTarget.username.value,
+      password: e.currentTarget.password.value,
+    };
+
     const res = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -26,26 +28,6 @@ export default function Login() {
       // set user to useSWR state
       mutate(userObj);
     }
-  }
-
-  async function onSubmit(e) {
-    e.preventDefault();
-
-    const body = {
-      username: e.currentTarget.username.value,
-      password: e.currentTarget.password.value,
-    };
-
-    if(body.username === ""){
-      setErrorMes({
-        field: "username",
-        message: "Username is empty"
-      })
-    } 
-    if(!errorMes.error){
-      loginUser(body)
-    }
-    
   }
 
   useEffect(() => {
@@ -75,7 +57,7 @@ export default function Login() {
           <Typography variant="h6">Login</Typography>
         </Stack>
 
-        <Box autoComplete="off" component="form" onSubmit={onSubmit}>
+        <form onSubmit={onSubmit}>
           <Stack
             direction={{ xs: "column", md: "row" }}
             spacing={2}
@@ -83,7 +65,6 @@ export default function Login() {
             sx={{ marginBottom: "16px" }}
           >
             <TextField
-              error={errorMes.field === "username"}
               variant="filled"
               size="small"
               name="username"
@@ -104,7 +85,7 @@ export default function Login() {
           <Button variant="contained" type="submit">
             Login
           </Button>
-        </Box>
+        </form>
       </Box>
     </>
   );

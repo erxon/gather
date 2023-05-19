@@ -21,6 +21,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { logout } from "@/lib/api-lib/api-auth";
 import ContactRequestMain from "./notifications/ContactRequestMain";
 import ContactAcceptedMain from "./notifications/ContactAcceptedMain";
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 export default function ComponentNavbar(props) {
   const [user, { mutate }] = useUser();
@@ -162,7 +163,7 @@ export default function ComponentNavbar(props) {
           aria-haspopup="true"
           color="inherit"
         >
-          <AccountCircle />
+          <AccountCircleIcon />
         </IconButton>
         <p>Profile</p>
       </MenuItem>
@@ -253,7 +254,7 @@ export default function ComponentNavbar(props) {
                 onClick={handleProfileMenuOpen}
                 color="inherit"
               >
-                <AccountCircle />
+                <AccountCircleIcon />
               </IconButton>
             </Box>
           ) : (
