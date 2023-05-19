@@ -37,44 +37,34 @@ export default function Login() {
 
   return (
     <>
-      <Box
-        sx={{
-          backgroundColor: "#f2f4f4",
-          marginTop: "100px",
-          padding: "30px",
-          borderRadius: "20px",
-          height: "25%",
-          padding: "5%",
-        }}
-      >
+      <Box sx={{margin: 'auto', textAlign: "center", maxWidth: {xs: '100%', md: '40%'}}}>
         <Stack
           alignItems="center"
+          justifyContent="center"
           direction="row"
           spacing={1}
-          sx={{ marginBottom: "16px" }}
+          sx={{mb: 3}}
         >
           <AccountCircleIcon />
-          <Typography variant="h6">Login</Typography>
+          <Typography variant="h5">Login</Typography>
         </Stack>
 
         <form onSubmit={onSubmit}>
           <Stack
-            direction={{ xs: "column", md: "row" }}
-            spacing={2}
+            justifyContent="center"
+            spacing={3}
             useFlexGap
-            sx={{ marginBottom: "16px" }}
+            sx={{mb: 3}}
           >
             <TextField
-              variant="filled"
-              size="small"
+              variant="outlined"
               name="username"
               id="username"
               type="text"
               label="username"
             />
             <TextField
-              variant="filled"
-              size="small"
+              variant="outlined"
               id="password"
               name="password"
               type="password"
@@ -82,7 +72,7 @@ export default function Login() {
             />
           </Stack>
 
-          <Button variant="contained" type="submit">
+          <Button fullWidth variant="contained" type="submit">
             Login
           </Button>
         </form>

@@ -4,19 +4,13 @@ import { useState } from "react";
 import { useUser } from "@/lib/hooks";
 import { useEffect } from "react";
 import TextField from "@mui/material/TextField";
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography, Paper } from "@mui/material";
 import Button from "@mui/material/Button";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { signup } from "@/lib/api-lib/api-auth";
 
-//Social Authentication Buttons
-import FacebookAuthButton from "@/components/authSocialButtons/FacebookAuthButton";
-import TwitterAuthButton from "@/components/authSocialButtons/TwitterAuthButton";
-
 export default function Signup() {
   const [user, { mutate }] = useUser();
-  console.log(user);
-  const [errorMsg, setErrorMsg] = useState("");
 
   async function onSubmit(e) {
     e.preventDefault();
@@ -54,69 +48,62 @@ export default function Signup() {
     <>
       <Box
         sx={{
-          backgroundColor: "#f2f4f4",
-          marginTop: "100px",
-          padding: "30px",
-          borderRadius: "20px",
-          height: "25%",
-          padding: {xs: "10%", md:"5%"},
+          margin: "auto",
+          width: { xs: "100%", md: "40%" },
+          textAlign: "center",
         }}
       >
         <Stack
           direction="row"
+          justifyContent="center"
           alignItems="center"
           spacing={1}
-          sx={{ marginBottom: "16px" }}
+          sx={{ mb: 3 }}
         >
           <AccountCircleIcon />
-          <Typography variant="h6">Signup</Typography>
+          <Typography variant="h5">Sign up</Typography>
         </Stack>
-        {/*Social auth buttons*/}
-        <FacebookAuthButton authType="Signup" />
-        <TwitterAuthButton authType="Signup" />
-        
         <form onSubmit={onSubmit}>
-          <Stack
-            sx={{
-              '& .MuiTextField-root': { width:{xs: "100%", md: "50%"} },
-              mb: '10px'
-            }}
-          >
-            <TextField 
+          <Stack sx={{ mb: 2 }}>
+            <TextField
               label="username"
-              variant="filled" 
-              id="username" 
-              type="text" 
+              variant="outlined"
+              id="username"
+              type="text"
               name="username"
               margin="dense"
-               />
-            <TextField 
+              required
+            />
+            <TextField
               label="email"
-              variant="filled" 
-              id="email" 
-              type="email" 
+              variant="outlined"
+              id="email"
+              type="email"
               name="email"
               margin="dense"
-               />
-            <TextField 
+              required
+            />
+            <TextField
               label="password"
-              variant="filled" 
-              id="password" 
-              type="password" 
+              variant="outlined"
+              id="password"
+              type="password"
               name="password"
               margin="dense"
-               />
-            <TextField 
+              required
+            />
+            <TextField
               label="repeat password"
-              variant="filled" 
-              id="rpassword" 
-              type="password" 
+              variant="outlined"
+              id="rpassword"
+              type="password"
               name="rpassword"
               margin="dense"
-               />
+              required
+            />
           </Stack>
 
-          <Button variant="contained" type="submit">
+          <Button fullWidth variant="contained" type="submit">
             Signup
           </Button>
         </form>
