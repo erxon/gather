@@ -13,7 +13,9 @@ import {
   Divider,
   Chip,
   InputAdornment,
-  Snackbar
+  Snackbar,
+  Paper,
+  Avatar,
 } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import UploadIcon from "@mui/icons-material/Upload";
@@ -22,6 +24,7 @@ import FacebookIcon from "@mui/icons-material/Facebook";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import AttachFileIcon from "@mui/icons-material/AttachFile";
 
 //Cloudinary
 import { CloudinaryImage } from "@cloudinary/url-gen";
@@ -31,118 +34,112 @@ import { max } from "@cloudinary/url-gen/actions/roundCorners";
 import { useRouter } from "next/router";
 export default function ProfilePage() {
   //User
-  const [user, { loading }] = useUser();
+  const [user, { loading, mutate}] = useUser();
   const router = useRouter();
 
   useEffect(() => {
     fetch("/api/user/checkAuth").then((response) => {
-        response.json().then((data) => {
-          if (!data.authenticated) {
-            return router.push("/login");
-          }
-        });
+      response.json().then((data) => {
+        if (!data.authenticated) {
+          return router.push("/login");
+        }
       });
+    });
   }, [user]);
-  
+
   const [userObj, setUserObj] = useState({
-    about: '',
-    photo: '',
+    about: "",
+    photo: "",
     socialMediaAccounts: {
-      facebook:"",
+      facebook: "",
       twitter: "",
-      instagram: ""
-    }
+      instagram: "",
+    },
   });
 
   //Retrieve user
   useEffect(() => {
     // redirect user to login if not authenticated
-    if(user){ 
-      setUserObj({...user})
+    if (user) {
+      setUserObj({ ...user });
     }
-    
   }, [user, loading]);
 
-
-   //For Snackbar
-   const [open, setOpen] = useState({
+  //For Snackbar
+  const [open, setOpen] = useState({
     open: false,
-    message: ''
+    message: "",
   });
   //Handle close for snackbar
   const handleClose = () => {
     setOpen({
-      open: false, 
+      open: false,
 
-      message: ''
+      message: "",
     });
-  }
+  };
   //Setting visibility for current password and new password
   const [visibility, setVisibility] = useState({
     currentPassword: false,
-    newPassword: false
+    newPassword: false,
   });
 
   const [passwordValues, setPasswordValues] = useState({
-    currentPassword: '',
-    newPassword: ''
+    currentPassword: "",
+    newPassword: "",
   });
 
   const [showError, setShowError] = useState({
     forCurPassword: false,
-    forNewPassword: false
+    forNewPassword: false,
   });
 
-
-
   const handlePasswordInputs = (event) => {
-    const {value, name} = event.target
+    const { value, name } = event.target;
     setPasswordValues((prev) => {
-      return {...prev, [name]: value}
-    })
-  }
+      return { ...prev, [name]: value };
+    });
+  };
 
   const handleChangePassword = async () => {
-    if (passwordValues.newPassword === ""){
-      setShowError((prev)=>{
-        return {...prev, forNewPassword: !prev.forNewPassword}
-      })
+    if (passwordValues.newPassword === "") {
+      setShowError((prev) => {
+        return { ...prev, forNewPassword: !prev.forNewPassword };
+      });
     }
-    if (passwordValues.currentPassword === ""){
-      setShowError((prev)=>{
-        return {...prev, forCurPassword: !prev.forCurPassword}
-      })
+    if (passwordValues.currentPassword === "") {
+      setShowError((prev) => {
+        return { ...prev, forCurPassword: !prev.forCurPassword };
+      });
     }
     const body = {
       username: userObj.username,
       newPassword: passwordValues.newPassword,
       curPassword: passwordValues.currentPassword,
       curSalt: userObj.salt,
-      curHash: userObj.hash
-    }
+      curHash: userObj.hash,
+    };
 
-    const res = await fetch('/api/utility/checkPassword', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(body)
-    })
+    const res = await fetch("/api/utility/checkPassword", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
 
     const changePasswordResult = await res.json();
-    if(res.status === 200){
+    if (res.status === 200) {
       setOpen({
         open: true,
-        message: changePasswordResult.message
-      })
-    } else if (res.status === 400){
+        message: changePasswordResult.message,
+      });
+    } else if (res.status === 400) {
       setOpen({
         open: true,
-        message: changePasswordResult.error
-      })
+        message: changePasswordResult.error,
+      });
     }
+  };
 
-  }
-
- 
   //Handle change for inputs in basic and contact information
   const handleChange = (event) => {
     const { value, name } = event.target;
@@ -155,21 +152,21 @@ export default function ProfilePage() {
   };
   //Handle change for inputs in social media accounts
   const handleAccountChange = (event) => {
-    const {value, name} = event.target
+    const { value, name } = event.target;
     setUserObj((prev) => {
       return {
         ...prev,
         socialMediaAccounts: {
           ...prev.socialMediaAccounts,
-          [name]: value
-        }
-      }
-    })
-  }
+          [name]: value,
+        },
+      };
+    });
+  };
   //handle update
   const handleUpdate = async () => {
     const body = {
-      ...userObj
+      ...userObj,
     };
     const res = await fetch("/api/user", {
       method: "PUT",
@@ -178,8 +175,8 @@ export default function ProfilePage() {
     });
 
     const update = await res.json();
-    if(update){
-      setOpen({open: true, message: update.message})
+    if (update) {
+      setOpen({ open: true, message: update.message });
     }
   };
 
@@ -187,33 +184,35 @@ export default function ProfilePage() {
   // else render the photo
 
   let profilePhoto;
-  if(userObj.photo){
+  if (userObj.photo) {
     profilePhoto = new CloudinaryImage(userObj.photo, {
       cloudName: "dg0cwy8vx",
       apiKey: process.env.CLOUDINARY_KEY,
       apiSecret: process.env.CLOUDINARY_SECRET,
     })
-    .resize(
-      fill().width(120).height(120)
-    ).roundCorners(max());
+      .resize(fill().width(60).height(60))
+      .roundCorners(max());
 
-    console.log(profilePhoto)
+    console.log(profilePhoto);
   }
-  
 
-  const [image, setImage] = useState({file: {}, fileName: "/assets/placeholder.png"});
+  const [image, setImage] = useState({
+    file: {},
+    fileName: "",
+  });
   const handleImageChange = (event) => {
-
-    setImage({
-      file: event.target.files[0],
-      fileName: URL.createObjectURL(event.target.files[0])
-    })
-
-
-  }
+    console.log(event.target.files[0]);
+    if (event.target.files[0]) {
+      setImage({
+        file: event.target.files[0],
+        fileName: URL.createObjectURL(event.target.files[0]),
+      });
+    }
+  };
   const handleImageSubmit = async (event) => {
     event.preventDefault();
     const form = event.currentTarget;
+
     const fileInput = Array.from(form.elements).find(
       ({ name }) => name === "file"
     );
@@ -233,12 +232,26 @@ export default function ProfilePage() {
         body: formData,
       }
     ).then((r) => r.json());
-    console.log(data)
-    setUserObj((prev) => {
-      return {...prev, photo: data.public_id}
-    })
 
-  }
+    const updatePhoto = await fetch("/api/user", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ photo: data.public_id }),
+    })
+    if(updatePhoto.status === 200){
+      setOpen({
+        open: true,
+        message: 'Profile photo updated'
+      })
+    }
+    setUserObj((prev) => {
+      return { ...prev, photo: data.public_id };
+    });
+    setImage({
+      file: {},
+      fileName: ''
+    })
+  };
 
   return (
     <>
@@ -250,48 +263,64 @@ export default function ProfilePage() {
         message={open.message}
       />
       <Box>
-        <Stack
-          direction="row"
-          alignItems="center"
-          spacing={1}
-          sx={{ marginBottom: "16px" }}
-        >
-          <AccountCircleIcon />
-          <Typography variant="h6">Profile</Typography>
-        </Stack>
+        <Typography sx={{ mb: 3 }} variant="h5">
+          Edit profile
+        </Typography>
 
-        { user && (
-          
+        {user && (
           <>
-            <Box sx={{ width: "120px" }}>
-              <Stack direction="column" spacing={2}>
-            {userObj.photo ? 
-            (<AdvancedImage cldImg={profilePhoto} />) :  
-            <Image
-              style={{ borderRadius: "100%" }}
-              width="120"
-              height="120"
-              src={image.fileName}
-            />}
-                <form method="post" encType="multipart/form-data" onSubmit={handleImageSubmit}>
+            <Paper sx={{ p: 3 }}>
+              <Stack direction="row" spacing={2} alignItems="center">
+                {userObj.photo ? (
+                  <AdvancedImage cldImg={profilePhoto} />
+                ) : (
+                  <Avatar
+                    sx={{ width: 60, height: 60 }}
+                    src={
+                      image.fileName === ""
+                        ? "/assets/placeholder.png"
+                        : image.fileName
+                    }
+                  />
+                )}
+                <form
+                  method="post"
+                  encType="multipart/form-data"
+                  onSubmit={handleImageSubmit}
+                >
+                  <Typography color="GrayText" variant="subtitle1">
+                    {image.file.name}
+                  </Typography>
                   <Button
+                    startIcon={<AttachFileIcon />}
+                    variant="outlined"
                     component="label"
                     size="small"
                   >
-                    Select file
-                    <input hidden name="file" onChange={handleImageChange} accept="image/*" multiple type="file" />
+                    File
+                    <input
+                      hidden
+                      name="file"
+                      onChange={handleImageChange}
+                      accept="image/*"
+                      multiple
+                      type="file"
+                    />
                   </Button>
-                  <Button
-                    variant="contained"
-                    startIcon={<UploadIcon />}
-                    type="submit"
-                  >
-                    Upload
-                  </Button>
+                  {image.fileName !== "" && (
+                    <Button
+                      sx={{ ml: 1 }}
+                      disableElevation
+                      size="small"
+                      variant="contained"
+                      type="submit"
+                    >
+                      Save
+                    </Button>
+                  )}
                 </form>
-                
               </Stack>
-            </Box>
+            </Paper>
             <Box sx={{ my: 3 }}>
               <Box sx={{ my: 3 }}>
                 {/*********************** Basic Information ********************************/}
@@ -336,18 +365,18 @@ export default function ProfilePage() {
                     value={userObj.lastName}
                     onChange={handleChange}
                   />
-                  
                 </Stack>
-                <TextField 
-                    multiline 
-                    rows={4} 
-                    value={userObj.about} 
-                    onChange={handleChange}
-                    label="About" 
-                    name="about" 
-                    variant="filled"
-                    sx={{mt: 3}}
-                /><br />
+                <TextField
+                  multiline
+                  rows={4}
+                  value={userObj.about}
+                  onChange={handleChange}
+                  label="About"
+                  name="about"
+                  variant="filled"
+                  sx={{ mt: 3 }}
+                />
+                <br />
                 <Button onClick={handleUpdate} sx={{ mt: 2 }} size="small">
                   Save
                 </Button>
@@ -440,7 +469,10 @@ export default function ProfilePage() {
                           <IconButton
                             onClick={() => {
                               setVisibility((prev) => {
-                                return {...prev, currentPassword: !prev.currentPassword}
+                                return {
+                                  ...prev,
+                                  currentPassword: !prev.currentPassword,
+                                };
                               });
                             }}
                           >
@@ -469,7 +501,10 @@ export default function ProfilePage() {
                           <IconButton
                             onClick={() => {
                               setVisibility((prev) => {
-                                return {...prev, newPassword: !prev.newPassword}
+                                return {
+                                  ...prev,
+                                  newPassword: !prev.newPassword,
+                                };
                               });
                             }}
                           >
@@ -484,7 +519,11 @@ export default function ProfilePage() {
                     }}
                   />
                 </Stack>
-                <Button onClick={handleChangePassword} sx={{ mt: 2 }} size="small">
+                <Button
+                  onClick={handleChangePassword}
+                  sx={{ mt: 2 }}
+                  size="small"
+                >
                   Change password
                 </Button>
               </Box>
