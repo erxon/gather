@@ -56,13 +56,12 @@ export default function ContactList({ user }) {
   const { data, error, isLoading } = useSWR(`/api/user/contacts`, fetcher);
   if (isLoading) return <CircularProgress />;
   const contacts = data;
+  console.log(contacts)
 
   return (
     <>
-      <Typography variant="body1">
-        <strong>Contacts</strong>
-      </Typography>
       <Divider sx={{ mb: 2 }} />
+      {contacts.length === 0 && <Typography color='GrayText'>No contacts yet</Typography>}
       {contacts.map((contact) => {
         return (
           <Contact

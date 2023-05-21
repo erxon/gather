@@ -8,6 +8,9 @@ import {
   Chip,
   Button,
   Grid,
+  Paper,
+  Avatar,
+  IconButton,
 } from "@mui/material";
 //Components
 import ProfilePhoto from "@/components/photo/ProfilePhoto";
@@ -15,29 +18,26 @@ import ContactList from "@/components/ContactList";
 
 //Hooks
 import { useUser } from "@/lib/hooks";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 //MUI Icons
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
 import EmailIcon from "@mui/icons-material/Email";
-import NumbersIcon from "@mui/icons-material/Numbers";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import TwitterIcon from "@mui/icons-material/Twitter";
-import Router from "next/router";
-
+import EditIcon from "@mui/icons-material/Edit";
 export default function ProfileIndex() {
   const [user, { loading }] = useUser();
   const router = useRouter();
   useEffect(() => {
     fetch("/api/user/checkAuth").then((response) => {
-        response.json().then((data) => {
-          if (!data.authenticated) {
-            return router.push("/login");
-          }
-        });
+      response.json().then((data) => {
+        if (!data.authenticated) {
+          return router.push("/login");
+        }
       });
+    });
   }, [user]);
 
   if (loading) {
@@ -46,98 +46,124 @@ export default function ProfileIndex() {
 
   return (
     <>
-      <Box
-        sx={{
-          backgroundColor: "#f2f4f4",
-          borderRadius: "20px",
-          padding: "30px",
-        }}
-      >
-        <Stack
-          direction="row"
-          alignItems="center"
-          spacing={1}
-          sx={{ marginBottom: "16px" }}
+      <Box>
+        <Typography variant="h5" sx={{ mb: 3 }}>
+          Profile
+        </Typography>
+
+        <Button
+          href="/profile/edit"
+          sx={{ mb: 1 }}
+          size="small"
+          startIcon={<EditIcon />}
         >
-          <AccountCircleIcon />
-          <Typography variant="h6">Profile</Typography>
-        </Stack>
+          Edit
+        </Button>
         {user && (
           <Grid container spacing={3}>
             <Grid item xs={12} md={8}>
-              <Box sx={{ width: "200px" }}>
-                <Stack direction="column" alignItems="start" spacing={1}>
-                  <ProfilePhoto publicId={user.photo} />
-                  <Stack direction="row" spacing={1} alignItems="center">
-                    <Typography variant="subtitle1">{user.username}</Typography>
-                    <Chip
-                      size="small"
-                      color="primary"
-                      icon={<VerifiedUserIcon />}
-                      label={`${user.type}`}
-                      variant="outlined"
-                    />
+              <Box>
+                <Paper elevation={2} sx={{ p: 3 }}>
+                  <Stack direction="row" spacing={2} alignItems="center">
+                    {user.photo ? (
+                      <Avatar>
+                        <ProfilePhoto publicId={user.photo} />
+                      </Avatar>
+                    ) : (
+                      <Avatar
+                        src="/assets/placeholder.png"
+                        sx={{ width: 56, height: 56 }}
+                      />
+                    )}
+                    <Box>
+                      <Typography sx={{ color: "GrayText" }} variant="body1">
+                        {user.firstName || user.lastName
+                          ? `${user.firstName} ${user.lastName}`
+                          : "Edit this profile to add display name"}
+                      </Typography>
+                      <Typography variant="subtitle1">
+                        {user.username}
+                      </Typography>
+                      <Chip
+                        size="small"
+                        color="primary"
+                        icon={<VerifiedUserIcon />}
+                        label={`${user.type}`}
+                        variant="outlined"
+                      />
+                    </Box>
                   </Stack>
-                </Stack>
+                </Paper>
               </Box>
               {/*Basic Information */}
               <Box sx={{ mt: 4 }}>
                 {/******Overview********/}
-                <Box>
-                  <Typography variant="h5">
-                    {user.firstName} {user.lastName}
-                  </Typography>
-                  <Typography sx={{ mt: 1 }} variant="body2">
-                    {user.about}
-                  </Typography>
-                </Box>
+                <Paper sx={{ p: 3 }} elevation={2}>
+                  <Box>
+                    <Typography sx={{ mt: 1 }} variant="body2">
+                      {user.about}
+                    </Typography>
+                  </Box>
 
-                {/******Contact Information********/}
-                <Stack sx={{ mt: 3 }} direction="row" spacing={1}>
-                  <LocalPhoneIcon />
+                  {/******Contact Information********/}
+
                   <Typography variant="body1">
                     <strong>Contact Me</strong>
                   </Typography>
-                </Stack>
-                <Divider />
-                <Stack sx={{ mt: 2 }} direction="row" spacing={1}>
-                  <EmailIcon />
-                  <Typography variant="body1">{user.email}</Typography>
-                </Stack>
-                <Stack sx={{ mt: 1 }} direction="row" spacing={1}>
-                  <NumbersIcon />
-                  <Typography variant="body1">{user.contactNumber}</Typography>
-                </Stack>
-                <Stack sx={{ mt: 1 }} direction="row" spacing={1}>
-                  <FacebookIcon />
-                  <Typography variant="body1">
-                    {user.socialMediaAccounts.facebook
-                      ? user.socialMediaAccounts.facebook
-                      : "none"}
-                  </Typography>
-                </Stack>
-                <Stack sx={{ mt: 1 }} direction="row" spacing={1}>
-                  <TwitterIcon />
-                  <Typography variant="body1">
-                    {user.socialMediaAccounts.twitter
-                      ? user.socialMediaAccounts.twitter
-                      : "none"}
-                  </Typography>
-                </Stack>
-
-                {/*******Buttons********/}
-                <Box sx={{ mt: 4 }}>
-                  <Stack direction="row" spacing={1}>
-                    <Button href="/profile/edit" variant="outlined">
-                      Edit
-                    </Button>
-                    <Button variant="text">Delete</Button>
+                  <Divider />
+                  <Stack sx={{ mt: 2 }} direction="row" spacing={1}>
+                    <EmailIcon />
+                    <Typography variant="body1">{user.email}</Typography>
                   </Stack>
-                </Box>
+                  <Stack sx={{ mt: 1 }} direction="row" spacing={1}>
+                    <LocalPhoneIcon />
+                    <Typography variant="body1">
+                      {user.contactNumber ? (
+                        <Typography variant="body1">
+                          {user.contactNumber}
+                        </Typography>
+                      ) : (
+                        <Typography color="GrayText" variant="body1">
+                          Add a contact number
+                        </Typography>
+                      )}
+                    </Typography>
+                  </Stack>
+                  <Stack sx={{ mt: 1 }} direction="row" spacing={1}>
+                    <FacebookIcon />
+
+                    {user.socialMediaAccounts.facebook ? (
+                      <Typography variant="body1">
+                        {user.socialMediaAccounts.facebook}
+                      </Typography>
+                    ) : (
+                      <Typography color="GrayText" variant="body1">
+                        Link your account here
+                      </Typography>
+                    )}
+                  </Stack>
+                  <Stack sx={{ mt: 1 }} direction="row" spacing={1}>
+                    <TwitterIcon />
+                    {user.socialMediaAccounts.twitter ? (
+                      <Typography variant="body1">
+                        {user.socialMediaAccounts.facebook}
+                      </Typography>
+                    ) : (
+                      <Typography color="GrayText" variant="body1">
+                        Link your account here
+                      </Typography>
+                    )}
+                  </Stack>
+                </Paper>
               </Box>
             </Grid>
             <Grid item xs={12} md={4}>
-              <ContactList user={user._id} />
+              <Paper sx={{ p: 3 }}>
+                <Typography variant="body1">
+                  <strong>Contacts</strong>
+                </Typography>
+                <ContactList user={user._id} />
+              </Paper>
             </Grid>
           </Grid>
         )}
