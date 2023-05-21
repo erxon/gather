@@ -53,14 +53,16 @@ function Contact(props) {
 }
 
 export default function ContactList({ user }) {
-  const { data, error, isLoading } = useSWR(`/api/user/${user}`, fetcher);
+  const { data, error, isLoading } = useSWR(`/api/user/contacts`, fetcher);
   if (isLoading) return <CircularProgress />;
-  const contacts = data.contacts;
+  const contacts = data;
 
   return (
     <>
-      <Typography variant="body1"><strong>Contacts</strong></Typography>
-      <Divider sx={{mb: 2}} />
+      <Typography variant="body1">
+        <strong>Contacts</strong>
+      </Typography>
+      <Divider sx={{ mb: 2 }} />
       {contacts.map((contact) => {
         return (
           <Contact
