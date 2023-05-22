@@ -4,7 +4,9 @@ import FacebookIcon from "@mui/icons-material/Facebook";
 export default function FacebookButton() {
   return (
     <>
-      <Button startIcon={<FacebookIcon />}>Share to Facebook</Button>
+      <Button variant="contained" size="small" startIcon={<FacebookIcon />}>
+        Share to Facebook
+      </Button>
     </>
   );
 }

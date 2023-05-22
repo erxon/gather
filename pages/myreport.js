@@ -96,7 +96,7 @@ export default function ReportDashboard() {
   return (
     <>
       <Box>
-        <Typography variant="h6">Your Reports</Typography>
+        <Typography variant="h5">Your Reports</Typography>
         <Box sx={{ my: 3 }}>
           <GetReport username={user.username} />
         </Box>

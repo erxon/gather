@@ -8,7 +8,15 @@ import Router from "next/router";
 import { useEffect, useState } from "react";
 import { useUser } from "@/lib/hooks";
 import ReportPhoto from "@/components/photo/ReportPhoto";
-import { Box, Typography, Button, TextField, Grid, Stack } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Button,
+  TextField,
+  Grid,
+  Stack,
+  Paper,
+} from "@mui/material";
 import Link from "next/link";
 import { getSingleReport, deleteReport } from "@/lib/api-lib/api-reports";
 
@@ -16,8 +24,14 @@ import { getSingleReport, deleteReport } from "@/lib/api-lib/api-reports";
 import FacebookButton from "@/components/socialMediaButtons/FacebookButton";
 import TwitterButton from "@/components/socialMediaButtons/TwitterButton";
 
+import EditIcon from "@mui/icons-material/Edit";
+import PersonIcon from "@mui/icons-material/Person";
+import PlaceIcon from "@mui/icons-material/Place";
+import EmailIcon from "@mui/icons-material/Email";
+import FacebookIcon from "@mui/icons-material/Facebook";
+import TwitterIcon from "@mui/icons-material/Twitter";
+
 export default function ReportPage({ data }) {
-  console.log(data);
   const reportedAt = new Date(data.reportedAt);
   const [user, { mutate }] = useUser();
   const [authorized, isAuthorized] = useState(false);
@@ -41,11 +55,12 @@ export default function ReportPage({ data }) {
       Router.push("/reportDashboard");
     }
   };
+  console.log(data);
 
   return (
     <Box>
-      <div>
-        <Typography variant="body1"> Reported by: </Typography>{" "}
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="body1"> Reported by </Typography>{" "}
         {data.reporter && (
           <Box>
             <Typography variant="body2">
@@ -60,105 +75,153 @@ export default function ReportPage({ data }) {
         {Object.hasOwn(data, "username") && (
           <Box sx={{ mt: 0.5 }}>
             <Typography variant="body2">
-              <Link href={`/profile/${data.account}`}>{data.username}</Link>
+              <Link href={`/reports/edit/${data.account}`}>
+                {data.username}
+              </Link>
             </Typography>
           </Box>
         )}
-      </div>
-      <Typography sx={{ mt: 2 }} variant="body2">
-        {reportedAt.toDateString()} {reportedAt.toLocaleTimeString()}
-      </Typography>
-      <Stack direction="row" spacing={2}>
-        <Box>
-          <div>
-            {data.photo ? (
-              <ReportPhoto publicId={data.photo} />
-            ) : (
-              <div>
-                <img src="https://placehold.co/250" /> <br />
-              </div>
-            )}
-          </div>
-          {authorized && (
-            <Box>
-              <TextField
-                multiline
-                sx={{ mt: 3, width: "250px" }}
-                rows={4}
-                label="Notes"
-              />
-            </Box>
-          )}
-          {authorized && (
-            <div>
-              <Button href={`/reports/edit/${data._id}`} size="sm">
-                Edit
-              </Button>
-              <Button size="sm" onClick={handleDelete}>
-                Delete
-              </Button>
-            </div>
-          )}
-        </Box>
+      </Box>
+      {authorized && (
+        <Button
+          sx={{ mb: 2 }}
+          variant="outlined"
+          startIcon={<EditIcon />}
+          href={`/reports/edit/${data._id}`}
+          size="small"
+        >
+          Edit
+        </Button>
+      )}
+      <Grid container spacing={2}>
         {/*Basic Information */}
-        <Box>
-          <Typography variant="h4">
-            {data.firstName} {data.lastName}
-          </Typography>
-          <Box sx={{ mt: 2 }}>
-            <Typography variant="body1">
-              <strong>Age: </strong>
-              {data.age} <br />
-            </Typography>
-            <Typography variant="body1">
-              <strong>Gender: </strong>
-              {data.gender} <br />
-            </Typography>
-            <Typography variant="body1">
-              <strong>Last seen: </strong>
-              {data.lastSeen}
-            </Typography>
-          </Box>
 
-          {/*Features, Email, Social Media Accounts */}
+        <Grid item xs={12} md={8}>
           <Box>
-            <Typography variant="body1">
-              <strong>Features: </strong>
-            </Typography>
-            {data.features &&
-              data.features.map((feature) => {
-                return <Typography>{feature}</Typography>;
-              })}
-          </Box>
-          <Box>
-            <Typography variant="body1">
-              <strong>Email: </strong>
-              {data.email && data.email}
-            </Typography>
-          </Box>
-          <Box>
-            <Typography>
-              <strong>Social Media Accounts: </strong>
-            </Typography>
-            {data.socialMediaAccounts && (
-              <Box>
-                <Typography>
-                  Facebook: {data.socialMediaAccounts.facebook}
+            <Paper sx={{ p: 3 }}>
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={6}>
+                  <Typography variant="h4">
+                    {data.firstName} {data.lastName}
+                  </Typography>
+                  {data.status === "pending" && (
+                    <Typography color="GrayText">
+                      This case is not yet verified
+                    </Typography>
+                  )}
+                  <Typography sx={{ mt: 2 }} variant="body2">
+                    Reportedly missing: <br />
+                    {reportedAt.toDateString()}{" "}
+                    {reportedAt.toLocaleTimeString()}
+                  </Typography>
+                  <Box sx={{ mt: 2 }}>
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                      <PersonIcon />
+                      <Typography variant="body1">
+                        {data.age} years old, {data.gender}
+                      </Typography>
+                    </Stack>
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                      <PlaceIcon />
+                      <Typography variant="body1">{data.lastSeen}</Typography>
+                    </Stack>
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                      <EmailIcon />
+
+                      {data.email ? (
+                        <Typography variant="body1">{data.email} </Typography>
+                      ) : (
+                        <Typography color="GrayText" variant="body1">
+                          Edit this report to add an email
+                        </Typography>
+                      )}
+                    </Stack>
+                  </Box>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  {data.photo ? (
+                    <ReportPhoto publicId={data.photo} />
+                  ) : (
+                    <img
+                      style={{ maxWidth: "100%", height: "auto" }}
+                      src="/assets/placeholder.png"
+                    />
+                  )}
+                </Grid>
+              </Grid>
+            </Paper>
+            {/*Features, Email, Social Media Accounts */}
+            <Paper sx={{ p: 3, my: 2 }}>
+              <Typography variant="h6">Features</Typography>
+              {data.features.length > 0 ? (
+                data.features.map((feature) => {
+                  return <Typography>{feature}</Typography>;
+                })
+              ) : (
+                <Typography color="GrayText">
+                  Edit this report to add features
                 </Typography>
-                <Typography>
-                  Twitter: {data.socialMediaAccounts.twitter}
+              )}
+            </Paper>
+
+            <Paper sx={{ p: 3 }}>
+              <Typography sx={{ mb: 2 }} variant="h6">
+                Social Media Accounts
+              </Typography>
+              {data.socialMediaAccounts ? (
+                <Box>
+                  <Stack direction="row" alignItems="center" spacing={1}>
+                    <FacebookIcon />
+                    {data.socialMediaAccounts.facebook != "" ? (
+                      <Typography>
+                        {data.socialMediaAccounts.facebook}
+                      </Typography>
+                    ) : (
+                      <Typography color="GrayText">
+                        Link a Facebook account
+                      </Typography>
+                    )}
+                  </Stack>
+                  <Stack
+                    sx={{ mt: 1 }}
+                    direction="row"
+                    alignItems="center"
+                    spacing={1}
+                  >
+                    <TwitterIcon />
+                    {data.socialMediaAccounts.twitter != "" ? (
+                      <Typography>
+                        {data.socialMediaAccounts.twitter}
+                      </Typography>
+                    ) : (
+                      <Typography color="GrayText">
+                        Link a Twitter account
+                      </Typography>
+                    )}
+                  </Stack>
+                </Box>
+              ) : (
+                <Typography color="GrayText">
+                  Edit this report to add social media accounts of the missing
                 </Typography>
-              </Box>
+              )}
+            </Paper>
+          </Box>
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <Paper sx={{ p: 3 }}>
+            <Typography sx={{ mb: 2 }} variant="h6">
+              Share
+            </Typography>
+            {data.status === "active" && authorized && (
+              <Stack spacing={2}>
+                <FacebookButton />
+                <TwitterButton />
+              </Stack>
             )}
-          </Box>
-        </Box>
-        {data.status === "active" && authorized && (
-          <Stack>
-            <FacebookButton /> 
-            <TwitterButton />
-          </Stack>
-        )}
-      </Stack>
+          </Paper>
+        </Grid>
+      </Grid>
     </Box>
   );
 }
