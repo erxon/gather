@@ -99,6 +99,9 @@ export default function HomePage() {
               }}
               elevation={2}
             >
+
+
+              {/*Report with Photo*/}
               <form
                 method="post"
                 onChange={handleChange}
@@ -112,7 +115,8 @@ export default function HomePage() {
                       direction="row"
                       sx={{ marginBottom: "16px" }}
                     >
-                      <Typography variant="h6">Report with Photo</Typography>
+                      
+                      <Typography variant="h5">Report with Photo</Typography>
                     </Stack>
                     <Typography variant="body1">
                       Report a missing person with only an image at hand.
@@ -154,9 +158,10 @@ export default function HomePage() {
                 </Grid>
               </form>
             </Paper>
-            {/*Report and manage*/}
+
+            {/*Report and manage***********/}
             <Paper elevation={2} sx={{ p: 3 }}>
-              <Typography variant="h6">Report and manage</Typography>
+              <Typography variant="h5">Report and manage</Typography>
               <Typography sx={{ my: 2 }} variant="body1">
                 Manage, and keep updated on the report you have filed.
               </Typography>
@@ -197,6 +202,7 @@ export default function HomePage() {
                   spacing={1}
                   alignItems="center"
                 >
+                  {/*First name*/}
                   <TextField
                     id="firstName"
                     label="First Name"
@@ -207,6 +213,7 @@ export default function HomePage() {
                     fullWidth
                     required
                   />
+                  {/*Last name*/}
                   <TextField
                     id="lastName"
                     label="Last Name"
@@ -218,6 +225,7 @@ export default function HomePage() {
                     required
                   />
                 </Stack>
+                {/*Last seen*/}
                 <TextField
                   id="lastSeen"
                   label="Last Seen"
@@ -241,6 +249,7 @@ export default function HomePage() {
             </Paper>
           </Grid>
           <Grid item xs={12} md={4}>
+
             {/*Data*/}
             <Box>
               <Paper elevation={2} sx={{ p: 3 }}>
