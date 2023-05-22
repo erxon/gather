@@ -59,8 +59,11 @@ function User(props) {
     <>
       <Box>
         <Card
-          style={{ maxWidth: "200px", textAlign: "center" }}
-          variant="outlined"
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
         >
           <Chip
             sx={{ mt: 3 }}
@@ -79,12 +82,15 @@ function User(props) {
               />
             )}
           </CardMedia>
-          <CardContent>
-            <Typography variant="subtitle1">{username}</Typography>
-            <Typography variant="subtitle2">{email}</Typography>
-          </CardContent>
-          <CardActions>
-            {/* <Button
+          <Box>
+            <CardContent sx={{ textAlign: "center" }}>
+              <Typography variant="subtitle1">{username}</Typography>
+              <Typography variant="subtitle2">{email}</Typography>
+            </CardContent>
+          </Box>
+          <Box sx={{width: '100%'}}>
+            <CardActions>
+              {/* <Button
                 fullWidth
                 variant="outlined"
                 size="small"
@@ -92,42 +98,43 @@ function User(props) {
               >
                 {added ? "Remove contact" : "Add"}
               </Button> */}
-            {buttonState === "noCurrentAction" && (
+              {buttonState === "noCurrentAction" && (
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  size="small"
+                  onClick={() => handleClick("noCurrentAction")}
+                >
+                  Add Contact
+                </Button>
+              )}
+              {buttonState === "disable" && (
+                <Button fullWidth variant="outlined" size="small" disabled>
+                  Requested
+                </Button>
+              )}
+              {buttonState === "requestAccepted" && (
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  size="small"
+                  onClick={() => handleClick("requestAccepted")}
+                >
+                  Remove contact
+                </Button>
+              )}
+            </CardActions>
+            <CardActions>
               <Button
                 fullWidth
                 variant="outlined"
                 size="small"
-                onClick={() => handleClick("noCurrentAction")}
+                href={`profile/${props.id}`}
               >
-                Add Contact
+                View Profile
               </Button>
-            )}
-            {buttonState === "disable" && (
-              <Button fullWidth variant="outlined" size="small" disabled>
-                Requested
-              </Button>
-            )}
-            {buttonState === "requestAccepted" && (
-              <Button
-                fullWidth
-                variant="outlined"
-                size="small"
-                onClick={() => handleClick("requestAccepted")}
-              >
-                Remove contact
-              </Button>
-            )}
-          </CardActions>
-          <CardActions>
-            <Button
-              fullWidth
-              variant="outlined"
-              size="small"
-              href={`profile/${props.id}`}
-            >
-              View Profile
-            </Button>
-          </CardActions>
+            </CardActions>
+          </Box>
         </Card>
       </Box>
     </>
@@ -154,7 +161,9 @@ function UserList() {
   //     setContacts((current) => [...current, ...userContacts])
   // }
   const handleAddContact = async (contact) => {
-    setContacts((prev) => {return [...prev, contact]});
+    setContacts((prev) => {
+      return [...prev, contact];
+    });
     await addToContactRequest({
       message: `${currentUser.username} wants to add you as a contact`,
       userId: contact,
@@ -186,7 +195,7 @@ function UserList() {
   return (
     <>
       <div>
-        <Grid container spacing={3}>
+        <Grid container spacing={1}>
           {!!users?.length &&
             users.map((user) => {
               if (user.username !== currentUser.username) {
@@ -217,10 +226,9 @@ export default function Users() {
   return (
     <>
       <div>
-        <Stack direction="row" alignItems="center" spacing={2}>
-          <GroupIcon />
-          <Typography variant="h6">Users</Typography>
-        </Stack>
+        <Typography sx={{ mb: 2 }} variant="h5">
+          Users
+        </Typography>
 
         <UserList />
         {/* <ContactList /> */}
