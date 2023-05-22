@@ -9,5 +9,5 @@ export default function ReportPhoto(props) {
     apiSecret: process.env.CLOUDINARY_SECRET,
   });
 
-  return <AdvancedImage cldImg={image} width={"100%"} height="auto" />;
+  return <AdvancedImage cldImg={image} width="100%" height="auto" />;
 }

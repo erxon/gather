@@ -197,9 +197,11 @@ export default function EditReport({ data }) {
             <Typography variant="body2">
               Reported missing on <strong>{reportedDateAndTime}</strong>
             </Typography>
-            <Typography variant="body2">
-              Report updated on <strong>{updatedDateAndTime}</strong>
-            </Typography>
+            {updatedDateAndTime && (
+              <Typography variant="body2">
+                Report updated on <strong>{updatedDateAndTime}</strong>
+              </Typography>
+            )}
           </Box>
           {user && user.type === "authority" && (
             <Box sx={{ my: 3, width: "300px" }}>

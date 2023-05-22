@@ -209,17 +209,17 @@ export default function ReportPage({ data }) {
           </Box>
         </Grid>
         <Grid item xs={12} md={4}>
-          <Paper sx={{ p: 3 }}>
-            <Typography sx={{ mb: 2 }} variant="h6">
-              Share
-            </Typography>
-            {data.status === "active" && authorized && (
+          {data.status === "active" && authorized && (
+            <Paper sx={{ p: 3 }}>
+              <Typography sx={{ mb: 2 }} variant="h6">
+                Share
+              </Typography>
               <Stack spacing={2}>
                 <FacebookButton />
                 <TwitterButton />
               </Stack>
-            )}
-          </Paper>
+            </Paper>
+          )}
         </Grid>
       </Grid>
     </Box>
