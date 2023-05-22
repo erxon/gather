@@ -6,8 +6,8 @@ import {
   Grid,
   Stack,
   Button,
+  Paper,
 } from "@mui/material";
-import DonutLargeIcon from "@mui/icons-material/DonutLarge";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import ArticleIcon from "@mui/icons-material/Article";
 
@@ -17,6 +17,7 @@ import { useEffect } from "react";
 //components
 import ActiveReports from "@/components/reports/ActiveReports";
 import NotificationsMain from "@/components/notifications/NotificationsMain";
+import Data from "@/components/Data";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -32,42 +33,16 @@ export default function Dashboard() {
     });
   }, [user]);
 
-  const boxStyles = {
-    backgroundColor: "#F2F4F4",
-    padding: "28px 30px 28px 30px",
-    borderRadius: "20px",
-  };
-
   return (
     <>
       <Box>
-        <Typography>Dashboard</Typography>
+        <Typography variant="h5">Dashboard</Typography>
 
-        <Grid container spacing={2} sx={{ mt: 5 }}>
+        <Grid container spacing={2} sx={{ mt: 3 }}>
           <Grid item xs={12} md={6}>
-            <Box sx={boxStyles}>
-              <Stack direction="row" spacing={1} alignItems="center">
-                <DonutLargeIcon />
-                <Typography variant="h6">Data</Typography>
-              </Stack>
-            </Box>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Box sx={boxStyles}>
-              <Stack direction="row" spacing={1} alignItems="center">
-                <NotificationsIcon />
-                <Typography variant="h6">Notifications</Typography>
-              </Stack>
-              <NotificationsMain />
-            </Box>
-          </Grid>
-          <Grid item xs={12}>
-            <Box sx={boxStyles}>
-              <Stack direction="row" spacing={1} alignItems="center">
-                <ArticleIcon />
-                <Typography variant="h6">Active Reports</Typography>
-              </Stack>
-              <Box sx={{ my: 5 }}>
+            <Paper sx={{ p: 3 }}>
+              <Typography variant="h6">Active Reports</Typography>
+              <Box sx={{my: 2}}>
                 <ActiveReports />
               </Box>
               <Button
@@ -78,7 +53,21 @@ export default function Dashboard() {
               >
                 View All
               </Button>
-            </Box>
+            </Paper>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Paper sx={{ p: 3 }}>
+              <Typography variant="h6">Notifications</Typography>
+              <NotificationsMain />
+            </Paper>
+            <Paper sx={{ p: 3, mt: 3 }}>
+              <Typography sx={{ mb: 3 }} variant="h6">
+                Data
+              </Typography>
+              <Box sx={{ width: 300, margin: "auto" }}>
+                <Data />
+              </Box>
+            </Paper>
           </Grid>
         </Grid>
       </Box>

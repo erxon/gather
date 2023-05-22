@@ -110,13 +110,22 @@ function Notifications(props) {
 }
 
 export default function NotificationsMain() {
-  const { data, error, isLoading } = useSWR("/api/notification/reports", fetcher);
-  if (error) return <Typography>Something went wrong</Typography>
-  if (isLoading) return <CircularProgress />
-
+  const { data, error, isLoading } = useSWR(
+    "/api/notification/reports",
+    fetcher
+  );
+  if (error) return <Typography>Something went wrong</Typography>;
+  if (isLoading) return <CircularProgress />;
+  console.log(data);
   return (
     <>
-      <Notifications notifications={data} />
+      {data.length > 0 ? (
+        <Notifications notifications={data} />
+      ) : (
+        <Typography color="GrayText" variant="body1">
+          No new reports yet
+        </Typography>
+      )}
     </>
   );
 }

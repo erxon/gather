@@ -62,8 +62,6 @@ export default function ActiveReports() {
     "/api/reports/status/active",
     fetcher
   );
-  
-  
 
   if (isLoading) return <CircularProgress />;
 
@@ -77,25 +75,32 @@ export default function ActiveReports() {
     );
   }
 
-  const reportsToShow = data.activeReports.slice(0, 3)
-  
+  const reportsToShow = data.activeReports.slice(0, 3);
   return (
     <>
-      <Grid container spacing={1}>
-        {reportsToShow.map((report) => {
-          return (
-            <Report
-              key={report._id}
-              id={report._id}
-              name={`${report.firstName} ${report.lastName}`}
-              photo={report.photo}
-              lastSeen={report.lastSeen}
-              gender={report.gender}
-              age={report.age}
-            />
-          );
-        })}
-      </Grid>
+      <Box>
+        {data.activeReports.length > 0 ? (
+          <Grid container spacing={1}>
+            {reportsToShow.map((report) => {
+              return (
+                <Report
+                  key={report._id}
+                  id={report._id}
+                  name={`${report.firstName} ${report.lastName}`}
+                  photo={report.photo}
+                  lastSeen={report.lastSeen}
+                  gender={report.gender}
+                  age={report.age}
+                />
+              );
+            })}
+          </Grid>
+        ) : (
+          <Typography color="GrayText" variant="body1">
+            No active reports yet
+          </Typography>
+        )}
+      </Box>
     </>
   );
 }
