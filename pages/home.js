@@ -20,13 +20,12 @@ import FileUploadIcon from "@mui/icons-material/FileUpload";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import Data from "@/components/Data";
 
-
 import { createReport, uploadReportPhoto } from "@/lib/api-lib/api-reports";
 
 export default function HomePage() {
   const [imageSrc, setImageSrc] = useState();
   const [uploadData, setUploadData] = useState();
-  const [gender, setGender] = useState('');
+  const [gender, setGender] = useState("");
 
   //Handle submission of Report and Manage form
   const handleSubmit = async (e) => {
@@ -99,8 +98,6 @@ export default function HomePage() {
               }}
               elevation={2}
             >
-
-
               {/*Report with Photo*/}
               <form
                 method="post"
@@ -115,7 +112,6 @@ export default function HomePage() {
                       direction="row"
                       sx={{ marginBottom: "16px" }}
                     >
-                      
                       <Typography variant="h5">Report with Photo</Typography>
                     </Stack>
                     <Typography variant="body1">
@@ -249,18 +245,10 @@ export default function HomePage() {
             </Paper>
           </Grid>
           <Grid item xs={12} md={4}>
-
             {/*Data*/}
             <Box>
               <Paper elevation={2} sx={{ p: 3 }}>
-                <Stack
-                  spacing={1}
-                  alignItems="center"
-                  direction="row"
-                  sx={{ marginBottom: "16px" }}
-                >
-                  <Typography variant="h6">Data</Typography>
-                </Stack>
+                <Typography sx={{mb: 3}} variant="h5">Data</Typography>
                 <Data />
               </Paper>
             </Box>

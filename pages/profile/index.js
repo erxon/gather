@@ -66,7 +66,7 @@ export default function ProfileIndex() {
                 <Paper elevation={2} sx={{ p: 3 }}>
                   <Stack direction="row" spacing={2} alignItems="center">
                     {user.photo ? (
-                      <Avatar>
+                      <Avatar sx={{ width: 56, height: 56 }}>
                         <ProfilePhoto publicId={user.photo} />
                       </Avatar>
                     ) : (
@@ -76,12 +76,17 @@ export default function ProfileIndex() {
                       />
                     )}
                     <Box>
-                      <Typography sx={{ color: "GrayText" }} variant="body1">
-                        {user.firstName || user.lastName
-                          ? `${user.firstName} ${user.lastName}`
-                          : "Edit this profile to add display name"}
-                      </Typography>
-                      <Typography variant="subtitle1">
+                      {user.firstName || user.lastName ? (
+                        <Typography variant="body1">
+                          {user.firstName} {user.lastName}
+                        </Typography>
+                      ) : (
+                        <Typography sx={{ color: "GrayText" }} variant="body1">
+                          "Edit this profile to add display name"
+                        </Typography>
+                      )}
+
+                      <Typography variant="subtitle2">
                         {user.username}
                       </Typography>
                       <Chip
@@ -99,17 +104,14 @@ export default function ProfileIndex() {
               <Box sx={{ mt: 4 }}>
                 {/******Overview********/}
                 <Paper sx={{ p: 3 }} elevation={2}>
-                  <Box>
-                    <Typography sx={{ mt: 1 }} variant="body2">
-                      {user.about}
-                    </Typography>
+                  <Box sx={{ mb: 2 }}>
+                    <Typography variant="h6">About Me</Typography>
+                    <Typography variant="body2">{user.about}</Typography>
                   </Box>
 
                   {/******Contact Information********/}
 
-                  <Typography variant="body1">
-                    <strong>Contact Me</strong>
-                  </Typography>
+                  <Typography variant="h6">Contact Me</Typography>
                   <Divider />
                   <Stack sx={{ mt: 2 }} direction="row" spacing={1}>
                     <EmailIcon />
@@ -159,9 +161,7 @@ export default function ProfileIndex() {
             </Grid>
             <Grid item xs={12} md={4}>
               <Paper sx={{ p: 3 }}>
-                <Typography variant="body1">
-                  <strong>Contacts</strong>
-                </Typography>
+                <Typography variant="h6">Contacts</Typography>
                 <ContactList user={user._id} />
               </Paper>
             </Grid>

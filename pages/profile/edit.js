@@ -16,15 +16,16 @@ import {
   Snackbar,
   Paper,
   Avatar,
+  Grid,
 } from "@mui/material";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import UploadIcon from "@mui/icons-material/Upload";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+
 import FacebookIcon from "@mui/icons-material/Facebook";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
+import InsertLinkIcon from "@mui/icons-material/InsertLink";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 //Cloudinary
 import { CloudinaryImage } from "@cloudinary/url-gen";
@@ -34,7 +35,7 @@ import { max } from "@cloudinary/url-gen/actions/roundCorners";
 import { useRouter } from "next/router";
 export default function ProfilePage() {
   //User
-  const [user, { loading, mutate}] = useUser();
+  const [user, { loading, mutate }] = useUser();
   const router = useRouter();
 
   useEffect(() => {
@@ -237,20 +238,20 @@ export default function ProfilePage() {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ photo: data.public_id }),
-    })
-    if(updatePhoto.status === 200){
+    });
+    if (updatePhoto.status === 200) {
       setOpen({
         open: true,
-        message: 'Profile photo updated'
-      })
+        message: "Profile photo updated",
+      });
     }
     setUserObj((prev) => {
       return { ...prev, photo: data.public_id };
     });
     setImage({
       file: {},
-      fileName: ''
-    })
+      fileName: "",
+    });
   };
 
   return (
@@ -263,16 +264,24 @@ export default function ProfilePage() {
         message={open.message}
       />
       <Box>
-        <Typography sx={{ mb: 3 }} variant="h5">
-          Edit profile
-        </Typography>
+        <Stack sx={{mb: 2}} direction="row" spacing={2} alignItems="center">
+          <IconButton href="/profile">
+            <ArrowBackIcon />
+          </IconButton>
+          <Typography sx={{ mb: 3 }} variant="h5">
+            Edit profile
+          </Typography>
+        </Stack>
 
         {user && (
           <>
-            <Paper sx={{ p: 3 }}>
+            {/*Photo***********/}
+            <Paper sx={{ p: 3 }} elevation={2}>
               <Stack direction="row" spacing={2} alignItems="center">
                 {userObj.photo ? (
-                  <AdvancedImage cldImg={profilePhoto} />
+                  <Avatar sx={{ width: 60, height: 60 }}>
+                    <AdvancedImage cldImg={profilePhoto} />
+                  </Avatar>
                 ) : (
                   <Avatar
                     sx={{ width: 60, height: 60 }}
@@ -321,144 +330,199 @@ export default function ProfilePage() {
                 </form>
               </Stack>
             </Paper>
+            <Grid container sx={{ my: 3 }} spacing={2}>
+              <Grid item xs={12} md={6}>
+                <Box>
+                  {/*********************** Basic Information ********************************/}
+                  <Paper sx={{ p: 3 }} elevation={2}>
+                    <Stack
+                      sx={{ mb: 2 }}
+                      direction="row"
+                      alignItems="center"
+                      spacing={2}
+                    >
+                      <Typography variant="h6">Basic Information</Typography>
+                      <Button
+                        variant="contained"
+                        onClick={handleUpdate}
+                        sx={{ mt: 2 }}
+                        size="small"
+                      >
+                        Save
+                      </Button>
+                    </Stack>
+                    <Divider />
+                    <Stack
+                      sx={{ mt: 3 }}
+                      direction="row"
+                      alignItems="center"
+                      spacing={1}
+                    >
+                      <Typography variant="subtitle1">
+                        {user.username}
+                      </Typography>
+                      <Chip
+                        sx={{ mt: 2 }}
+                        color="primary"
+                        label={user.type}
+                        variant="outlined"
+                      />
+                    </Stack>
+
+                    <Stack
+                      direction={{ xs: "column", md: "row" }}
+                      spacing={2}
+                      sx={{ mt: 3 }}
+                    >
+                      <TextField
+                        variant="outlined"
+                        label="First Name"
+                        value={userObj.firstName}
+                        name="firstName"
+                        onChange={handleChange}
+                      />
+                      <TextField
+                        variant="outlined"
+                        label="Last Name"
+                        name="lastName"
+                        value={userObj.lastName}
+                        onChange={handleChange}
+                      />
+                    </Stack>
+                    <TextField
+                      fullWidth
+                      multiline
+                      rows={4}
+                      value={userObj.about}
+                      onChange={handleChange}
+                      label="About"
+                      name="about"
+                      variant="outlined"
+                      sx={{ mt: 3 }}
+                    />
+                    <br />
+                  </Paper>
+                </Box>
+              </Grid>
+              {/*********************** Contact Information ********************************/}
+              <Grid item xs={12} md={6}>
+                <Box>
+                  <Paper sx={{ p: 3 }} elevation={2}>
+                    <Stack
+                      sx={{ mb: 2 }}
+                      direction="row"
+                      alignItems="center"
+                      spacing={2}
+                    >
+                      <Typography variant="h6">Contact Information</Typography>
+                      <Button
+                        variant="contained"
+                        onClick={handleUpdate}
+                        size="small"
+                      >
+                        Save
+                      </Button>
+                    </Stack>
+                    <Divider />
+                    <Stack
+                      direction={{ xs: "column", md: "row" }}
+                      spacing={2}
+                      sx={{ mt: 3 }}
+                    >
+                      <TextField
+                        variant="outlined"
+                        label="Contact number"
+                        name="contactNumber"
+                        value={userObj.contactNumber}
+                        onChange={handleChange}
+                      />
+                      <TextField
+                        variant="outlined"
+                        label="Email"
+                        name="email"
+                        value={userObj.email}
+                        onChange={handleChange}
+                      />
+                    </Stack>
+
+                    <Typography sx={{ my: 3 }} variant="subtitle1">
+                      Social Media Accounts
+                    </Typography>
+                    <Stack
+                      direction={{ xs: "column", md: "row" }}
+                      spacing={2}
+                      sx={{ mt: 2 }}
+                    >
+                      <Stack direction="row" alignItems="center" spacing={1}>
+                        <InsertLinkIcon />
+                        <TextField
+                          fullWidth
+                          label="Facebook Account"
+                          variant="outlined"
+                          name="facebook"
+                          value={userObj.socialMediaAccounts.facebook}
+                          onChange={handleAccountChange}
+                          InputProps={{
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                <FacebookIcon />
+                              </InputAdornment>
+                            ),
+                          }}
+                        />
+                      </Stack>
+                      <Stack direction="row" alignItems="center" spacing={1}>
+                        <InsertLinkIcon />
+                        <TextField
+                          fullWidth
+                          label="Twitter Account"
+                          variant="outlined"
+                          name="twitter"
+                          value={userObj.socialMediaAccounts.twitter}
+                          onChange={handleAccountChange}
+                          InputProps={{
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                <TwitterIcon />
+                              </InputAdornment>
+                            ),
+                          }}
+                        />
+                      </Stack>
+                    </Stack>
+                  </Paper>
+                </Box>
+              </Grid>
+            </Grid>
+            {/*********************** Change Password ********************************/}
             <Box sx={{ my: 3 }}>
-              <Box sx={{ my: 3 }}>
-                {/*********************** Basic Information ********************************/}
-                <Stack direction="row" spacing={1} alignItems="center">
-                  <Typography variant="body1">
-                    <strong>Basic Information</strong>
-                  </Typography>
-                  <IconButton>
-                    <ArrowDropDownIcon />
-                  </IconButton>
+              <Paper sx={{ p: 3 }} elevation={2}>
+                <Stack
+                  sx={{ mb: 2 }}
+                  direction="row"
+                  spacing={2}
+                  alignItems="center"
+                >
+                  <Typography variant="h6">Change Password</Typography>
+                  <Button
+                    onClick={handleChangePassword}
+                    size="small"
+                    variant="contained"
+                  >
+                    Save
+                  </Button>
                 </Stack>
                 <Divider />
                 <Stack
+                  direction={{ xs: "column", md: "row" }}
+                  spacing={2}
                   sx={{ mt: 3 }}
-                  direction="row"
-                  alignItems="center"
-                  spacing={1}
                 >
-                  <Typography variant="subtitle1">{user.username}</Typography>
-                  <Chip
-                    sx={{ mt: 2 }}
-                    color="primary"
-                    label={user.type}
-                    variant="outlined"
-                  />
-                </Stack>
-
-                <Stack direction="row" spacing={2} sx={{ mt: 3 }}>
-                  <TextField
-                    variant="filled"
-                    label="First Name"
-                    size="small"
-                    value={userObj.firstName}
-                    name="firstName"
-                    onChange={handleChange}
-                  />
-                  <TextField
-                    variant="filled"
-                    label="Last Name"
-                    size="small"
-                    name="lastName"
-                    value={userObj.lastName}
-                    onChange={handleChange}
-                  />
-                </Stack>
-                <TextField
-                  multiline
-                  rows={4}
-                  value={userObj.about}
-                  onChange={handleChange}
-                  label="About"
-                  name="about"
-                  variant="filled"
-                  sx={{ mt: 3 }}
-                />
-                <br />
-                <Button onClick={handleUpdate} sx={{ mt: 2 }} size="small">
-                  Save
-                </Button>
-              </Box>
-              {/*********************** Contact Information ********************************/}
-              <Box>
-                <Typography variant="subtitle1">
-                  <strong>Contact Information</strong>
-                </Typography>
-                <Divider />
-                <Stack direction="row" spacing={2} sx={{ mt: 3 }}>
-                  <TextField
-                    variant="filled"
-                    label="Contact number"
-                    size="small"
-                    name="contactNumber"
-                    value={userObj.contactNumber}
-                    onChange={handleChange}
-                  />
-                  <TextField
-                    variant="filled"
-                    label="Email"
-                    size="small"
-                    name="email"
-                    value={userObj.email}
-                    onChange={handleChange}
-                  />
-                </Stack>
-
-                <Typography sx={{ mt: 2 }} variant="subtitle2">
-                  Social Media Accounts
-                </Typography>
-                <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
-                  <TextField
-                    label="Facebook Account"
-                    variant="filled"
-                    size="small"
-                    name="facebook"
-                    value={userObj.socialMediaAccounts.facebook}
-                    onChange={handleAccountChange}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <FacebookIcon />
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                  <TextField
-                    label="Twitter Account"
-                    variant="filled"
-                    size="small"
-                    name="twitter"
-                    value={userObj.socialMediaAccounts.twitter}
-                    onChange={handleAccountChange}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <TwitterIcon />
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                </Stack>
-                <Button onClick={handleUpdate} sx={{ mt: 2 }} size="small">
-                  Save
-                </Button>
-              </Box>
-
-              {/*********************** Change Password ********************************/}
-              <Box sx={{ my: 3 }}>
-                <Typography variant="subtitle1">
-                  <strong>Change Password</strong>
-                </Typography>
-                <Divider />
-                <Stack direction="row" spacing={2} sx={{ mt: 3 }}>
                   <TextField
                     error={showError.forCurPassword}
                     required
-                    variant="filled"
+                    variant="outlined"
                     label="Current Password"
-                    size="small"
                     name="currentPassword"
                     value={passwordValues.currentPassword}
                     onChange={handlePasswordInputs}
@@ -488,9 +552,8 @@ export default function ProfilePage() {
                   />
                   <TextField
                     error={showError.forNewPassword}
-                    variant="filled"
+                    variant="outlined"
                     label="New Password"
-                    size="small"
                     name="newPassword"
                     value={passwordValues.newPassword}
                     onChange={handlePasswordInputs}
@@ -519,14 +582,7 @@ export default function ProfilePage() {
                     }}
                   />
                 </Stack>
-                <Button
-                  onClick={handleChangePassword}
-                  sx={{ mt: 2 }}
-                  size="small"
-                >
-                  Change password
-                </Button>
-              </Box>
+              </Paper>
             </Box>
           </>
         )}

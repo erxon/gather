@@ -13,7 +13,7 @@ export default function ProfilePhoto({publicId}){
         apiSecret: process.env.CLOUDINARY_SECRET,
       })
       .resize(
-        fill().width(120).height(120)
+        fill().width(56).height(56)
       ).roundCorners(max()).delivery(format(auto())) ;
 
     return <>
