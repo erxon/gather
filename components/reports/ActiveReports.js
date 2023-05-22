@@ -14,46 +14,56 @@ import {
 } from "@mui/material";
 
 import ReportPhoto from "../photo/ReportPhoto";
+import { AdvancedImage, responsive } from "@cloudinary/react";
+import { CloudinaryImage } from "@cloudinary/url-gen";
+import { limitFit, fill } from "@cloudinary/url-gen/actions/resize";
 
 function Report(props) {
   const { id, name, photo, lastSeen, age, gender } = props;
+
+  const image = new CloudinaryImage(photo, {
+    cloudName: "dg0cwy8vx",
+    apiKey: process.env.CLOUDINARY_KEY,
+    apiSecret: process.env.CLOUDINARY_SECRET,
+  }).resize(fill().height(150).width(150));
+
   return (
-    <Grid item xs={12} md={4}>
-      <Card sx={{ maxWidth: "350px", maxHeight: "260" }} variant="outlined">
-        {photo ? (
-          <CardMedia sx={{ height: 200 }}>
-            <ReportPhoto publicId={photo} />
-          </CardMedia>
-        ) : (
-          <Box
-            sx={{
-              backgroundColor: "#D9D9D9",
-              height: "200px",
-            }}
-          ></Box>
-        )}
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="div">
-            {name}
-          </Typography>
-          <Typography variant="body2">
-            <strong>Last known location: </strong>
-            {lastSeen}
-            <br />
-            <strong>Age: </strong>
-            {age}
-            <br />
-            <strong>Gender: </strong>
-            {gender}
-          </Typography>
-        </CardContent>
+    <Card
+      sx={{
+        display: "flex",
+        my: 1
+      }}
+      variant="outlined"
+    >
+      {photo ? (
+          <AdvancedImage cldImg={image} />
+      ) : (
+        <CardMedia
+          component="img"
+          sx={{ width: 150 }}
+          image="/assets/placeholder.png"
+        />
+      )}
+      <Box sx={{ display: "flex", flexDirection: "column", py: 2, pl: 1 }}>
+        <Box>
+          <CardContent sx={{ flex: "1 0 auto" }}>
+            <Typography gutterBottom variant="h5" component="div">
+              {name}
+            </Typography>
+            <Typography variant="body2">
+              {lastSeen}
+              <br />
+              {age} years old, {gender}
+            </Typography>
+          </CardContent>
+        </Box>
         <CardActions>
-          <Button size="small" href={`/reports/${id}`}>
+          <Button variant="contained" size="small" href={`/reports/${id}`}>
             View
           </Button>
         </CardActions>
-      </Card>
-    </Grid>
+      </Box>
+    </Card>
   );
 }
 
@@ -80,7 +90,7 @@ export default function ActiveReports() {
     <>
       <Box>
         {data.activeReports.length > 0 ? (
-          <Grid container spacing={1}>
+          <Box>
             {reportsToShow.map((report) => {
               return (
                 <Report
@@ -94,7 +104,7 @@ export default function ActiveReports() {
                 />
               );
             })}
-          </Grid>
+          </Box>
         ) : (
           <Typography color="GrayText" variant="body1">
             No active reports yet

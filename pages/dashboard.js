@@ -39,7 +39,7 @@ export default function Dashboard() {
         <Typography variant="h5">Dashboard</Typography>
 
         <Grid container spacing={2} sx={{ mt: 3 }}>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} sm={12} md={6}>
             <Paper sx={{ p: 3 }}>
               <Typography variant="h6">Active Reports</Typography>
               <Box sx={{my: 2}}>
