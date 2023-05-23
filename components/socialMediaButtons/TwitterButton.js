@@ -1,12 +1,14 @@
-import { Button } from "@mui/material";
-import TwitterIcon from "@mui/icons-material/Twitter";
-
+import { Button, Stack, Typography } from "@mui/material";
+import { TwitterShareButton, TwitterIcon } from "react-share";
 export default function TwitterButton() {
   return (
     <>
-      <Button variant="contained" size="small" startIcon={<TwitterIcon />}>
-        Share to Twitter
-      </Button>
+      <TwitterShareButton>
+        <Stack alignItems="center" direction="row" spacing={1}>
+          <TwitterIcon size={32} round/>
+          <Typography>Share to Twitter</Typography>
+        </Stack>
+      </TwitterShareButton>
     </>
   );
 }

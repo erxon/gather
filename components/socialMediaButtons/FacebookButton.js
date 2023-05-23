@@ -1,12 +1,16 @@
-import { Button } from "@mui/material";
-import FacebookIcon from "@mui/icons-material/Facebook";
-
-export default function FacebookButton() {
+import { Button, Stack, Typography } from "@mui/material";
+import { FacebookShareButton, FacebookIcon } from "react-share";
+export default function FacebookButton(props) {
   return (
     <>
-      <Button variant="contained" size="small" startIcon={<FacebookIcon />}>
-        Share to Facebook
-      </Button>
+      <FacebookShareButton
+        url={props.url}
+      >
+        <Stack alignItems="center" direction="row" spacing={1}>
+          <FacebookIcon size={32} round />
+          <Typography>Share to Facebook</Typography>
+        </Stack>
+      </FacebookShareButton>
     </>
   );
 }

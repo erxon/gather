@@ -25,7 +25,7 @@ function Report(props) {
     cloudName: "dg0cwy8vx",
     apiKey: process.env.CLOUDINARY_KEY,
     apiSecret: process.env.CLOUDINARY_SECRET,
-  }).resize(fill().height(150).width(150));
+  }).resize(fill().height(200).width(150));
 
   return (
     <Card

@@ -39,6 +39,7 @@
     "react-dom": "18.2.0",
     "react-minimal-pie-chart": "^8.4.0",
     "react-scroll-to-bottom": "^4.2.0",
+    "react-share": "^4.4.1",
     "socket.io": "^4.6.1",
     "socket.io-client": "^4.6.1",
     "styled-components": "^5.3.9",
