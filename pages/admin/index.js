@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useUser } from "@/lib/hooks";
 import Router from "next/router";
-import Link from "next/link";
+
 
 export default function Admin() {
   const [user, { mutate }] = useUser();
