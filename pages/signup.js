@@ -11,19 +11,37 @@ import { signup } from "@/lib/api-lib/api-auth";
 
 export default function Signup() {
   const [user, { mutate }] = useUser();
+  const [values, setValues] = useState({
+    username: "",
+    email: "",
+    password: "",
+    rpassword: "",
+  });
+  const [error, setError] = useState({
+    show: false,
+    message: ''
+  })
 
-  async function onSubmit(e) {
-    e.preventDefault();
+  const handleChange = (event) => {
+    const {name, value} = event.target;
+    setValues({...values, [name]: value});
+  }
+
+  const onSubmit = async () => {
+    if (username === "" || email === "" || password === "" || rpassword === ""){
+      setError({show: true, message: 'Missing fields'})
+      return;
+    }
 
     const body = {
-      username: e.currentTarget.username.value,
-      password: e.currentTarget.password.value,
-      email: e.currentTarget.email.value,
+      username: values.username,
+      password: values.password,
+      email: values.email,
       type: "authority",
     };
 
-    if (body.password !== e.currentTarget.rpassword.value) {
-      setErrorMsg(`The passwords don't match`);
+    if (body.password !== values.rpassword) {
+      setError({show: true, message: `Password don't match`});
       return;
     }
     //Signup user
@@ -34,9 +52,9 @@ export default function Signup() {
       // set user to useSWR state
       mutate(userObj);
     } else {
-      setErrorMsg(await res.text());
+      res.text().then((text) => {setError({show: true, message: text})});
     }
-  }
+  };
 
   useEffect(() => {
     if (user) {
@@ -63,50 +81,56 @@ export default function Signup() {
           <AccountCircleIcon />
           <Typography variant="h5">Sign up</Typography>
         </Stack>
-        <form onSubmit={onSubmit}>
-          <Stack sx={{ mb: 2 }}>
-            <TextField
-              label="username"
-              variant="outlined"
-              id="username"
-              type="text"
-              name="username"
-              margin="dense"
-              required
-            />
-            <TextField
-              label="email"
-              variant="outlined"
-              id="email"
-              type="email"
-              name="email"
-              margin="dense"
-              required
-            />
-            <TextField
-              label="password"
-              variant="outlined"
-              id="password"
-              type="password"
-              name="password"
-              margin="dense"
-              required
-            />
-            <TextField
-              label="repeat password"
-              variant="outlined"
-              id="rpassword"
-              type="password"
-              name="rpassword"
-              margin="dense"
-              required
-            />
-          </Stack>
-
-          <Button fullWidth variant="contained" type="submit">
-            Signup
-          </Button>
-        </form>
+        <Stack sx={{ mb: 2 }}>
+          <TextField
+            label="username"
+            variant="outlined"
+            id="username"
+            type="text"
+            name="username"
+            margin="dense"
+            onChange={handleChange}
+            error={error.show}
+            required
+          />
+          <TextField
+            label="email"
+            variant="outlined"
+            id="email"
+            type="email"
+            name="email"
+            margin="dense"
+            onChange={handleChange}
+            error={error.show}
+            required
+          />
+          <TextField
+            label="password"
+            variant="outlined"
+            id="password"
+            type="password"
+            name="password"
+            margin="dense"
+            onChange={handleChange}
+            error={error.show}
+            required
+          />
+          <TextField
+            label="repeat password"
+            variant="outlined"
+            id="rpassword"
+            type="password"
+            name="rpassword"
+            margin="dense"
+            onChange={handleChange}
+            error={error.show}
+            required
+          />
+        </Stack>
+        {error.show && <Typography sx={{mb: 2}} color="red">{error.message}</Typography>}
+        <Button onClick={onSubmit} fullWidth variant="contained" type="submit">
+          Signup
+        </Button>
       </Box>
     </>
   );
