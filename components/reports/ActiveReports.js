@@ -23,8 +23,8 @@ function Report(props) {
 
   const image = new CloudinaryImage(photo, {
     cloudName: "dg0cwy8vx",
-    apiKey: process.env.CLOUDINARY_KEY,
-    apiSecret: process.env.CLOUDINARY_SECRET,
+    apiKey: process.env.NEXT_PUBLIC_CLOUDINARY_KEY,
+    apiSecret: process.env.NEXT_PUBLIC_CLOUDINARY_SECRET,
   }).resize(fill().height(200).width(150));
 
   return (

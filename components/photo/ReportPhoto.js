@@ -5,8 +5,8 @@ import { limitFit, fill } from "@cloudinary/url-gen/actions/resize";
 export default function ReportPhoto(props) {
   const image = new CloudinaryImage(props.publicId, {
     cloudName: "dg0cwy8vx",
-    apiKey: process.env.CLOUDINARY_KEY,
-    apiSecret: process.env.CLOUDINARY_SECRET,
+    apiKey: process.env.NEXT_PUBLIC_CLOUDINARY_KEY,
+    apiSecret: process.env.NEXT_PUBLIC_CLOUDINARY_SECRET,
   });
 
   return <AdvancedImage cldImg={image} width="100%" height="auto" />;

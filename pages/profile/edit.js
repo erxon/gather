@@ -188,8 +188,8 @@ export default function ProfilePage() {
   if (userObj.photo) {
     profilePhoto = new CloudinaryImage(userObj.photo, {
       cloudName: "dg0cwy8vx",
-      apiKey: process.env.CLOUDINARY_KEY,
-      apiSecret: process.env.CLOUDINARY_SECRET,
+      apiKey: process.env.NEXT_PUBLIC_CLOUDINARY_KEY,
+      apiSecret: process.env.NEXT_PUBLIC_CLOUDINARY_SECRET,
     })
       .resize(fill().width(60).height(60))
       .roundCorners(max());
