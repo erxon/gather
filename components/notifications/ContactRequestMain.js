@@ -90,7 +90,7 @@ function ContactRequest({userId, username, photo, requests }) {
     //Remove notification once the request is accepted
     setNotifications(
       notifications.filter((notification) => {
-        return notification.id !== notificationId;
+        return notification._id !== notificationId;
       })
     );
     //Remove notification in Database
@@ -107,13 +107,15 @@ function ContactRequest({userId, username, photo, requests }) {
   };
 
   const handleRemove = async (id) => {
+
     setNotifications(
       notifications.filter((notification) => {
-        return notification.id !== id;
+        return notification._id !== id;
       })
     );
     await removeContactNotification(id);
   };
+
   useEffect(() => {
     const channel = pusherJS.subscribe(`notification-${userId}`);
     channel.bind("contact-requested", (data) => {
@@ -128,7 +130,7 @@ function ContactRequest({userId, username, photo, requests }) {
   return (
     <>
       <Box>
-        {notifications.length !== 0 ? (
+        {notifications.length > 0 ? (
           notifications.map((notification) => {
             return (
               <ContactRequestNotification

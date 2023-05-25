@@ -3,6 +3,7 @@ import { pusher } from "@/utils/pusher";
 import {
   getNotifications,
   saveNotification,
+  removeAll,
 } from "@/lib/controllers/notificationController";
 import auth from "@/middleware/auth";
 const handler = nextConnect();
@@ -17,7 +18,7 @@ handler
           `notification-accepted-${user._id}`,
           "request-accepted"
         );
-        res.json(result)
+        res.json(result);
       } catch (error) {
         res.json(error);
       }
@@ -54,6 +55,14 @@ handler
       res.json(result);
     } catch (error) {
       res.json(error);
+    }
+  })
+  .delete(async (req, res) => {
+    try {
+      const result = await removeAll(req.body.channel, req.body.event);
+      res.json(result);
+    } catch (err) {
+      res.json(err);
     }
   });
 

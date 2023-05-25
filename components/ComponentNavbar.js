@@ -69,8 +69,8 @@ export default function ComponentNavbar(props) {
     <Menu
       anchorEl={anchorEl}
       anchorOrigin={{
-        vertical: "top",
-        horizontal: "right",
+        vertical: "bottom",
+        horizontal: "left",
       }}
       id={menuId}
       keepMounted
@@ -95,14 +95,14 @@ export default function ComponentNavbar(props) {
       open={isNotificationsOpen}
       onClose={handleNotificationsClose}
       anchorEl={notificationsAnchorEl}
-      anchorOrigin={{
-        vertical: "bottom",
-        horizontal: "left",
-      }}
       id={popoverId}
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'left',
+      }}
       transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
+        vertical: 'top',
+        horizontal: 'center',
       }}
     >
       {user && (
