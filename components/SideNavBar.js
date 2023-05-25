@@ -45,7 +45,7 @@ function MainListItems() {
         {user && (
           <List>
             {" "}
-            <ListItemButton href={`/communicate/${user._id}`} sx={styles}>
+            <ListItemButton href={`/communicate`} sx={styles}>
               <ListItemIcon>
                 <ChatBubbleIcon />
               </ListItemIcon>

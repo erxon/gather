@@ -8,10 +8,16 @@ import {
   Grid,
   Paper,
   Avatar,
+  Card,
+  CardMedia,
+  CardContent,
+  CardActions,
+  IconButton
 } from "@mui/material";
 //Components
 import ProfilePhoto from "@/components/photo/ProfilePhoto";
 import ContactList from "@/components/ContactList";
+import ProfilePhotoAvatar from "@/components/photo/ProfilePhotoAvatar";
 
 //MUI Icons
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
@@ -20,6 +26,31 @@ import EmailIcon from "@mui/icons-material/Email";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import { getUser } from "@/lib/api-lib/api-users";
+
+function Contact(props) {
+  return (
+    <>
+      <Card sx={{ mb: 3 }} variant="outlined">
+        <Stack sx={{ px: 2 }} direction="row" spacing={1} alignItems="center">
+          <CardMedia>
+            {props.photo !== "" ? (
+              <Avatar>
+                <ProfilePhotoAvatar publicId={props.photo} />
+              </Avatar>
+            ) : (
+              <Avatar src="/assets/placeholder.png" />
+            )}
+          </CardMedia>
+          <CardContent sx={{ flex: "1" }}>
+            <Typography variant="subtitle2">{props.username}</Typography>
+            <Chip size="small" label={props.type} />
+          </CardContent>
+        </Stack>
+      </Card>
+    </>
+  );
+}
+
 export default function ProfileIndex({ data }) {
   const user = data;
 
@@ -129,7 +160,13 @@ export default function ProfileIndex({ data }) {
             <Grid item xs={12} md={4}>
               <Paper sx={{ p: 3 }}>
                 <Typography variant="h6">Contacts</Typography>
-                <ContactList user={user._id} />
+                {user.contacts.length > 0 ? user.contacts.map((contact) => {
+                    return <Contact 
+                    photo={contact.photo}
+                    username={contact.username}
+                    type={contact.type}
+                    />
+                }) : <Typography color="GrayText">No contacts yet</Typography>}
               </Paper>
             </Grid>
           </Grid>

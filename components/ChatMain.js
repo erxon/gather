@@ -63,7 +63,7 @@ export default function ChatMain({user}) {
   });
 
   if (error) return <Typography>Something went wrong</Typography>;
-  if (isLoading) return <CircularProgress />;
+  if (isLoading) return <CircularProgress size="small" />;
 
   const handleClick = (contactId, username) => {
     setContact({
@@ -76,7 +76,7 @@ export default function ChatMain({user}) {
     <>
       <Grid container spacing={3}>
         <Grid item xs={12} md={4}>
-          <Box>
+          <Paper sx={{p: 3}}>
             <Typography variant="body1">Contacts</Typography>
             <List
               sx={{
@@ -89,7 +89,7 @@ export default function ChatMain({user}) {
                 direction={{ xs: "row", md: "column", sm: "row" }}
                 spacing={{ xs: 2, md: 1, sm: 1 }}
               >
-                {data && data.map((contact) => {
+                {data && data.length > 0 ? data.map((contact) => {
                   return (
                     <Contact
                       key={contact._id}
@@ -99,10 +99,10 @@ export default function ChatMain({user}) {
                       username={contact.username}
                     />
                   );
-                })}
+                }) : <Typography color="GrayText">No contacts yet</Typography>}
               </Stack>
             </List>
-          </Box>
+          </Paper>
         </Grid>
         <Grid item xs={12} md={8}>
           {contact.id !== "" && (

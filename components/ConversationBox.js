@@ -165,7 +165,13 @@ export default function ConversationBox({ contactId, username, user }) {
   );
 
   if (error) return <Typography>Something went wrong</Typography>;
-  if (isLoading) return <CircularProgress />;
+  if (isLoading)
+    return (
+      <Stack direction="row" alignItems="center" spacing={1}>
+        <Typography>Loading conversation </Typography>
+        <CircularProgress />
+      </Stack>
+    );
 
   const handleChange = (event) => {
     setMessage(event.target.value);

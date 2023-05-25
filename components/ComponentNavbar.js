@@ -97,7 +97,7 @@ export default function ComponentNavbar(props) {
       anchorEl={notificationsAnchorEl}
       anchorOrigin={{
         vertical: "bottom",
-        horizontal: "right",
+        horizontal: "left",
       }}
       id={popoverId}
       transformOrigin={{

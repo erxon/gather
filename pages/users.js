@@ -12,6 +12,7 @@ import {
   Box,
   Stack,
   Chip,
+  CircularProgress,
 } from "@mui/material";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import GroupIcon from "@mui/icons-material/Group";
@@ -21,38 +22,23 @@ import { addToContactRequest } from "@/lib/api-lib/api-notifications";
 //display all users
 //display add contact if user is authenticated
 function User(props) {
-  //Check if the user is already in the contact
-  //if the user is already in the contacts, display Remove from Contacts button
-  //if the user is not yet in the contacts, display Add as a contact button
-  //
-  // let id = props.id;
-  // let contacts = [...props.contacts];
+  const { username, email, publicId, type } = props;
 
-  const username = props.username;
-  const email = props.email;
-  const publicId = props.publicId;
-  const type = props.type;
+  const button = props.contacts.includes(props.id)
+    ? "requestAccepted"
+    : "noCurrentAction";
 
-  // const [added, isAdded] = useState(props.contacts.includes(props.id));
-  const [buttonState, setButtonState] = useState(
-    props.contacts.includes(props.id) ? "requestAccepted" : "noCurrentAction"
-  );
+  const [buttonState, setButtonState] = useState(button);
+  console.log(buttonState);
 
   const handleClick = (previousState) => {
     if (previousState === "noCurrentAction") {
       props.onAdd(props.id);
       setButtonState("disable");
     } else if (previousState === "requestAccepted") {
-      setButtonState("noCurrentAction");
       props.onDelete(props.id);
+      setButtonState("Add contact");
     }
-
-    // isAdded(!added);
-    // if (!added) {
-    //   props.onAdd(props.id);
-    // } else {
-    //   props.onDelete(props.id);
-    // }
   };
 
   return (
@@ -88,16 +74,8 @@ function User(props) {
               <Typography variant="subtitle2">{email}</Typography>
             </CardContent>
           </Box>
-          <Box sx={{width: '100%'}}>
+          <Box sx={{ width: "100%" }}>
             <CardActions>
-              {/* <Button
-                fullWidth
-                variant="outlined"
-                size="small"
-                onClick={handleClick}
-              >
-                {added ? "Remove contact" : "Add"}
-              </Button> */}
               {buttonState === "noCurrentAction" && (
                 <Button
                   fullWidth
@@ -140,26 +118,28 @@ function User(props) {
     </>
   );
 }
-function UserList() {
-  const { data: { users } = {} } = useSWR("/api/users", fetcher);
-  const [user, { mutate }] = useUser();
 
-  const [currentUser, setCurrentUser] = useState({});
+function UserList() {
+  const {
+    data: { users } = {},
+    error,
+    isLoading,
+  } = useSWR("/api/users", fetcher);
+  const [currentUser, { loading }] = useUser();
+
   const [contacts, setContacts] = useState([]);
+
   useEffect(() => {
-    if (user) {
-      setContacts([...user.contacts]);
-      setCurrentUser((prev) => {
-        return { ...prev, ...user };
-      });
+    if (currentUser && !loading) {
+      setContacts(currentUser.contacts);
     }
-  }, [user]);
+  }, [currentUser, contacts]);
+
+  if (error) return <Typography>Something went wrong</Typography>;
+  if (isLoading) return <CircularProgress />;
+
   console.log(contacts);
 
-  // if(currentUser) {
-  //     let userContacts = currentUser.contacts;
-  //     setContacts((current) => [...current, ...userContacts])
-  // }
   const handleAddContact = async (contact) => {
     setContacts((prev) => {
       return [...prev, contact];
@@ -177,7 +157,6 @@ function UserList() {
     if (index !== -1) {
       array.splice(index, 1);
       setContacts(array);
-      console.log(contacts);
     }
 
     const body = {
@@ -197,8 +176,9 @@ function UserList() {
       <div>
         <Grid container spacing={1}>
           {!!users?.length &&
+            currentUser &&
             users.map((user) => {
-              if (user.username !== currentUser.username) {
+              if (user._id !== currentUser._id) {
                 return (
                   <Grid item xs={12} md={3} sm={4}>
                     <User

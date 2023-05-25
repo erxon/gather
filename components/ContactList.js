@@ -20,7 +20,7 @@ import ProfilePhotoAvatar from "./photo/ProfilePhotoAvatar";
 function Contact(props) {
   return (
     <>
-      <Card sx={{ mb: 3 }}>
+      <Card sx={{ mb: 3 }} variant="outlined">
         <Stack sx={{ px: 2 }} direction="row" spacing={1} alignItems="center">
           <CardMedia>
             {props.photo !== "" ? (
