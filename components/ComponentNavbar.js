@@ -21,7 +21,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { logout } from "@/lib/api-lib/api-auth";
 import ContactRequestMain from "./notifications/ContactRequestMain";
 import ContactAcceptedMain from "./notifications/ContactAcceptedMain";
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 export default function ComponentNavbar(props) {
   const [user, { mutate }] = useUser();
@@ -97,12 +97,12 @@ export default function ComponentNavbar(props) {
       anchorEl={notificationsAnchorEl}
       id={popoverId}
       anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'left',
+        vertical: "bottom",
+        horizontal: "left",
       }}
       transformOrigin={{
-        vertical: 'top',
-        horizontal: 'center',
+        vertical: "top",
+        horizontal: "center",
       }}
     >
       {user && (
@@ -185,11 +185,21 @@ export default function ComponentNavbar(props) {
       onClose={handleMobileMenuClose}
     >
       <MenuList dense>
-        <MenuItem href="/signup">
-          <p>Signup</p>
+        <MenuItem>
+          <Link
+            href="/signup"
+            style={{ textDecoration: "none", color: "#000" }}
+          >
+            Signup
+          </Link>
         </MenuItem>
-        <MenuItem href="/login">
-          <p>Login</p>
+        <MenuItem>
+          <Link
+            href="/login"
+            style={{ textDecoration: "none", color: "#000" }}
+          >
+            Login
+          </Link>
         </MenuItem>
       </MenuList>
     </Menu>
