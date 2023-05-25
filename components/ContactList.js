@@ -16,7 +16,6 @@ import {
 import MessageIcon from "@mui/icons-material/Message";
 import useSWR from "swr";
 import { fetcher } from "@/lib/hooks";
-import ProfilePhoto from "./photo/ProfilePhoto";
 import ProfilePhotoAvatar from "./photo/ProfilePhotoAvatar";
 function Contact(props) {
   return (
@@ -56,23 +55,26 @@ export default function ContactList({ user }) {
   const { data, error, isLoading } = useSWR(`/api/user/contacts`, fetcher);
   if (isLoading) return <CircularProgress />;
   const contacts = data;
-  console.log(contacts)
+  console.log(contacts);
 
   return (
     <>
       <Divider sx={{ mb: 2 }} />
-      {contacts.length === 0 && <Typography color='GrayText'>No contacts yet</Typography>}
-      {contacts.map((contact) => {
-        return (
-          <Contact
-            username={contact.username}
-            firstName={contact.firstName}
-            lastName={contact.lastName}
-            photo={Object.hasOwn(contact, "photo") ? contact.photo : ""}
-            type={contact.type}
-          />
-        );
-      })}
+      {contacts.length > 0 ? (
+        contacts.map((contact) => {
+          return (
+            <Contact
+              username={contact.username}
+              firstName={contact.firstName}
+              lastName={contact.lastName}
+              photo={Object.hasOwn(contact, "photo") ? contact.photo : ""}
+              type={contact.type}
+            />
+          );
+        })
+      ) : (
+        <Typography color="GrayText">No contacts yet</Typography>
+      )}
     </>
   );
 }

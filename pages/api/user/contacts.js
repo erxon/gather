@@ -6,7 +6,7 @@ const handler = nextConnect();
 
 handler.use(auth).get(async (req, res) => {
     const user = await req.user;
-    findUserById(req, user._id).then((data) => {
+    findUserById(user._id).then((data) => {
         if (data && data.errors) {
             res.status(400).json({message: 'Cannot retrieve user'})
         }

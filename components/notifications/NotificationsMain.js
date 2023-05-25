@@ -19,6 +19,75 @@ import {
 import useSWR from "swr";
 import { fetcher } from "@/lib/hooks";
 
+export default function NotificationsMain() {
+  const { data, error, isLoading } = useSWR(
+    "/api/notification/reports",
+    fetcher
+  );
+  if (error) return <Typography>Something went wrong</Typography>;
+  if (isLoading) return <CircularProgress />;
+  console.log(data);
+  return (
+    <>
+      {data.length > 0 ? (
+        <Notifications notifications={data} />
+      ) : (
+        <Typography color="GrayText" variant="body1">
+          No new reports yet
+        </Typography>
+      )}
+    </>
+  );
+}
+
+
+function Notifications(props) {
+  const [notifications, setNotifications] = useState([...props.notifications]);
+
+  useEffect(() => {
+    const channel = pusherJS.subscribe("notification");
+    channel.bind("new-report", (data) => {
+      setNotifications([data, ...notifications]);
+    });
+    return () => {
+      channel.unbind;
+      pusherJS.unsubscribe("notification");
+    };
+  }, [notifications]);
+
+  const handleDelete = async (id) => {
+    setNotifications(notifications.filter((notification) => {
+      return notification._id !== id;
+    }));
+
+    await removeNotification(id);
+
+  };
+  return (
+    <>
+      <Box>
+        <pre>
+          {notifications.map((object) => {
+            return (
+              <Notification
+                name={`${object.body.firstName} ${object.body.lastName}`}
+                lastSeen={object.body.lastSeen}
+                reporter={object.body.reporter}
+                id={object._id}
+                key={object._id}
+                reportId={object.body.reportId}
+                onRemove={handleDelete}
+              />
+            );
+          })}
+        </pre>
+      </Box>
+    </>
+  );
+}
+
+
+
 function Notification(props) {
   return (
     <>
@@ -60,72 +129,6 @@ function Notification(props) {
           </Stack>
         </Paper>
       </Box>
-    </>
-  );
-}
-
-function Notifications(props) {
-  const [notifications, setNotifications] = useState([...props.notifications]);
-
-  useEffect(() => {
-    const channel = pusherJS.subscribe("notification");
-    channel.bind("new-report", (data) => {
-      setNotifications([data, ...notifications]);
-    });
-    return () => {
-      channel.unbind;
-      pusherJS.unsubscribe("notification");
-    };
-  }, [notifications]);
-
-  const handleDelete = async (id) => {
-    setNotifications((prev) => {
-      return prev.filter((obj) => {
-        obj._id !== id;
-      });
-    });
-    await removeNotification(id);
-  };
-  return (
-    <>
-      <Box>
-        <pre>
-          {notifications.map((object) => {
-            return (
-              <Notification
-                name={`${object.body.firstName} ${object.body.lastName}`}
-                lastSeen={object.body.lastSeen}
-                reporter={object.body.reporter}
-                id={object._id}
-                key={object._id}
-                reportId={object.body.reportId}
-                onRemove={handleDelete}
-              />
-            );
-          })}
-        </pre>
-      </Box>
-    </>
-  );
-}
-
-export default function NotificationsMain() {
-  const { data, error, isLoading } = useSWR(
-    "/api/notification/reports",
-    fetcher
-  );
-  if (error) return <Typography>Something went wrong</Typography>;
-  if (isLoading) return <CircularProgress />;
-  console.log(data);
-  return (
-    <>
-      {data.length > 0 ? (
-        <Notifications notifications={data} />
-      ) : (
-        <Typography color="GrayText" variant="body1">
-          No new reports yet
-        </Typography>
-      )}
     </>
   );
 }

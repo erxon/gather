@@ -10,6 +10,7 @@ handler.use((req, res, next) => {
     from: req.body.from,
     createdAt: req.body.date
   };
+
   pusher
     .trigger(req.body.channelId, "chat", { body })
     .then(() => {

@@ -56,10 +56,12 @@ function Contact(props) {
 export default function ChatMain({user}) {
 
   const { data, error, isLoading } = useSWR("/api/user/contacts", fetcher);
+
   const [contact, setContact] = useState({
     id: "",
     username: "",
   });
+
   if (error) return <Typography>Something went wrong</Typography>;
   if (isLoading) return <CircularProgress />;
 
@@ -87,7 +89,7 @@ export default function ChatMain({user}) {
                 direction={{ xs: "row", md: "column", sm: "row" }}
                 spacing={{ xs: 2, md: 1, sm: 1 }}
               >
-                {data.map((contact) => {
+                {data && data.map((contact) => {
                   return (
                     <Contact
                       key={contact._id}

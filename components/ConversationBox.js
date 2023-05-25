@@ -21,7 +21,7 @@ async function sendMessage(message, channelId, user) {
     channelId: channelId,
     from: user,
   };
-  console.log(body);
+
   const result = await fetch("/api/communicate/conversation", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -106,21 +106,21 @@ function Conversation(props) {
     setConversation(props.conversation);
     setChannelId(props.channelId);
   }
-  
 
   useEffect(() => {
     chatLogRef.current.scrollTop = chatLogRef.current.scrollHeight;
 
-    const channel = pusherJS.subscribe(props.channelId);
+    const channel = pusherJS.subscribe(channelId);
+
     channel.bind("chat", (data) => {
       setConversation([...conversation, data.body]);
     });
+
     return () => {
       channel.unbind();
       pusherJS.unsubscribe(channel);
     };
   }, [conversation, chatLogRef]);
-
   return (
     <>
       <Box
@@ -134,10 +134,11 @@ function Conversation(props) {
           sx={{
             overflowY: "auto",
             flexGrow: 1,
-            marginBottom: '10px'
+            marginBottom: "10px",
           }}
           ref={chatLogRef}
         >
+          {console.log(conversation)}
           {conversation.map((messageObj) => {
             return (
               <MessageContainer
@@ -172,8 +173,7 @@ export default function ConversationBox({ contactId, username, user }) {
 
   const handleSend = async () => {
     setMessage("");
-    const res = await sendMessage(message, data[0]._id, user);
-    console.log(res.status);
+    await sendMessage(message, data[0]._id, user);
   };
 
   return (
@@ -181,13 +181,11 @@ export default function ConversationBox({ contactId, username, user }) {
       <Box>
         <Typography>{username}</Typography>
         <Divider />
-        {data && (
-          <Conversation
-            channelId={data[0]._id}
-            conversation={data[0].conversation}
-            user={user}
-          />
-        )}
+        <Conversation
+          channelId={data[0]._id}
+          conversation={data[0].conversation}
+          user={user}
+        />
         <Stack direction="row" spacing={2} alignItems="center">
           <TextField
             fullWidth
