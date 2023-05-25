@@ -185,10 +185,10 @@ export default function ComponentNavbar(props) {
       onClose={handleMobileMenuClose}
     >
       <MenuList dense>
-        <MenuItem>
+        <MenuItem href="/signup">
           <p>Signup</p>
         </MenuItem>
-        <MenuItem>
+        <MenuItem href="/login">
           <p>Login</p>
         </MenuItem>
       </MenuList>
