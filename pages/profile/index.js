@@ -82,7 +82,7 @@ export default function ProfileIndex() {
                         </Typography>
                       ) : (
                         <Typography sx={{ color: "GrayText" }} variant="body1">
-                          "Edit this profile to add display name"
+                          Edit this profile to add display name
                         </Typography>
                       )}
 

@@ -31,6 +31,7 @@ import {
   updateReport,
   uploadReportPhoto,
 } from "@/lib/api-lib/api-reports";
+import Image from "next/image";
 
 export default function EditReport({ data }) {
   const [user, { loading }] = useUser();
@@ -237,11 +238,10 @@ export default function EditReport({ data }) {
                 {data.photo ? (
                   <ReportPhoto publicId={data.photo} />
                 ) : (
-                  <img
-                    style={{
-                      width: "100%",
-                      height: "auto",
-                    }}
+                  <Image
+                    width='150'
+                    height='150'
+                    alt="placeholder"
                     src={
                       image.renderImage === ""
                         ? "/assets/placeholder.png"
@@ -408,10 +408,10 @@ export default function EditReport({ data }) {
                   Features
                 </Typography>
                 <Stack spacing={2}>
-                  {features.length > 0 ? (
+                  {features && features.length > 0 ? (
                     features.map((feature) => {
                       return (
-                        <Box>
+                        <Box key={feature}>
                           <Paper elevation={1} sx={{ maxWidth: "300px", p: 2 }}>
                             <Stack
                               direction="row"
