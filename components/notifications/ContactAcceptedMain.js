@@ -54,7 +54,7 @@ function ContactAccepted({ userId, data }) {
       channel.unbind;
       pusherJS.unsubscribe(`notification-accepted-${userId}`);
     };
-  }, [notifications]);
+  }, [notifications, userId]);
 
   return (
     <>

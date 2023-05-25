@@ -30,6 +30,7 @@ import PlaceIcon from "@mui/icons-material/Place";
 import EmailIcon from "@mui/icons-material/Email";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import TwitterIcon from "@mui/icons-material/Twitter";
+import Image from "next/image";
 
 export default function ReportPage({ data }) {
   const reportedAt = new Date(data.reportedAt);
@@ -46,7 +47,7 @@ export default function ReportPage({ data }) {
         isAuthorized(false);
       }
     }
-  }, [user]);
+  }, [user, data.username]);
   //Delete report
   const handleDelete = async () => {
     const res = await deleteReport(data._id);
@@ -142,10 +143,12 @@ export default function ReportPage({ data }) {
                   {data.photo ? (
                     <ReportPhoto publicId={data.photo} />
                   ) : (
-                    <img
-                      style={{ maxWidth: "100%", height: "auto" }}
-                      src="/assets/placeholder.png"
-                    />
+                      <Image
+                        width={150}
+                        height={150}
+                        alt="placeholder"
+                        src="/assets/placeholder.png"
+                      />
                   )}
                 </Grid>
               </Grid>
@@ -153,9 +156,9 @@ export default function ReportPage({ data }) {
             {/*Features, Email, Social Media Accounts */}
             <Paper sx={{ p: 3, my: 2 }}>
               <Typography variant="h6">Features</Typography>
-              {data.features.length > 0 ? (
+              {data.features && data.features.length > 0 ? (
                 data.features.map((feature) => {
-                  return <Typography>{feature}</Typography>;
+                  return <Typography key={feature}>{feature}</Typography>;
                 })
               ) : (
                 <Typography color="GrayText">

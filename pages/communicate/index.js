@@ -12,7 +12,7 @@ export default function Communicate() {
     if (!loading && user === {}) {
       Router.push("/login");
     }
-  }, [user]);
+  }, [user, loading]);
 
   if (loading) {
     return <CircularProgress />;

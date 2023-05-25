@@ -46,7 +46,7 @@ export default function ProfilePage() {
         }
       });
     });
-  }, [user]);
+  }, [user, router]);
 
   const [userObj, setUserObj] = useState({
     about: "",

@@ -21,6 +21,7 @@ import AttachFileIcon from "@mui/icons-material/AttachFile";
 import Data from "@/components/Data";
 
 import { createReport, uploadReportPhoto } from "@/lib/api-lib/api-reports";
+import Image from "next/image";
 
 const ReportToManage = () => {
   const [gender, setGender] = useState("");
@@ -210,8 +211,10 @@ const ReportWithPhoto = () => {
               </Button>
             </Grid>
             <Grid item xs={12} md={6}>
-              <img
-                style={{ maxWidth: "100%", height: "auto" }}
+              <Image
+                width="100%"
+                height="auto"
+                alt=""
                 src={imageSrc}
               />
               {imageSrc && !uploadData && (

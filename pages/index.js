@@ -14,7 +14,7 @@ export default function Index(){
         }
       })
     })
-  }, [])
+  }, [router])
   
   return <CircularProgress />
 }

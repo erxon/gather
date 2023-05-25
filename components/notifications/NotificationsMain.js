@@ -14,7 +14,6 @@ import CircleNotificationsIcon from "@mui/icons-material/CircleNotifications";
 import { useEffect, useState } from "react";
 import {
   removeNotification,
-  getNotifications,
 } from "@/lib/api-lib/api-notifications";
 import useSWR from "swr";
 import { fetcher } from "@/lib/hooks";
@@ -24,6 +23,7 @@ export default function NotificationsMain() {
     "/api/notification/reports",
     fetcher
   );
+
   if (error) return <Typography>Something went wrong</Typography>;
   if (isLoading) return <CircularProgress />;
   console.log(data);
@@ -40,7 +40,6 @@ export default function NotificationsMain() {
   );
 }
 
-
 function Notifications(props) {
   const [notifications, setNotifications] = useState([...props.notifications]);
 
@@ -56,37 +55,34 @@ function Notifications(props) {
   }, [notifications]);
 
   const handleDelete = async (id) => {
-    setNotifications(notifications.filter((notification) => {
-      return notification._id !== id;
-    }));
+    setNotifications(
+      notifications.filter((notification) => {
+        return notification._id !== id;
+      })
+    );
 
     await removeNotification(id);
-
   };
   return (
     <>
       <Box>
-        <pre>
-          {notifications.map((object) => {
-            return (
-              <Notification
-                name={`${object.body.firstName} ${object.body.lastName}`}
-                lastSeen={object.body.lastSeen}
-                reporter={object.body.reporter}
-                id={object._id}
-                key={object._id}
-                reportId={object.body.reportId}
-                onRemove={handleDelete}
-              />
-            );
-          })}
-        </pre>
+        {notifications.map((object) => {
+          return (
+            <Notification
+              name={`${object.body.firstName} ${object.body.lastName}`}
+              lastSeen={object.body.lastSeen}
+              reporter={object.body.reporter}
+              id={object._id}
+              key={object._id}
+              reportId={object.body.reportId}
+              onRemove={handleDelete}
+            />
+          );
+        })}
       </Box>
     </>
   );
 }
-
-
 
 function Notification(props) {
   return (

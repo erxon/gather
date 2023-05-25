@@ -128,9 +128,8 @@ export default function ReportPage({ data }) {
           {displayData.length > 0 ? (
             displayData.map((report) => {
               return (
-                <Grid item xs={12} md={4} sm={6}>
+                <Grid item xs={12} md={4} sm={6} key={report._id}>
                   <Report
-                    key={report._id}
                     id={report._id}
                     photo={report.photo}
                     firstName={report.firstName}

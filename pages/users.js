@@ -18,6 +18,7 @@ import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import GroupIcon from "@mui/icons-material/Group";
 import ProfilePhoto from "@/components/photo/ProfilePhoto";
 import { addToContactRequest } from "@/lib/api-lib/api-notifications";
+import Image from "next/image";
 
 //display all users
 //display add contact if user is authenticated
@@ -62,8 +63,10 @@ function User(props) {
             {publicId ? (
               <ProfilePhoto publicId={publicId} />
             ) : (
-              <img
-                style={{ width: "120px", height: "120px" }}
+              <Image
+                width="120"
+                height="120"
+                alt="placeholder"
                 src="/assets/placeholder.png"
               />
             )}
@@ -133,7 +136,7 @@ function UserList() {
     if (currentUser && !loading) {
       setContacts(currentUser.contacts);
     }
-  }, [currentUser, contacts]);
+  }, [currentUser, contacts, loading]);
 
   if (error) return <Typography>Something went wrong</Typography>;
   if (isLoading) return <CircularProgress />;
@@ -180,7 +183,7 @@ function UserList() {
             users.map((user) => {
               if (user._id !== currentUser._id) {
                 return (
-                  <Grid item xs={12} md={3} sm={4}>
+                  <Grid item xs={12} md={3} sm={4} key={user._id}>
                     <User
                       key={user._id}
                       id={user._id}

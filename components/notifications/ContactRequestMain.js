@@ -125,7 +125,7 @@ function ContactRequest({userId, username, photo, requests }) {
       channel.unbind;
       pusherJS.unsubscribe(`notification-${userId}`);
     };
-  }, [notifications]);
+  }, [notifications, userId]);
 
   return (
     <>

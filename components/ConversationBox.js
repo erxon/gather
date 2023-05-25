@@ -120,7 +120,7 @@ function Conversation(props) {
       channel.unbind();
       pusherJS.unsubscribe(channel);
     };
-  }, [conversation, chatLogRef]);
+  }, [conversation, chatLogRef, channelId]);
   return (
     <>
       <Box
@@ -142,6 +142,7 @@ function Conversation(props) {
           {conversation.map((messageObj) => {
             return (
               <MessageContainer
+                key={messageObj._id}
                 currentUserUsername={props.user}
                 username={messageObj.from}
                 date={messageObj.createdAt}

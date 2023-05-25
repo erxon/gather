@@ -52,7 +52,6 @@ function Report(props) {
             </Typography>
             <Typography variant="body2">
               {lastSeen}
-              <br />
               {age} years old, {gender}
             </Typography>
           </CardContent>

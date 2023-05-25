@@ -64,6 +64,7 @@ export default function ContactList({ user }) {
         contacts.map((contact) => {
           return (
             <Contact
+              key={contact._id}
               username={contact.username}
               firstName={contact.firstName}
               lastName={contact.lastName}

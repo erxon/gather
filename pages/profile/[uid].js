@@ -12,7 +12,7 @@ import {
   CardMedia,
   CardContent,
   CardActions,
-  IconButton
+  IconButton,
 } from "@mui/material";
 //Components
 import ProfilePhoto from "@/components/photo/ProfilePhoto";
@@ -160,13 +160,20 @@ export default function ProfileIndex({ data }) {
             <Grid item xs={12} md={4}>
               <Paper sx={{ p: 3 }}>
                 <Typography variant="h6">Contacts</Typography>
-                {user.contacts.length > 0 ? user.contacts.map((contact) => {
-                    return <Contact 
-                    photo={contact.photo}
-                    username={contact.username}
-                    type={contact.type}
-                    />
-                }) : <Typography color="GrayText">No contacts yet</Typography>}
+                {user.contacts.length > 0 ? (
+                  user.contacts.map((contact) => {
+                    return (
+                      <Contact
+                        key={contact._id}
+                        photo={contact.photo}
+                        username={contact.username}
+                        type={contact.type}
+                      />
+                    );
+                  })
+                ) : (
+                  <Typography color="GrayText">No contacts yet</Typography>
+                )}
               </Paper>
             </Grid>
           </Grid>

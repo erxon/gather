@@ -38,7 +38,7 @@ export default function ProfileIndex() {
         }
       });
     });
-  }, [user]);
+  }, [user, router]);
 
   if (loading) {
     return <div>Loading...</div>;
