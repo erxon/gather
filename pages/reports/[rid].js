@@ -76,7 +76,7 @@ export default function ReportPage({ data }) {
         {Object.hasOwn(data, "username") && (
           <Box sx={{ mt: 0.5 }}>
             <Typography variant="body2">
-              <Link href={`/reports/edit/${data.account}`}>
+              <Link href={`/profile/${data.account}`}>
                 {data.username}
               </Link>
             </Typography>
