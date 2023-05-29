@@ -17,6 +17,7 @@ import {
   Paper,
   Avatar,
   Grid,
+  CircularProgress,
 } from "@mui/material";
 
 import FacebookIcon from "@mui/icons-material/Facebook";
@@ -25,7 +26,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import InsertLinkIcon from "@mui/icons-material/InsertLink";
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 //Cloudinary
 import { CloudinaryImage } from "@cloudinary/url-gen";
@@ -33,20 +34,11 @@ import { AdvancedImage } from "@cloudinary/react";
 import { fill } from "@cloudinary/url-gen/actions/resize";
 import { max } from "@cloudinary/url-gen/actions/roundCorners";
 import { useRouter } from "next/router";
-export default function ProfilePage() {
+
+export default function ProfileEdit() {
   //User
   const [user, { loading, mutate }] = useUser();
   const router = useRouter();
-
-  useEffect(() => {
-    fetch("/api/user/checkAuth").then((response) => {
-      response.json().then((data) => {
-        if (!data.authenticated) {
-          return router.push("/login");
-        }
-      });
-    });
-  }, [user, router]);
 
   const [userObj, setUserObj] = useState({
     about: "",
@@ -58,27 +50,12 @@ export default function ProfilePage() {
     },
   });
 
-  //Retrieve user
-  useEffect(() => {
-    // redirect user to login if not authenticated
-    if (user) {
-      setUserObj({ ...user });
-    }
-  }, [user, loading]);
-
   //For Snackbar
   const [open, setOpen] = useState({
     open: false,
     message: "",
   });
-  //Handle close for snackbar
-  const handleClose = () => {
-    setOpen({
-      open: false,
 
-      message: "",
-    });
-  };
   //Setting visibility for current password and new password
   const [visibility, setVisibility] = useState({
     currentPassword: false,
@@ -94,6 +71,32 @@ export default function ProfilePage() {
     forCurPassword: false,
     forNewPassword: false,
   });
+
+  const [image, setImage] = useState({
+    file: {},
+    fileName: "",
+  });
+  //Retrieve user
+  useEffect(() => {
+    // redirect user to login if not authenticated
+    if (!user && !loading) {
+      router.push("/login");
+    }
+    if (user) {
+      setUserObj({ ...user });
+    }
+  }, [user, loading]);
+
+  if (loading) return <CircularProgress />;
+
+  //Handle close for snackbar
+  const handleClose = () => {
+    setOpen({
+      open: false,
+
+      message: "",
+    });
+  };
 
   const handlePasswordInputs = (event) => {
     const { value, name } = event.target;
@@ -197,10 +200,6 @@ export default function ProfilePage() {
     console.log(profilePhoto);
   }
 
-  const [image, setImage] = useState({
-    file: {},
-    fileName: "",
-  });
   const handleImageChange = (event) => {
     console.log(event.target.files[0]);
     if (event.target.files[0]) {
@@ -264,17 +263,21 @@ export default function ProfilePage() {
         message={open.message}
       />
       <Box>
-        <Stack sx={{mb: 2}} direction="row" spacing={2} alignItems="center">
-          <IconButton href="/profile">
-            <ArrowBackIcon />
-          </IconButton>
-          <Typography sx={{ mb: 3 }} variant="h5">
-            Edit profile
-          </Typography>
-        </Stack>
-
         {user && (
           <>
+            <Stack
+              sx={{ mb: 2 }}
+              direction="row"
+              spacing={2}
+              alignItems="center"
+            >
+              <IconButton href="/profile">
+                <ArrowBackIcon />
+              </IconButton>
+              <Typography sx={{ mb: 3 }} variant="h5">
+                Edit profile
+              </Typography>
+            </Stack>
             {/*Photo***********/}
             <Paper sx={{ p: 3 }} elevation={2}>
               <Stack direction="row" spacing={2} alignItems="center">

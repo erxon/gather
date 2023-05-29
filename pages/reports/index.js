@@ -53,7 +53,6 @@ function Report(props) {
             <Typography gutterBottom variant="h5" component="div">
               {props.firstName} {props.lastName}
             </Typography>
-            
 
             <Typography>
               <strong>Last seen: </strong> {props.lastSeen} <br />
@@ -67,8 +66,13 @@ function Report(props) {
               label={props.status}
             />
 
-            <CardActions sx={{p: 0, mt: 2}}>
-              <Button variant="contained" disableElevation fullWidth href={route}>
+            <CardActions sx={{ p: 0, mt: 2 }}>
+              <Button
+                variant="contained"
+                disableElevation
+                fullWidth
+                href={route}
+              >
                 View
               </Button>
             </CardActions>
@@ -96,33 +100,29 @@ export default function ReportPage({ data }) {
   };
   return (
     <div>
-      <Stack direction="row" alignItems="center" spacing={1}>
-        <ArticleIcon />
-        <Typography variant="h6">Reports</Typography>
-      </Stack>
-
+      <Typography variant="h5" sx={{ pb: 2 }}>
+        Reports
+      </Typography>
       <div className="row">
         {user && user.type === "authority" && (
-          <div>
-            <RadioGroup onChange={handleChange} name="filter">
-              <FormControlLabel
-                value="pending"
-                control={<Radio />}
-                label="Pending"
-              />
-              <FormControlLabel
-                value="active"
-                control={<Radio />}
-                label="Active"
-              />
-              <FormControlLabel
-                value="closed"
-                control={<Radio />}
-                label="Closed"
-              />
-              <FormControlLabel value="all" control={<Radio />} label="All" />
-            </RadioGroup>
-          </div>
+          <RadioGroup onChange={handleChange} name="filter">
+            <FormControlLabel
+              value="pending"
+              control={<Radio />}
+              label="Pending"
+            />
+            <FormControlLabel
+              value="active"
+              control={<Radio />}
+              label="Active"
+            />
+            <FormControlLabel
+              value="closed"
+              control={<Radio />}
+              label="Closed"
+            />
+            <FormControlLabel value="all" control={<Radio />} label="All" />
+          </RadioGroup>
         )}
         <Grid container spacing={2}>
           {displayData.length > 0 ? (

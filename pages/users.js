@@ -19,6 +19,7 @@ import GroupIcon from "@mui/icons-material/Group";
 import ProfilePhoto from "@/components/photo/ProfilePhoto";
 import { addToContactRequest } from "@/lib/api-lib/api-notifications";
 import Image from "next/image";
+import { useRouter } from "next/router";
 
 //display all users
 //display add contact if user is authenticated
@@ -206,16 +207,27 @@ function UserList() {
 }
 
 export default function Users() {
-  return (
-    <>
-      <div>
-        <Typography sx={{ mb: 2 }} variant="h5">
-          Users
-        </Typography>
+  const [user, { loading }] = useUser();
+  const router = useRouter();
 
-        <UserList />
-        {/* <ContactList /> */}
-      </div>
-    </>
-  );
+  useEffect(() => {
+    if (!user && !loading) {
+      router.push("/login");
+    }
+  }, [user, loading]);
+
+  if (loading) return <CircularProgress />;
+  if (user)
+    return (
+      <>
+        <div>
+          <Typography sx={{ mb: 2 }} variant="h5">
+            Users
+          </Typography>
+
+          <UserList />
+          {/* <ContactList /> */}
+        </div>
+      </>
+    );
 }

@@ -4,29 +4,19 @@ import {
   Grid,
   Button,
   Paper,
+  CircularProgress,
 } from "@mui/material";
 
-import { useRouter } from "next/router";
+import { Router, useRouter } from "next/router";
 import { useEffect } from "react";
 
 //components
 import ActiveReports from "@/components/reports/ActiveReports";
 import NotificationsMain from "@/components/notifications/NotificationsMain";
 import Data from "@/components/Data";
+import { useUser } from "@/lib/hooks";
 
-export default function Dashboard() {
-  const router = useRouter();
-
-  useEffect(() => {
-    fetch("/api/user/checkAuth").then((response) => {
-      response.json().then((data) => {
-        if (!data.authenticated) {
-          return router.push("/login");
-        }
-      });
-    });
-  }, [router]);
-
+function DashboardMain() {
   return (
     <>
       <Typography variant="h5">Dashboard</Typography>
@@ -65,4 +55,29 @@ export default function Dashboard() {
       </Grid>
     </>
   );
+}
+
+export default function Dashboard() {
+  const router = useRouter();
+
+  // useEffect(() => {
+  //   fetch("/api/user/checkAuth").then((response) => {
+  //     response.json().then((data) => {
+  //       if (!data.authenticated) {
+  //         return router.push("/login");
+  //       }
+  //     });
+  //   });
+  // }, [router]);
+
+  const [user, { loading }] = useUser();
+
+  useEffect(() => {
+    if(!user && !loading){
+        router.push("/login")
+    }
+  }, [user, loading])
+
+  if (loading) return <CircularProgress />;
+  if (user) return <DashboardMain />
 }

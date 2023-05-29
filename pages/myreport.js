@@ -1,7 +1,7 @@
 import { useUser } from "@/lib/hooks";
 import { useEffect } from "react";
 import useSWR from "swr";
-import Router from "next/router";
+import Router, { useRouter } from "next/router";
 import {
   Card,
   CardContent,
@@ -44,7 +44,9 @@ function Report(props) {
             </Typography>
           </CardContent>
           <CardActions>
-            <Button fullWidth variant="contained" href={`/reports/${props.id}`}>View</Button>
+            <Button fullWidth variant="contained" href={`/reports/${props.id}`}>
+              View
+            </Button>
           </CardActions>
         </Card>
       </Box>
@@ -84,23 +86,25 @@ export default function ReportDashboard() {
   //create a card component for each report
   //add view button
   //route the view button to the report
-  const [user, { mutate }] = useUser();
+  const [user, { loading }] = useUser();
+  const router = useRouter();
 
   useEffect(() => {
-    if (!user) {
-      return;
+    if (!user && !loading) {
+      router.push("/login");
     }
-  }, [user]);
+  }, [user, loading]);
 
-  if (!user) return <div>Loading user...</div>;
-  return (
-    <>
-      <Box>
-        <Typography variant="h5">Your Reports</Typography>
-        <Box sx={{ my: 3 }}>
-          <GetReport username={user.username} />
+  if (loading) return <CircularProgress />;
+  if (user)
+    return (
+      <>
+        <Box>
+          <Typography variant="h5">Your Reports</Typography>
+          <Box sx={{ my: 3 }}>
+            <GetReport username={user.username} />
+          </Box>
         </Box>
-      </Box>
-    </>
-  );
+      </>
+    );
 }
