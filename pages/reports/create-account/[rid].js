@@ -31,7 +31,7 @@ import Image from "next/image";
 //Signup user
 //Update the report
 
-function UploadPhoto({ mpName, reportId, getPhotoId}) {
+function UploadPhoto({ mpName, reportId, getPhotoId }) {
   const uploadToDatabase = async (photoData) => {
     const uploadedPhoto = await fetch("/api/photos", {
       method: "POST",
@@ -50,9 +50,7 @@ function UploadPhoto({ mpName, reportId, getPhotoId}) {
     return updateReport;
   };
 
-
   const generateAlertContent = (status, message) => {
-
     if (status === 400) {
       return {
         open: true,
@@ -98,20 +96,20 @@ function UploadPhoto({ mpName, reportId, getPhotoId}) {
         message: "The file exceeds 100mb",
       });
       return;
+    } else {
+      const reader = new FileReader();
+
+      reader.onload = function (onLoadEvent) {
+        setPhoto({
+          src: onLoadEvent.target.result,
+          fileName: event.target.files[0].name,
+          type: event.target.files[0].type,
+          size: event.target.files[0].size,
+        });
+      };
+
+      reader.readAsDataURL(event.target.files[0]);
     }
-
-    const reader = new FileReader();
-
-    reader.onload = function (onLoadEvent) {
-      setPhoto({
-        src: onLoadEvent.target.result,
-        fileName: event.target.files[0].name,
-        type: event.target.files[0].type,
-        size: event.target.files[0].size,
-      });
-    };
-
-    reader.readAsDataURL(event.target.files[0]);
   };
 
   const handleSubmit = async (event) => {
@@ -146,15 +144,12 @@ function UploadPhoto({ mpName, reportId, getPhotoId}) {
     const upload = await uploadToDatabase(photoData);
     const newPhoto = await upload.json();
 
-    snackbarContent = generateAlertContent(
-      upload.status,
-      newPhoto.message
-    );
+    snackbarContent = generateAlertContent(upload.status, newPhoto.message);
 
-    setSnackbar(snackbarContent)
-    isUploaded(true)
+    setSnackbar(snackbarContent);
+    isUploaded(true);
     // Link the photo to report
-    getPhotoId(newPhoto.data._id)
+    getPhotoId(newPhoto.data._id);
     // setSnackbar(snackbarContent)
   };
 
@@ -299,8 +294,8 @@ export default function CreateAccount({ data }) {
     email: "",
     password: "",
   });
-  const [photoId, setPhotoId] = useState(null)
-  
+  const [photoId, setPhotoId] = useState(null);
+
   const handleChange = (event) => {
     const { value, name } = event.target;
     setValues((prev) => {
@@ -369,7 +364,7 @@ export default function CreateAccount({ data }) {
           mpName={`${data.firstName} ${data.lastName}`}
           reportId={data._id}
           getPhotoId={setPhotoId}
-        />  
+        />
         <Paper sx={{ p: 3 }} elevation={2}>
           <Typography sx={{ mb: 2 }} variant="h6">
             Signup
