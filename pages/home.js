@@ -11,6 +11,8 @@ import {
   FormControl,
   InputLabel,
   Divider,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
@@ -19,7 +21,7 @@ import ArticleIcon from "@mui/icons-material/Article";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import Data from "@/components/Data";
-import styles from '../public/style/home.module.css'
+import styles from "../public/style/home.module.css";
 
 import { createReport, uploadReportPhoto } from "@/lib/api-lib/api-reports";
 import Image from "next/image";
@@ -130,20 +132,43 @@ const ReportToManage = () => {
 };
 
 const ReportWithPhoto = () => {
-  const [imageSrc, setImageSrc] = useState();
+  const [photo, setPhoto] = useState({
+    src: "",
+    fileName: "",
+    type: "",
+    size: 0,
+  });
   const [uploadData, setUploadData] = useState();
+  //Snackbar
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    severity: "",
+    message: "",
+  });
+
+  const handleSnackbarClose = () => {
+    setSnackbar({
+      open: false,
+      severity: "",
+      message: "",
+    });
+  };
 
   //Handle change in image element to display the preview
   //of the image before uploading
-  const handleChange = (changeEvent) => {
+  const handleChange = (event) => {
     const reader = new FileReader();
 
     reader.onload = function (onLoadEvent) {
-      setImageSrc(onLoadEvent.target.result);
+      setPhoto({
+        src: onLoadEvent.target.result,
+        fileName: event.target.files[0].name,
+        type: event.target.files[0].type,
+        size: event.target.files[0].size,
+      });
       setUploadData(undefined);
     };
-
-    reader.readAsDataURL(changeEvent.target.files[0]);
+    reader.readAsDataURL(event.target.files[0]);
   };
 
   //Handle uploading of an image
@@ -162,13 +187,29 @@ const ReportWithPhoto = () => {
 
     formData.append("upload_preset", "report-photos");
 
-    //Upload photo
-    const data = await uploadReportPhoto(formData);
-    const publicId = data.public_id.substring(13, 34);
-    console.log(publicId);
+    //Upload photo to Cloudinary
+    const uploadPhoto = await uploadReportPhoto(formData);
+    const publicId = uploadPhoto.public_id.substring(14, 34);
 
-    if (data) {
-      Router.push(`/reports/upload/${publicId}`);
+    //Upload photo to Database
+    const photoData = {
+      publicId: publicId,
+      fileName: photo.fileName,
+    };
+    const uploadToDatabase = await fetch("/api/photos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(photoData),
+    });
+    const newPhoto = await uploadToDatabase.json();
+    if (uploadToDatabase.status === 400) {
+      setSnackbar({
+        open: true,
+        severity: "error",
+        message: "Something went wrong",
+      });
+    } else {
+      Router.push(`/reports/upload/${newPhoto.data._id}`);
     }
   };
 
@@ -181,7 +222,12 @@ const ReportWithPhoto = () => {
         }}
         elevation={2}
       >
+        {/*Snackbar*/}
+        <Snackbar open={snackbar.open} onClose={handleSnackbarClose}>
+          <Alert severity={snackbar.severity} />
+        </Snackbar>
         {/*Report with Photo*/}
+
         <form
           method="post"
           onChange={handleChange}
@@ -208,21 +254,16 @@ const ReportWithPhoto = () => {
                 size="small"
               >
                 Select file
-                <input hidden type="file" name="file" />
+                <input hidden type="file" name="file" accept="image/jpeg, image/png" />
               </Button>
             </Grid>
             <Grid item xs={12} md={6}>
-              {imageSrc && (
+              {photo.src && (
                 <div className={styles.imagecontainer}>
-                  <Image
-                    width={150}
-                    height={150}
-                    alt=""
-                    src={imageSrc}
-                  />
+                  <Image width={150} height={150} alt="" src={photo.src} />
                 </div>
               )}
-              {imageSrc && !uploadData && (
+              {photo.src && !uploadData && (
                 <p>
                   <Button
                     startIcon={<FileUploadIcon />}

@@ -3,6 +3,7 @@ import { fill } from "@cloudinary/url-gen/actions/resize";
 import { CloudinaryImage } from "@cloudinary/url-gen";
 import { AdvancedImage } from "@cloudinary/react";
 import { useState } from "react";
+import useSWR from 'swr';
 import {
   Button,
   TextField,
@@ -16,19 +17,28 @@ import {
   Select,
   MenuItem,
   InputAdornment,
+  CircularProgress,
 } from "@mui/material";
 
 import PlaceIcon from "@mui/icons-material/Place";
+import { fetcher } from "@/lib/hooks";
 
 export default function Upload() {
   const router = useRouter();
-  const { imgsurl } = router.query;
+  const { photoId } = router.query;
+  const {data, error, isLoading} = useSWR(`/api/photos/${photoId}`, fetcher);
+  if (isLoading) return <CircularProgress />
+  if (error) return <Typography>Something went wrong</Typography>
+  if (data) return <Form publicId={data.publicId} />
+}
+
+function Form({publicId}){
+  
   const [submitted, isSubmitted] = useState(false);
   const [reportId, setReportId] = useState(null);
   const [gender, setGender] = useState("");
 
-  const publicId = `report-photos/${imgsurl}`;
-  const myImage = new CloudinaryImage(publicId, {
+  const myImage = new CloudinaryImage(`report-photos/${publicId}`, {
     cloudName: "dg0cwy8vx",
     apiKey: process.env.CLOUDINARY_KEY,
     apiSecret: process.env.CLOUDINARY_SECRET,
@@ -95,7 +105,6 @@ export default function Upload() {
             <Grid item xs={12} md={4}>
               <Paper sx={{ p: 3 }}>
                 <AdvancedImage cldImg={myImage} width="100%" height="auto" />
-                <Typography variant="body2">Not found in database</Typography>
               </Paper>
             </Grid>
             <Grid item xs={12} md={8}>
@@ -168,10 +177,27 @@ export default function Upload() {
                     required
                   />
                 </Paper>
+                {/*Report*/}
                 <Paper sx={{ p: 3 }}>
                   <Typography sx={{ mb: 3 }} variant="h6">
                     Report
                   </Typography>
+                  <TextField
+                    sx={{ mb: 2 }}
+                    fullWidth
+                    variant="outlined"
+                    label="Current location"
+                    type="text"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment>
+                          <PlaceIcon />
+                        </InputAdornment>
+                      ),
+                    }}
+                    name="mpLastSeen"
+                    required
+                  />
                   <Stack
                     sx={{ mb: 2 }}
                     spacing={1}
@@ -184,7 +210,6 @@ export default function Upload() {
                       label="First name"
                       type="text"
                       name="mpFirstName"
-                      required
                     />
                     <TextField
                       fullWidth
@@ -192,7 +217,6 @@ export default function Upload() {
                       label="last name"
                       type="text"
                       name="mpLastName"
-                      required
                     />
                   </Stack>
                   <Stack
@@ -207,9 +231,8 @@ export default function Upload() {
                       label="Age"
                       type="text"
                       name="mpAge"
-                      required
                     />
-                    <FormControl fullWidth required>
+                    <FormControl fullWidth>
                       <InputLabel>Gender</InputLabel>
                       <Select
                         label="Gender"
@@ -222,22 +245,6 @@ export default function Upload() {
                       </Select>
                     </FormControl>
                   </Stack>
-                  <TextField
-                    sx={{ mt: 2 }}
-                    fullWidth
-                    variant="outlined"
-                    label="last seen"
-                    type="text"
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment>
-                          <PlaceIcon />
-                        </InputAdornment>
-                      ),
-                    }}
-                    name="mpLastSeen"
-                    required
-                  />
                 </Paper>
               </form>
             </Grid>
@@ -247,3 +254,5 @@ export default function Upload() {
     </>
   );
 }
+
+

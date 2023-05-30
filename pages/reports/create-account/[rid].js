@@ -41,15 +41,6 @@ function UploadPhoto({ mpName, reportId, getPhotoId }) {
     return uploadedPhoto;
   };
 
-  const attachPhotoToReport = async (reportId, photoId) => {
-    const updateReport = await fetch(`/api/reports/photo/${reportId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ photoId: photoId }),
-    });
-    return updateReport;
-  };
-
   const generateAlertContent = (status, message) => {
     if (status === 400) {
       return {
