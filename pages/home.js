@@ -19,6 +19,7 @@ import ArticleIcon from "@mui/icons-material/Article";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import Data from "@/components/Data";
+import styles from '../public/style/home.module.css'
 
 import { createReport, uploadReportPhoto } from "@/lib/api-lib/api-reports";
 import Image from "next/image";
@@ -159,13 +160,13 @@ const ReportWithPhoto = () => {
       formData.append("file", file);
     }
 
-    formData.append("upload_preset", "my-uploads");
+    formData.append("upload_preset", "report-photos");
 
     //Upload photo
     const data = await uploadReportPhoto(formData);
+    const publicId = data.public_id.substring(13, 34);
+    console.log(publicId);
 
-    console.log(data);
-    const publicId = data.public_id.substring(11, 31);
     if (data) {
       Router.push(`/reports/upload/${publicId}`);
     }
@@ -211,12 +212,16 @@ const ReportWithPhoto = () => {
               </Button>
             </Grid>
             <Grid item xs={12} md={6}>
-              <Image
-                width="100%"
-                height="auto"
-                alt=""
-                src={imageSrc}
-              />
+              {imageSrc && (
+                <div className={styles.imagecontainer}>
+                  <Image
+                    width={150}
+                    height={150}
+                    alt=""
+                    src={imageSrc}
+                  />
+                </div>
+              )}
               {imageSrc && !uploadData && (
                 <p>
                   <Button

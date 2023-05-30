@@ -16,6 +16,8 @@ import {
   Grid,
   Stack,
   Paper,
+  Chip,
+  CircularProgress,
 } from "@mui/material";
 import Link from "next/link";
 import { getSingleReport, deleteReport } from "@/lib/api-lib/api-reports";
@@ -31,10 +33,10 @@ import EmailIcon from "@mui/icons-material/Email";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import Image from "next/image";
+import calculateTimeElapsed from "@/utils/calculateTimeElapsed";
 
 export default function ReportPage({ data }) {
-  const reportedAt = new Date(data.reportedAt);
-  const [user, { mutate }] = useUser();
+  const [user, { mutate, loading }] = useUser();
   const [authorized, isAuthorized] = useState(false);
   //Checks if the user is authorized
   useEffect(() => {
@@ -47,7 +49,9 @@ export default function ReportPage({ data }) {
         isAuthorized(false);
       }
     }
-  }, [user, data.username]);
+  }, [user, data.username, loading]);
+  if(loading) return <CircularProgress />
+
   //Delete report
   const handleDelete = async () => {
     const res = await deleteReport(data._id);
@@ -56,7 +60,8 @@ export default function ReportPage({ data }) {
       Router.push("/reportDashboard");
     }
   };
-  console.log(data);
+  const reportedAt = new Date(data.reportedAt);
+  const timeElapsed = calculateTimeElapsed(reportedAt);
 
   return (
     <Box>
@@ -76,9 +81,7 @@ export default function ReportPage({ data }) {
         {Object.hasOwn(data, "username") && (
           <Box sx={{ mt: 0.5 }}>
             <Typography variant="body2">
-              <Link href={`/profile/${data.account}`}>
-                {data.username}
-              </Link>
+              <Link href={`/profile/${data.account}`}>{data.username}</Link>
             </Typography>
           </Box>
         )}
@@ -96,25 +99,29 @@ export default function ReportPage({ data }) {
       )}
       <Grid container spacing={2}>
         {/*Basic Information */}
-
         <Grid item xs={12} md={8}>
           <Box>
             <Paper sx={{ p: 3 }}>
               <Grid container spacing={3}>
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h4">
-                    {data.firstName} {data.lastName}
-                  </Typography>
+                  <Box sx={{ mb: 1.5 }}>
+                    <Typography variant="h4" sx={{ mb: 0.5 }}>
+                      {data.firstName} {data.lastName}
+                    </Typography>
+                    <Chip label={data.status} size="small" color="secondary" />
+                  </Box>
                   {data.status === "pending" && (
                     <Typography color="GrayText">
                       This case is not yet verified
                     </Typography>
                   )}
+                  <Typography sx={{ mt: 2 }}>{timeElapsed}</Typography>
                   <Typography sx={{ mt: 2 }} variant="body2">
                     Reportedly missing: <br />
                     {reportedAt.toDateString()}{" "}
                     {reportedAt.toLocaleTimeString()}
                   </Typography>
+
                   <Box sx={{ mt: 2 }}>
                     <Stack direction="row" alignItems="center" spacing={1}>
                       <PersonIcon />
@@ -133,22 +140,26 @@ export default function ReportPage({ data }) {
                         <Typography variant="body1">{data.email} </Typography>
                       ) : (
                         <Typography color="GrayText" variant="body1">
-                          Edit this report to add an email
+                          {user.username === data.username
+                            ? "Edit this report to add an email"
+                            : "No email to show"}
                         </Typography>
                       )}
                     </Stack>
                   </Box>
                 </Grid>
                 <Grid item xs={12} md={6}>
-                  {data.photo ? (
-                    <ReportPhoto publicId={data.photo} />
+                  {data.photoId ? (
+                    <ReportPhoto
+                      publicId={`report-photos/${data.photoId.publicId}`}
+                    />
                   ) : (
-                      <Image
-                        width={150}
-                        height={150}
-                        alt="placeholder"
-                        src="/assets/placeholder.png"
-                      />
+                    <Image
+                      width={150}
+                      height={150}
+                      alt="placeholder"
+                      src="/assets/placeholder.png"
+                    />
                   )}
                 </Grid>
               </Grid>
@@ -162,7 +173,9 @@ export default function ReportPage({ data }) {
                 })
               ) : (
                 <Typography color="GrayText">
-                  Edit this report to add features
+                  {user.username === data.username
+                    ? "Edit this report to add features"
+                    : "No features added yet"}
                 </Typography>
               )}
             </Paper>
@@ -181,7 +194,9 @@ export default function ReportPage({ data }) {
                       </Typography>
                     ) : (
                       <Typography color="GrayText">
-                        Link a Facebook account
+                        {user.username === data.username
+                          ? "Link a Facebook account"
+                          : "No Facebook account linked"}
                       </Typography>
                     )}
                   </Stack>
@@ -198,14 +213,18 @@ export default function ReportPage({ data }) {
                       </Typography>
                     ) : (
                       <Typography color="GrayText">
-                        Link a Twitter account
+                        {user.username === data.username
+                          ? "Link a twitter account"
+                          : "No twitter account linked"}
                       </Typography>
                     )}
                   </Stack>
                 </Box>
               ) : (
                 <Typography color="GrayText">
-                  Edit this report to add social media accounts of the missing
+                  {user.username === data.username
+                    ? "Edit this report to add social media accounts"
+                    : "No social media accounts to show"}
                 </Typography>
               )}
             </Paper>

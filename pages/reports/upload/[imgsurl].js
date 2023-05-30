@@ -27,7 +27,7 @@ export default function Upload() {
   const [reportId, setReportId] = useState(null);
   const [gender, setGender] = useState("");
 
-  const publicId = `my-uploads/${imgsurl}`;
+  const publicId = `report-photos/${imgsurl}`;
   const myImage = new CloudinaryImage(publicId, {
     cloudName: "dg0cwy8vx",
     apiKey: process.env.CLOUDINARY_KEY,

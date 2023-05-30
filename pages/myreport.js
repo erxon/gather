@@ -11,8 +11,13 @@ import {
   CardMedia,
   Box,
   CircularProgress,
+  Chip,
 } from "@mui/material";
 import ReportPhoto from "@/components/photo/ReportPhoto";
+import StackRow from "@/utils/StackRow";
+
+import PlaceIcon from "@mui/icons-material/Place";
+import PersonIcon from "@mui/icons-material/Person";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
@@ -20,10 +25,10 @@ function Report(props) {
   return (
     <>
       <Box>
-        <Card sx={{ maxWidth: "350px", maxHeight: "260" }}>
+        <Card sx={{ maxWidth: "300px" }}>
           {props.photo ? (
-            <CardMedia sx={{ height: 200 }}>
-              <ReportPhoto publicId={props.photo} />
+            <CardMedia sx={{ width: "100%", height: 200, textAlign: "center" }}>
+              <ReportPhoto publicId={`report-photos/${props.photo}`} />
             </CardMedia>
           ) : (
             <Box
@@ -33,15 +38,25 @@ function Report(props) {
               }}
             ></Box>
           )}
-          <CardContent>
-            <Typography>
-              {props.firstName} {props.lastName}
-            </Typography>
-            <Typography>
-              <strong>Last seen: </strong> {props.lastSeen} <br />
-              <strong>Age: </strong> {props.age} <br />
-              <strong>Gender: </strong> {props.gender}
-            </Typography>
+          <CardContent sx={{ p: 3 }}>
+            <Box sx={{ mb: 1 }}>
+              <Typography variant="h5" sx={{mb: 0.5}}>
+                {props.firstName} {props.lastName}
+              </Typography>
+              <Chip label={props.status} size="small" color="secondary"/>
+            </Box>
+            <StackRow>
+              <PlaceIcon/>
+              <Typography variant="body2">
+                {props.lastSeen}
+              </Typography>
+            </StackRow>
+            <StackRow>
+              <PersonIcon />
+              <Typography variant="body2">
+                {props.gender}, {props.age}
+              </Typography>
+            </StackRow>
           </CardContent>
           <CardActions>
             <Button fullWidth variant="contained" href={`/reports/${props.id}`}>
@@ -62,7 +77,6 @@ function GetReport(props) {
 
   if (error) return <div>failed to load </div>;
   if (isLoading) return <CircularProgress />;
-
   return (
     <>
       {data.data.map((report) => {
@@ -70,11 +84,12 @@ function GetReport(props) {
           <Report
             key={report._id}
             id={report._id}
-            photo={report.photo}
+            photo={report.photoId.publicId}
             firstName={report.firstName}
             lastName={report.lastName}
             lastSeen={report.lastSeen}
             age={report.age}
+            status={report.status}
             gender={report.gender}
           />
         );
