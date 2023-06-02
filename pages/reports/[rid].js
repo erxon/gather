@@ -149,9 +149,9 @@ export default function ReportPage({ data }) {
                   </Box>
                 </Grid>
                 <Grid item xs={12} md={6}>
-                  {data.photoId ? (
+                  {data.photo ? (
                     <ReportPhoto
-                      publicId={`report-photos/${data.photoId.publicId}`}
+                      publicId={`report-photos/${data.photo}`}
                     />
                   ) : (
                     <Image
@@ -250,8 +250,10 @@ export default function ReportPage({ data }) {
 
 export const getServerSideProps = async ({ params }) => {
   const { rid } = params;
+  
   //Get single report
   const data = await getSingleReport(rid);
+  console.log(data)
   return {
     props: { data },
   };

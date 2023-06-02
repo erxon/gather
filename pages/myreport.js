@@ -40,16 +40,14 @@ function Report(props) {
           )}
           <CardContent sx={{ p: 3 }}>
             <Box sx={{ mb: 1 }}>
-              <Typography variant="h5" sx={{mb: 0.5}}>
+              <Typography variant="h5" sx={{ mb: 0.5 }}>
                 {props.firstName} {props.lastName}
               </Typography>
-              <Chip label={props.status} size="small" color="secondary"/>
+              <Chip label={props.status} size="small" color="secondary" />
             </Box>
             <StackRow>
-              <PlaceIcon/>
-              <Typography variant="body2">
-                {props.lastSeen}
-              </Typography>
+              <PlaceIcon />
+              <Typography variant="body2">{props.lastSeen}</Typography>
             </StackRow>
             <StackRow>
               <PersonIcon />
@@ -74,9 +72,11 @@ function GetReport(props) {
     `/api/reports/user/${props.username}`,
     fetcher
   );
+  console.log(props.username)
 
   if (error) return <div>failed to load </div>;
   if (isLoading) return <CircularProgress />;
+
   return (
     <>
       {data.data.map((report) => {

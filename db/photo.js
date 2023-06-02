@@ -2,10 +2,12 @@
 import mongoose from "mongoose";
 
 const photoSchema = new mongoose.Schema({
-  publicId: String,
+  images: [{
+    publicId: String,
+    fileName: String
+  }],
   reportId: { type: mongoose.Schema.Types.ObjectId, ref: "Report" },
-  fileName: String,
-  mpName: String,
+  missingPerson: String,
 });
 
 const Photo = mongoose.models.Photo || mongoose.model("Photo", photoSchema);

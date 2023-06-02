@@ -57,11 +57,11 @@ function UploadPhoto({ mpName, reportId, getPhotoId }) {
     }
   };
 
-  const [photo, setPhoto] = useState({
-    src: "",
-    fileName: "",
-    type: "",
-    size: 0,
+  const [photos, setPhotos] = useState([]);
+  const [isDisabled, disableButton] = useState({
+    photo1: false,
+    photo2: false,
+    photo3: false,
   });
 
   //Snackbar, for feedback
@@ -70,6 +70,7 @@ function UploadPhoto({ mpName, reportId, getPhotoId }) {
     severity: "",
     message: "",
   });
+
   const [uploaded, isUploaded] = useState(false);
 
   const handleSnackbarClose = () => {
@@ -78,9 +79,11 @@ function UploadPhoto({ mpName, reportId, getPhotoId }) {
 
   //Display Photo
   const handleChange = (event) => {
+    console.log(event.target.files[0]);
+
     //Include validation
     //if the size of the photo exceeds 100000, return a message
-    if (event.target.files[0].size > 100000) {
+    if (event.target.files[0].size > 10000000) {
       setSnackbar({
         open: true,
         severity: "error",
@@ -91,13 +94,15 @@ function UploadPhoto({ mpName, reportId, getPhotoId }) {
       const reader = new FileReader();
 
       reader.onload = function (onLoadEvent) {
-        setPhoto({
-          src: onLoadEvent.target.result,
-          fileName: event.target.files[0].name,
-          type: event.target.files[0].type,
-          size: event.target.files[0].size,
-        });
+        setPhotos([
+          ...photos,
+          {
+            [event.target.name]: onLoadEvent.target.result,
+            fileName: event.target.files[0].name,
+          },
+        ]);
       };
+      disableButton({ ...isDisabled, [event.target.name]: true });
 
       reader.readAsDataURL(event.target.files[0]);
     }
@@ -106,42 +111,40 @@ function UploadPhoto({ mpName, reportId, getPhotoId }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     let snackbarContent = {};
+    let uploadedPhotos = [];
 
     //Upload photo to Cloudinary
     const form = event.currentTarget;
-    const fileInput = Array.from(form.elements).find(
-      ({ name }) => name === "file"
-    );
-    const formData = new FormData();
 
-    for (const file of fileInput.files) {
-      formData.append("file", file);
+    for(let i = 0; i < 3; i++){
+      for (const file of form.elements[i].files) {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", "report-photos");
+        const data = await uploadReportPhoto(formData);
+        uploadedPhotos.push({publicId: data.public_id.substring(14, 34), fileName: file.name})
+      }
     }
 
-    formData.append("upload_preset", "report-photos");
-
-    const data = await uploadReportPhoto(formData);
-    const publicId = data.public_id.substring(14, 34);
-
     //Save photo to Photo database
-    const photoData = {
-      publicId: publicId,
+    const photosData = {
+      images: [...uploadedPhotos],
       reportId: reportId,
-      fileName: photo.fileName,
-      mpName: mpName,
+      missingPerson: mpName,
     };
+   
 
-    //Store response message
-    const upload = await uploadToDatabase(photoData);
-    const newPhoto = await upload.json();
+    // //Store response message
+    const upload = await uploadToDatabase(photosData);
+    const newPhotos = await upload.json();
 
-    snackbarContent = generateAlertContent(upload.status, newPhoto.message);
+    snackbarContent = generateAlertContent(upload.status, newPhotos.message);
 
     setSnackbar(snackbarContent);
     isUploaded(true);
     // Link the photo to report
-    getPhotoId(newPhoto.data._id);
-    // setSnackbar(snackbarContent)
+    getPhotoId(newPhotos.data._id);
+    setSnackbar(snackbarContent)
   };
 
   return (
@@ -166,7 +169,7 @@ function UploadPhoto({ mpName, reportId, getPhotoId }) {
       </Typography>
 
       {/*Display photo preview before upload*/}
-      {photo.src !== "" && (
+      {/* {photo.src !== "" && (
         <Box>
           <Box
             sx={{
@@ -188,27 +191,58 @@ function UploadPhoto({ mpName, reportId, getPhotoId }) {
             {photo.fileName}
           </Typography>
         </Box>
-      )}
+      )} */}
 
       {/* If the photo is already uploaded, remove the form */}
       {!uploaded ? (
         <form onChange={handleChange} onSubmit={handleSubmit}>
-          <Stack direction="row" alignItems="center" spacing={1}>
+          <Stack direction="column" alignItems="left" spacing={1}>
             <Button
+              disabled={isDisabled.photo1}
               startIcon={<AttachFileIcon />}
               component="label"
               size="small"
               variant="contained"
             >
-              Select file
+              Select Image 1
               <input
                 hidden
                 type="file"
-                name="file"
+                name="photo1"
                 accept="image/png, image/jpeg"
               />
             </Button>
-            {photo.src !== "" && (
+            <Button
+              disabled={isDisabled.photo2}
+              startIcon={<AttachFileIcon />}
+              component="label"
+              size="small"
+              variant="contained"
+            >
+              Select Image 2
+              <input
+                hidden
+                type="file"
+                name="photo2"
+                accept="image/png, image/jpeg"
+              />
+            </Button>
+            <Button
+              disabled={isDisabled.photo3}
+              startIcon={<AttachFileIcon />}
+              component="label"
+              size="small"
+              variant="contained"
+            >
+              Select Image 3
+              <input
+                hidden
+                type="file"
+                name="photo3"
+                accept="image/png, image/jpeg"
+              />
+            </Button>
+            {photos.length === 3 && (
               <Button type="submit" size="small" variant="contained">
                 Upload
               </Button>
