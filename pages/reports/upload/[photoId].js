@@ -29,7 +29,7 @@ export default function Upload() {
   const {data, error, isLoading} = useSWR(`/api/photos/${photoId}`, fetcher);
   if (isLoading) return <CircularProgress />
   if (error) return <Typography>Something went wrong</Typography>
-  if (data) return <Form publicId={data.publicId} />
+  if (data) return <Form publicId={data.image} />
 }
 
 function Form({publicId}){
@@ -38,7 +38,7 @@ function Form({publicId}){
   const [reportId, setReportId] = useState(null);
   const [gender, setGender] = useState("");
 
-  const myImage = new CloudinaryImage(`report-photos/${publicId}`, {
+  const myImage = new CloudinaryImage(`query-photos/${publicId}`, {
     cloudName: "dg0cwy8vx",
     apiKey: process.env.CLOUDINARY_KEY,
     apiSecret: process.env.CLOUDINARY_SECRET,

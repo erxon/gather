@@ -185,23 +185,24 @@ const ReportWithPhoto = () => {
       formData.append("file", file);
     }
 
-    formData.append("upload_preset", "report-photos");
+    formData.append("upload_preset", "query-photos");
 
     //Upload photo to Cloudinary
-    const uploadPhoto = await uploadReportPhoto(formData);
-    const publicId = uploadPhoto.public_id.substring(14, 34);
+    const cloudUpload = await uploadReportPhoto(formData);
+    const publicId = cloudUpload.public_id.substring(13)
 
     //Upload photo to Database
-    const photoData = {
-      publicId: publicId,
+    const setValues = {
+      type: 'query',
+      image: publicId,
       fileName: photo.fileName,
     };
     const uploadToDatabase = await fetch("/api/photos", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(photoData),
+      body: JSON.stringify(setValues),
     });
-    const newPhoto = await uploadToDatabase.json();
+    const newQueryPhoto = await uploadToDatabase.json();
     if (uploadToDatabase.status === 400) {
       setSnackbar({
         open: true,
@@ -209,7 +210,7 @@ const ReportWithPhoto = () => {
         message: "Something went wrong",
       });
     } else {
-      Router.push(`/reports/upload/${newPhoto.data._id}`);
+      Router.push(`/reports/upload/${newQueryPhoto.data._id}`);
     }
   };
 

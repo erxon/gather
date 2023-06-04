@@ -2,6 +2,7 @@
 import mongoose from "mongoose";
 
 const photoSchema = new mongoose.Schema({
+  image: String,
   images: [{
     publicId: String,
     fileName: String
