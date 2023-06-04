@@ -129,6 +129,7 @@ function UploadPhoto({ mpName, reportId, getPhotoId }) {
     //Save photo to Photo database
     const photosData = {
       images: [...uploadedPhotos],
+      type: 'reference',
       reportId: reportId,
       missingPerson: mpName,
     };
