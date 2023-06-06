@@ -1,29 +1,34 @@
-import { useUser } from "@/lib/hooks";
-import { CircularProgress, Box, Typography } from "@mui/material";
-import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { Box, Typography, Paper, Grid } from "@mui/material";
+import Image from "next/image";
+import ReportCardHorizontal from "@/components/reports/ReportCardHorizontal";
+import Authenticate from "@/utils/authority/Authenticate";
 
 function RenderMatches() {
   return (
     <Box>
       <Typography>Matches will be displayed here</Typography>
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={4}>
+          <Paper sx={{ p: 3 }}>
+            <Typography sx={{ mb: 1.5 }}>Photo</Typography>
+            <Image width="150" height="150" src="/assets/placeholder.png" />
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={8}>
+          <Paper sx={{ p: 3 }}>
+            <Typography sx={{ mb: 1.5 }}>Possible matches</Typography>
+            <ReportCardHorizontal distance={"Distance: 10%"} />
+          </Paper>
+        </Grid>
+      </Grid>
     </Box>
   );
 }
 
 export default function Matches() {
-  const [user, { loading }] = useUser();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push("/login");
-    }
-  }, [user, loading]);
-
-  if (loading) return <CircularProgress />;
-  if (user && user.type !== "authority") {
-    return <Typography>Forbidden</Typography>;
-  }
-  if (user) return <RenderMatches />
+  return (
+    <Authenticate>
+      <RenderMatches />
+    </Authenticate>
+  );
 }

@@ -3,7 +3,7 @@ import { fill } from "@cloudinary/url-gen/actions/resize";
 import { CloudinaryImage } from "@cloudinary/url-gen";
 import { AdvancedImage } from "@cloudinary/react";
 import { useState } from "react";
-import useSWR from 'swr';
+import useSWR from "swr";
 import {
   Button,
   TextField,
@@ -26,16 +26,14 @@ import { fetcher } from "@/lib/hooks";
 export default function Upload() {
   const router = useRouter();
   const { photoId } = router.query;
-  const {data, error, isLoading} = useSWR(`/api/photos/${photoId}`, fetcher);
-  if (isLoading) return <CircularProgress />
-  if (error) return <Typography>Something went wrong</Typography>
-  if (data) return <Form publicId={data.image} />
+  const { data, error, isLoading } = useSWR(`/api/photos/${photoId}`, fetcher);
+  if (isLoading) return <CircularProgress />;
+  if (error) return <Typography>Something went wrong</Typography>;
+  if (data) return <Form publicId={data.image} photoId={photoId} />;
 }
 
-function Form({publicId}){
-  
+function Form({ publicId, photoId }) {
   const [submitted, isSubmitted] = useState(false);
-  const [reportId, setReportId] = useState(null);
   const [gender, setGender] = useState("");
 
   const myImage = new CloudinaryImage(`query-photos/${publicId}`, {
@@ -53,17 +51,12 @@ function Form({publicId}){
   const handleSubmit = async (e) => {
     e.preventDefault();
     const body = {
-      photo: publicId,
-      rFirstName: e.target.rFirstName.value,
-      rLastName: e.target.rLastName.value,
-      rRelationToMissing: e.target.rRelationToMissing.value,
-      rContactNumber: e.target.rContactNumber.value,
-      rEmail: e.target.rEmail.value,
-      mpFirstName: e.target.mpFirstName.value,
-      mpLastName: e.target.mpLastName.value,
-      mpAge: e.target.mpAge.value,
-      mpGender: gender,
-      mpLastSeen: e.target.mpLastSeen.value,
+      photo: photoId,
+      firstName: e.target.firstName.value,
+      lastName: e.target.lastName.value,
+      relationToMissing: e.target.relationToMissing.value,
+      contactNumber: e.target.contactNumber.value,
+      email: e.target.email.value,
     };
     const res = await fetch("/api/reports/upload", {
       method: "POST",
@@ -72,8 +65,6 @@ function Form({publicId}){
     });
 
     const data = await res.json();
-
-    setReportId(data.data._id);
     isSubmitted(true);
   };
 
@@ -85,19 +76,6 @@ function Form({publicId}){
             Thank you for informing us about this missing person. Authorities
             will contact you at any given moment to verify this report.
           </Typography>
-          <Typography sx={{ mt: 3 }} variant="body2">
-            If you want to manage this report with the authorities, signup for
-            an account.
-          </Typography>
-          <Button
-            sx={{ my: 2 }}
-            disableElevation
-            size="small"
-            variant="contained"
-            href={`/reports/create-account/${reportId}`}
-          >
-            Manage Report
-          </Button>
         </div>
       ) : (
         <Box>
@@ -133,7 +111,7 @@ function Form({publicId}){
                       variant="outlined"
                       label="First name"
                       type="text"
-                      name="rFirstName"
+                      name="firstName"
                       required
                     />
                     <TextField
@@ -141,7 +119,7 @@ function Form({publicId}){
                       variant="outlined"
                       label="Last name"
                       type="text"
-                      name="rLastName"
+                      name="lastName"
                       required
                     />
                   </Stack>
@@ -156,7 +134,7 @@ function Form({publicId}){
                       variant="outlined"
                       label="Contact number"
                       type="text"
-                      name="rContactNumber"
+                      name="contactNumber"
                       required
                     />
                     <TextField
@@ -164,7 +142,7 @@ function Form({publicId}){
                       variant="outlined"
                       label="Email"
                       type="text"
-                      name="rEmail"
+                      name="email"
                       required
                     />
                   </Stack>
@@ -173,78 +151,9 @@ function Form({publicId}){
                     variant="outlined"
                     label="Relation to missing"
                     type="text"
-                    name="rRelationToMissing"
+                    name="relationToMissing"
                     required
                   />
-                </Paper>
-                {/*Report*/}
-                <Paper sx={{ p: 3 }}>
-                  <Typography sx={{ mb: 3 }} variant="h6">
-                    Report
-                  </Typography>
-                  <TextField
-                    sx={{ mb: 2 }}
-                    fullWidth
-                    variant="outlined"
-                    label="Current location"
-                    type="text"
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment>
-                          <PlaceIcon />
-                        </InputAdornment>
-                      ),
-                    }}
-                    name="mpLastSeen"
-                    required
-                  />
-                  <Stack
-                    sx={{ mb: 2 }}
-                    spacing={1}
-                    direction={{ xs: "column", md: "row" }}
-                    alignItems="center"
-                  >
-                    <TextField
-                      fullWidth
-                      variant="outlined"
-                      label="First name"
-                      type="text"
-                      name="mpFirstName"
-                    />
-                    <TextField
-                      fullWidth
-                      variant="outlined"
-                      label="last name"
-                      type="text"
-                      name="mpLastName"
-                    />
-                  </Stack>
-                  <Stack
-                    spacing={1}
-                    direction={{ xs: "column", md: "row" }}
-                    alignItems="center"
-                    sx={{ mt: 2 }}
-                  >
-                    <TextField
-                      fullWidth
-                      variant="outlined"
-                      label="Age"
-                      type="text"
-                      name="mpAge"
-                    />
-                    <FormControl fullWidth>
-                      <InputLabel>Gender</InputLabel>
-                      <Select
-                        label="Gender"
-                        value={gender}
-                        onChange={handleGenderSelect}
-                      >
-                        <MenuItem value="Male">Male</MenuItem>
-                        <MenuItem value="Female">Female</MenuItem>
-                        <MenuItem value="Other">Other</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </Stack>
                 </Paper>
               </form>
             </Grid>
@@ -254,5 +163,3 @@ function Form({publicId}){
     </>
   );
 }
-
-
