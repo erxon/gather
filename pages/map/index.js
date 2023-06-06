@@ -31,7 +31,7 @@ export default function Map() {
   return (
     <>
       <Typography>
-        Map will be rendered here, just wait and you'll see!
+        {"Map will be rendered here, just wait and you'll see!"}
       </Typography>
       <div className="sidebar">
         Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
