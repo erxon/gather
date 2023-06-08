@@ -9,20 +9,27 @@ import PeopleIcon from "@mui/icons-material/People";
 import HomeIcon from "@mui/icons-material/Home";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
-import { Box, Drawer } from "@mui/material";
+import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
+import { Box, Divider, Drawer } from "@mui/material";
 import { useUser } from "@/lib/hooks";
+import styles from "@/public/style/sidenav.module.css";
+import Typography from "@mui/material/Typography";
+import { useState } from "react";
 
-function MainListItems() {
+function ListItems(props) {
   const [user] = useUser();
+
   const styles = {
     borderRadius: "5px",
     margin: "10px",
+    height: 30,
   };
+
   return (
     <>
       <List>
         {user ? (
-          <ListItemButton href="/dashboard" sx={styles} selected={true}>
+          <ListItemButton href="/dashboard" sx={styles}>
             <ListItemIcon>
               <DashboardIcon />
             </ListItemIcon>
@@ -40,7 +47,7 @@ function MainListItems() {
           <ListItemIcon>
             <ArticleIcon />
           </ListItemIcon>
-          <ListItemText primary="Reports" />
+          <ListItemText primary="Missing Person Reports" />
         </ListItemButton>
         {user && (
           <List>
@@ -63,15 +70,18 @@ function MainListItems() {
               </ListItemIcon>
               <ListItemText primary="My report" />
             </ListItemButton>
+            {user.type === "authority" && (
+              <ListItemButton
+                href="/authority/photos"
+                sx={styles}
+              >
+                <ListItemIcon>
+                  <PhotoLibraryIcon />
+                </ListItemIcon>
+                <ListItemText primary="Photos" />
+              </ListItemButton>
+            )}
           </List>
-        )}
-        {user && user.type === "authority" && (
-          <ListItemButton href="/authority/photos" sx={styles}>
-            <ListItemIcon>
-              <AssignmentIndIcon />
-            </ListItemIcon>
-            <ListItemText primary="Photos" />
-          </ListItemButton>
         )}
       </List>
     </>
@@ -81,7 +91,7 @@ function MainListItems() {
 export default function SideNavBar() {
   return (
     <>
-      <MainListItems />
+      <ListItems />
     </>
   );
 }

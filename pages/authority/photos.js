@@ -8,6 +8,8 @@ import {
   CardContent,
   CardActions,
   Button,
+  Grid,
+  Divider,
 } from "@mui/material";
 import useSWR from "swr";
 import { fetcher } from "@/lib/hooks";
@@ -18,7 +20,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
 import EmailIcon from "@mui/icons-material/Email";
 
-function Photo({ photoId }) {
+function UploadedPhoto({ photoId }) {
   const { data, error, isLoading } = useSWR(`/api/photos/${photoId}`, fetcher);
   if (isLoading) return <CircularProgress />;
   if (error) return <Typography>Something went wrong</Typography>;
@@ -46,7 +48,37 @@ function Reporter(props) {
   );
 }
 
-function RenderPhotos() {
+function Report(props) {
+  return (
+    <Grid item xs={12} md={3} sm={6}>
+      <Card sx={{ maxWidth: "300px" }} variant="outlined">
+        <CardMedia sx={{ textAlign: "center" }}>
+          <UploadedPhoto photoId={props.photoUploaded} />
+        </CardMedia>
+        <CardContent>
+          <Typography sx={{ mb: 2 }} variant="h5">
+            Reporter
+          </Typography>
+          <Reporter
+            name={`${props.firstName} ${props.lastName}`}
+            contact={props.contactNumber}
+            email={props.email}
+          />
+        </CardContent>
+        <CardActions>
+          <Button
+            size="small"
+            href={`/authority/matches/${props.photoUploaded}`}
+          >
+            View
+          </Button>
+        </CardActions>
+      </Card>
+    </Grid>
+  );
+}
+
+function Reports() {
   const { data, error, isLoading } = useSWR("/api/reporters", fetcher);
   if (isLoading) return <CircularProgress />;
   if (error) return <Typography>Something went wrong</Typography>;
@@ -54,35 +86,24 @@ function RenderPhotos() {
     const reporters = data.data;
     return (
       <Box>
-        {reporters.map((reporter) => {
-          return (
-            <Card sx={{ maxWidth: "300px" }}>
-              <CardMedia sx={{ textAlign: "center" }}>
-                <Photo photoId={reporter.photoUploaded} />
-              </CardMedia>
-              <CardContent>
-                <Typography sx={{ mb: 2 }} variant="h5">
-                  Reporter
-                </Typography>
-                <Reporter
-                  name={`${reporter.firstName} ${reporter.lastName}`}
-                  contact={reporter.contactNumber}
-                  email={reporter.email}
-                />
-              </CardContent>
-              <CardActions>
-                <Button
-                  fullWidth
-                  size="small"
-                  variant="contained"
-                  href={`/authority/matches/${reporter.photoUploaded}`}
-                >
-                  View
-                </Button>
-              </CardActions>
-            </Card>
-          );
-        })}
+        <Box sx={{mb: 3}}>
+          <Typography variant="h5">Photos submitted</Typography>
+          <Divider />
+        </Box>
+        <Grid container spacing={1.25}>
+          {reporters.map((reporter) => {
+            return (
+              <Report
+                key={reporter._id}
+                photoUploaded={reporter.photoUploaded}
+                firstName={reporter.firstName}
+                lastName={reporter.lastName}
+                contactNumber={reporter.contactNumber}
+                email={reporter.email}
+              />
+            );
+          })}
+        </Grid>
       </Box>
     );
   }
@@ -91,7 +112,7 @@ function RenderPhotos() {
 export default function Page() {
   return (
     <Authenticate>
-      <RenderPhotos />
+      <Reports />
     </Authenticate>
   );
 }

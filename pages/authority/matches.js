@@ -9,7 +9,7 @@ function RenderMatches() {
       <Typography>Matches will be displayed here</Typography>
       <Grid container spacing={2}>
         <Grid item xs={12} md={4}>
-          <Paper sx={{ p: 3 }}>
+          <Paper sx={{ p: 3 }} variant="outlined">
             <Typography sx={{ mb: 1.5 }}>Photo</Typography>
             <Image width="150" height="150" src="/assets/placeholder.png" />
           </Paper>

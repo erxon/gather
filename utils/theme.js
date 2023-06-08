@@ -13,6 +13,9 @@ const theme = createTheme({
       light: "#CCE8E9",
     },
   },
+  typography: {
+    fontSize: 12
+  },
   components: {
     MuiListItemText: {
       styleOverrides: {
@@ -20,7 +23,25 @@ const theme = createTheme({
           fontSize: "12px",
         },
       },
-    }
+    },
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          backgorundColor: '#F7FAF9'
+        },
+        colorDefault: {
+          backgroundColor: '#F7FAF9'
+        }
+      }
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: '20px'
+        }
+      }
+    },
+    
   },
 });
 

@@ -20,6 +20,7 @@ import { useState} from "react";
 import useSWR from "swr";
 import { fetcher } from "@/lib/hooks";
 import ConversationBox from "./ConversationBox";
+import Head from "./Head";
 
 function Contact(props) {
   return (
@@ -74,10 +75,11 @@ export default function ChatMain({user}) {
 
   return (
     <>
+      <Head title="Communicate" />
       <Grid container spacing={3}>
         <Grid item xs={12} md={4}>
-          <Paper sx={{p: 3}}>
-            <Typography variant="body1">Contacts</Typography>
+          <Paper sx={{p: 3}} variant="outlined">
+            <Typography variant="h6">Contacts</Typography>
             <List
               sx={{
                 maxHeight: "500px",

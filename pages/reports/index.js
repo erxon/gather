@@ -23,7 +23,9 @@ import {
   Chip,
 } from "@mui/material";
 import ArticleIcon from "@mui/icons-material/Article";
+import AddIcon from "@mui/icons-material/Add";
 import { getReports } from "@/lib/api-lib/api-reports";
+import Head from "@/components/Head";
 
 function Report(props) {
   const route = `/reports/${props.id}`;
@@ -100,9 +102,14 @@ export default function ReportPage({ data }) {
   };
   return (
     <div>
-      <Typography variant="h5" sx={{ pb: 2 }}>
-        Reports
-      </Typography>
+      <Head
+        title="Reports"
+        component={
+          <Button startIcon={<AddIcon />} variant="contained">
+            Add new report
+          </Button>
+        }
+      />
       <div className="row">
         {user && user.type === "authority" && (
           <RadioGroup onChange={handleChange} name="filter">

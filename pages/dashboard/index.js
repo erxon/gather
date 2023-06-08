@@ -15,15 +15,15 @@ import ActiveReports from "@/components/reports/ActiveReports";
 import NotificationsMain from "@/components/notifications/NotificationsMain";
 import Data from "@/components/Data";
 import { useUser } from "@/lib/hooks";
+import Head from "@/components/Head";
 
 function DashboardMain() {
   return (
     <>
-      <Typography variant="h5">Dashboard</Typography>
-
+      <Head title="Dashboard" />
       <Grid container spacing={2} sx={{ mt: 3 }}>
         <Grid item xs={12} sm={12} md={6}>
-          <Paper sx={{ p: 3 }}>
+          <Paper sx={{ p: 3 }} variant="outlined">
             <Typography variant="h6">Active Reports</Typography>
             <Box sx={{ my: 2 }}>
               <ActiveReports />
@@ -39,11 +39,11 @@ function DashboardMain() {
           </Paper>
         </Grid>
         <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 3 }}>
+          <Paper sx={{ p: 3 }} variant="outlined">
             <Typography variant="h6">Notifications</Typography>
             <NotificationsMain />
           </Paper>
-          <Paper sx={{ p: 3, mt: 3 }}>
+          <Paper sx={{ p: 3, mt: 3 }} variant="outlined">
             <Typography sx={{ mb: 3 }} variant="h6">
               Data
             </Typography>
@@ -59,16 +59,6 @@ function DashboardMain() {
 
 export default function Dashboard() {
   const router = useRouter();
-
-  // useEffect(() => {
-  //   fetch("/api/user/checkAuth").then((response) => {
-  //     response.json().then((data) => {
-  //       if (!data.authenticated) {
-  //         return router.push("/login");
-  //       }
-  //     });
-  //   });
-  // }, [router]);
 
   const [user, { loading }] = useUser();
 

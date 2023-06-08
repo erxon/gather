@@ -1,13 +1,22 @@
-import { Box, Typography, Paper, Grid, CircularProgress } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Paper,
+  Grid,
+  CircularProgress,
+  Button,
+} from "@mui/material";
 import Image from "next/image";
 import ReportCardHorizontal from "@/components/reports/ReportCardHorizontal";
 import Authenticate from "@/utils/authority/Authenticate";
 import { useRouter } from "next/router";
 import useSWR from "swr";
-import useSWRImmutable from 'swr/immutable'
+import useSWRImmutable from "swr/immutable";
 import { fetcher } from "@/lib/hooks";
 import QueryPhoto from "@/components/photo/QueryPhoto";
 import { useState, useEffect } from "react";
+import Head from "@/components/Head";
+import RefreshIcon from "@mui/icons-material/Refresh";
 
 function Photo({ queryPhotoId }) {
   return <QueryPhoto publicId={queryPhotoId} />;
@@ -19,7 +28,7 @@ function Report({ photoId, distance }) {
   if (isLoading) return <CircularProgress />;
   if (data) {
     return (
-      <Paper sx={{p: 3}}>
+      <Paper sx={{ p: 3 }}>
         <Typography>Distance: {`${Math.round(distance * 100)}%`}</Typography>
         <Typography>Report: {data.reportId}</Typography>
         <Typography>{data.missingPerson}</Typography>
@@ -43,9 +52,13 @@ function FindMatches({ queryPhotoId }) {
   if (data) {
     return (
       <Box>
-        {data ? data.matches.map((match) => {
-          return <Report photoId={match._label} distance={match._distance} />;
-        }) : <Typography>No matches found</Typography>}
+        {data ? (
+          data.matches.map((match) => {
+            return <Report photoId={match._label} distance={match._distance} />;
+          })
+        ) : (
+          <Typography>No matches found</Typography>
+        )}
       </Box>
     );
   }
@@ -62,17 +75,24 @@ function RenderMatches({ queryPhotoId }) {
   if (data) {
     return (
       <Box>
-        <Typography>Matches will be displayed here</Typography>
+        <Head
+          title="Matches"
+          component={
+            <Button startIcon={<RefreshIcon />}>
+              Reload
+            </Button>
+          }
+        />
         <Grid container spacing={2}>
           <Grid item xs={12} md={4}>
-            <Paper sx={{ p: 3 }}>
-              <Typography sx={{ mb: 1.5 }}>Photo</Typography>
+            <Paper sx={{ p: 3 }} variant="outlined">
+              <Typography sx={{ mb: 1.5 }} variant="h6">Photo</Typography>
               <Photo queryPhotoId={data.image} />
             </Paper>
           </Grid>
           <Grid item xs={12} md={8}>
-            <Paper sx={{ p: 3 }}>
-              <Typography sx={{ mb: 1.5 }}>Possible matches</Typography>
+            <Paper sx={{ p: 3 }} variant="outlined">
+              <Typography sx={{ mb: 1.5 }} variant="h6">Possible matches</Typography>
               <FindMatches queryPhotoId={data.image} />
             </Paper>
           </Grid>

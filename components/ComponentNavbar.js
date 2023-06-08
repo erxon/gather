@@ -22,6 +22,8 @@ import { logout } from "@/lib/api-lib/api-auth";
 import ContactRequestMain from "./notifications/ContactRequestMain";
 import ContactAcceptedMain from "./notifications/ContactAcceptedMain";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import IconTypography from "@/utils/layout/IconTypography";
 
 export default function ComponentNavbar(props) {
   const [user, { mutate }] = useUser();
@@ -119,56 +121,7 @@ export default function ComponentNavbar(props) {
   );
 
   const mobileMenuId = "primary-search-account-menu-mobile";
-  const renderMobileMenu = user ? (
-    <Menu
-      anchorEl={mobileMoreAnchorEl}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      id={mobileMenuId}
-      keepMounted
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      open={isMobileMenuOpen}
-      onClose={handleMobileMenuClose}
-    >
-      <MenuItem>
-        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={4} color="error">
-            <MailIcon />
-          </Badge>
-        </IconButton>
-        <p>Messages</p>
-      </MenuItem>
-      <MenuItem onClick={handleNotificationsOpen}>
-        <IconButton
-          size="large"
-          aria-label="show 17 new notifications"
-          color="inherit"
-        >
-          <Badge badgeContent={17} color="error">
-            <NotificationsIcon />
-          </Badge>
-        </IconButton>
-        <p>Notifications</p>
-      </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
-        <IconButton
-          size="large"
-          aria-label="account of current user"
-          aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
-          color="inherit"
-        >
-          <AccountCircleIcon />
-        </IconButton>
-        <p>Profile</p>
-      </MenuItem>
-    </Menu>
-  ) : (
+  const renderMobileMenu = (
     <Menu
       anchorEl={mobileMoreAnchorEl}
       anchorOrigin={{
@@ -194,10 +147,7 @@ export default function ComponentNavbar(props) {
           </Link>
         </MenuItem>
         <MenuItem>
-          <Link
-            href="/login"
-            style={{ textDecoration: "none", color: "#000" }}
-          >
+          <Link href="/login" style={{ textDecoration: "none", color: "#000" }}>
             Login
           </Link>
         </MenuItem>
@@ -211,8 +161,9 @@ export default function ComponentNavbar(props) {
         sx={{
           width: { sm: `calc(100% - ${240}px)` },
           ml: { sm: `${240}px` },
+          px: 4,
         }}
-        color="background"
+        color="default"
       >
         <Toolbar>
           <IconButton
@@ -224,39 +175,16 @@ export default function ComponentNavbar(props) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ display: { xs: "none", sm: "block" } }}
-          >
-            Gather
-          </Typography>
           <Box sx={{ flexGrow: 1 }} />
+
           {user ? (
             <Box sx={{ display: { xs: "none", md: "flex" } }}>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <AccountCircleIcon />
+                <Typography>{user.username}</Typography>
+              </Stack>
               <IconButton
-                size="large"
-                aria-label="show 4 new mails"
-                color="inherit"
-              >
-                <Badge badgeContent={4} color="error">
-                  <MailIcon />
-                </Badge>
-              </IconButton>
-              <IconButton
-                size="large"
-                aria-label="show 17 new notifications"
-                color="inherit"
-                aria-controls={popoverId}
-                onClick={handleNotificationsOpen}
-              >
-                <Badge badgeContent={17} color="error">
-                  <NotificationsIcon />
-                </Badge>
-              </IconButton>
-              <IconButton
-                size="large"
+                size="small"
                 edge="end"
                 aria-label="account of current user"
                 aria-controls={menuId}
@@ -264,7 +192,7 @@ export default function ComponentNavbar(props) {
                 onClick={handleProfileMenuOpen}
                 color="inherit"
               >
-                <AccountCircleIcon />
+                <ArrowDropDownIcon />
               </IconButton>
             </Box>
           ) : (
@@ -294,18 +222,38 @@ export default function ComponentNavbar(props) {
               </Stack>
             </Box>
           )}
-          <Box sx={{ display: { xs: "flex", md: "none" } }}>
-            <IconButton
-              size="large"
-              aria-label="show more"
-              aria-controls={mobileMenuId}
-              aria-haspopup="true"
-              onClick={handleMobileMenuOpen}
-              color="inherit"
-            >
-              <MoreIcon />
-            </IconButton>
-          </Box>
+          {user ? (
+            <Box sx={{ display: { xs: "flex", md: "none" } }}>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <AccountCircleIcon />
+                <Typography>{user.username}</Typography>
+              </Stack>
+              <IconButton
+                size="small"
+                edge="end"
+                aria-label="account of current user"
+                aria-controls={menuId}
+                aria-haspopup="true"
+                onClick={handleProfileMenuOpen}
+                color="inherit"
+              >
+                <ArrowDropDownIcon />
+              </IconButton>
+            </Box>
+          ) : (
+            <Box sx={{ display: { xs: "flex", md: "none" } }}>
+              <IconButton
+                size="large"
+                aria-label="show more"
+                aria-controls={mobileMenuId}
+                aria-haspopup="true"
+                onClick={handleMobileMenuOpen}
+                color="inherit"
+              >
+                <MoreIcon />
+              </IconButton>
+            </Box>
+          )}
         </Toolbar>
       </AppBar>
       {renderMobileMenu}

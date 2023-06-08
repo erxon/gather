@@ -13,6 +13,7 @@ import {
   Stack,
   Chip,
   CircularProgress,
+  Divider,
 } from "@mui/material";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import GroupIcon from "@mui/icons-material/Group";
@@ -20,6 +21,7 @@ import ProfilePhoto from "@/components/photo/ProfilePhoto";
 import { addToContactRequest } from "@/lib/api-lib/api-notifications";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import Head from "@/components/Head";
 
 //display all users
 //display add contact if user is authenticated
@@ -52,6 +54,7 @@ function User(props) {
             flexDirection: "column",
             alignItems: "center",
           }}
+          variant="outlined"
         >
           <Chip
             sx={{ mt: 3 }}
@@ -178,7 +181,7 @@ function UserList() {
   return (
     <>
       <div>
-        <Grid container spacing={1}>
+        <Grid container spacing={3}>
           {!!users?.length &&
             currentUser &&
             users.map((user) => {
@@ -221,9 +224,7 @@ export default function Users() {
     return (
       <>
         <div>
-          <Typography sx={{ mb: 2 }} variant="h5">
-            Users
-          </Typography>
+          <Head title="Users" />
 
           <UserList />
           {/* <ContactList /> */}

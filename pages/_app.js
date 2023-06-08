@@ -2,17 +2,21 @@ import ComponentNavbar from "@/components/ComponentNavbar";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "@/utils/theme";
 import SideNavBar from "@/components/SideNavBar";
-import { Box, Toolbar, Divider, Drawer } from "@mui/material";
+import { Box, Toolbar, Divider, Drawer, Typography } from "@mui/material";
 import { useState } from "react";
 import Layout from "@/utils/Layout";
+import "@/public/style/global.css";
 
 export default function MyApp({ Component, pageProps }) {
   const [mobileOpen, setMobileOpen] = useState(false);
-
+  
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
+  const handleChange = (event) => {
+    console.log(event)
+  }
   return (
     <>
       <ThemeProvider theme={theme}>
@@ -20,9 +24,13 @@ export default function MyApp({ Component, pageProps }) {
           <ComponentNavbar handleToggle={handleDrawerToggle} />
           <Box
             component="nav"
-            sx={{ width: { sm: 240 }, flexShrink: { sm: 0 } }}
+            sx={{
+              width: { sm: 240 },
+              flexShrink: { sm: 0 },
+            }}
             aria-label="mailbox folders"
           >
+            
             <Drawer
               variant="temporary"
               open={mobileOpen}
@@ -35,9 +43,12 @@ export default function MyApp({ Component, pageProps }) {
                 "& .MuiDrawer-paper": {
                   boxSizing: "border-box",
                   width: 240,
+                  backgroundColor: "#F7FAF9",
+                  border: 'none',
                 },
               }}
             >
+              <Typography>Gather</Typography>
               <Toolbar />
               <Divider />
               <SideNavBar />
@@ -45,14 +56,20 @@ export default function MyApp({ Component, pageProps }) {
             <Drawer
               sx={{
                 display: { xs: "none", sm: "block" },
-                "& .MuiDrawer-paper": { boxSizing: "border-box", width: 240 },
+                "& .MuiDrawer-paper": {
+                  boxSizing: "border-box",
+                  width: 240,
+                  backgroundColor: "#F7FAF9",
+                  border: 'none',
+                },
               }}
               variant="permanent"
               open
             >
-              <Toolbar />
-              <Divider />
-              <SideNavBar />
+              <Box sx={{px: 3, pt: 3}}>
+                <Typography variant="h4">Gather</Typography>
+              </Box>
+              <SideNavBar onPageChange={handleChange} />
             </Drawer>
           </Box>
 
@@ -67,7 +84,7 @@ export default function MyApp({ Component, pageProps }) {
             <Layout>
               <main>
                 <div className="container">
-                    <Component {...pageProps} />
+                  <Component {...pageProps} />
                 </div>
               </main>
             </Layout>
