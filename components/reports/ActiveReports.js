@@ -17,6 +17,7 @@ import ReportPhoto from "../photo/ReportPhoto";
 import { AdvancedImage, responsive } from "@cloudinary/react";
 import { CloudinaryImage } from "@cloudinary/url-gen";
 import { limitFit, fill } from "@cloudinary/url-gen/actions/resize";
+import ReportDetails from "./ReportDetails";
 
 function Report(props) {
   const { id, name, photo, lastSeen, age, gender } = props;
@@ -44,16 +45,17 @@ function Report(props) {
           image="/assets/placeholder.png"
         />
       )}
-      <Box sx={{ display: "flex", flexDirection: "column", py: 2, pl: 1 }}>
+      <Box sx={{ display: "flex", flexDirection: "column", py: 0.5, pl: 1 }}>
         <Box>
           <CardContent sx={{ flex: "1 0 auto" }}>
             <Typography gutterBottom variant="h5" component="div">
               {name}
             </Typography>
-            <Typography variant="body2">
-              {lastSeen}
-              {age} years old, {gender}
-            </Typography>
+            <ReportDetails 
+              lastSeen={lastSeen}
+              age={age}
+              gender={gender}
+            />
           </CardContent>
         </Box>
         <CardActions>

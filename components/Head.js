@@ -10,10 +10,7 @@ export default function Head({ title, component }) {
         <Box sx={{textAlign: 'right', width: '100%'}}>
           {component}
         </Box>
-        
       </Stack>
-
-      <Divider />
     </Box>
   );
 }

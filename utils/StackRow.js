@@ -1,8 +1,8 @@
 import { Stack } from "@mui/material";
 
-export default function StackRow({ children }) {
+export default function StackRow({ children, styles }) {
   return (
-    <Stack direction="row" spacing={0.5} alignItems="center">
+    <Stack sx={styles} direction="row" spacing={0.5} alignItems="center">
       {children}
     </Stack>
   );

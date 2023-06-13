@@ -5,6 +5,9 @@ import {
   Grid,
   CircularProgress,
   Button,
+  Stack,
+  IconButton,
+  Divider,
 } from "@mui/material";
 import Image from "next/image";
 import ReportCardHorizontal from "@/components/reports/ReportCardHorizontal";
@@ -14,25 +17,80 @@ import useSWR from "swr";
 import useSWRImmutable from "swr/immutable";
 import { fetcher } from "@/lib/hooks";
 import QueryPhoto from "@/components/photo/QueryPhoto";
+import ReportPhoto from "@/components/photo/ReportPhoto";
 import { useState, useEffect } from "react";
 import Head from "@/components/Head";
 import RefreshIcon from "@mui/icons-material/Refresh";
+import IconTypography from "@/utils/layout/IconTypography";
+import PersonIcon from "@mui/icons-material/Person";
+import PlaceIcon from "@mui/icons-material/Place";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import StackRow from "@/utils/StackRow";
 
-function Photo({ queryPhotoId }) {
-  return <QueryPhoto publicId={queryPhotoId} />;
+function DisplayReportDetails({ reportId, distance }) {
+  const { data, error, isLoading } = useSWR(
+    `/api/reports/${reportId}`,
+    fetcher
+  );
+  if (error) return <Typography>Something went wrong</Typography>;
+  if (isLoading) return <CircularProgress />;
+  if (data) {
+    return (
+      <Box>
+        <Paper
+          sx={{
+            p: 3,
+          }}
+          variant="outlined"
+        >
+          <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
+            {data.photo ? (
+              <ReportPhoto publicId={data.photo} />
+            ) : (
+              <Image
+                width={150}
+                height={150}
+                src="/assets/placeholder.png"
+                alt="placeholder"
+              />
+            )}
+            <Box>
+              <Typography>Distance {Math.round(distance * 100)}%</Typography>
+              <Typography variant="h6">
+                {data.firstName} {data.lastName}
+              </Typography>
+              <IconTypography
+                customStyles={{ mb: 0.5 }}
+                Icon={<PlaceIcon />}
+                content={data.lastSeen}
+              />
+              <IconTypography
+                Icon={<PersonIcon />}
+                content={`${data.gender}, ${data.age}`}
+                customStyles={{ mb: 0.5 }}
+              />
+              <Button
+                href={`/reports/${reportId}`}
+                size="small"
+                variant="contained"
+              >
+                View
+              </Button>
+            </Box>
+          </Stack>
+        </Paper>
+      </Box>
+    );
+  }
 }
 
-function Report({ photoId, distance }) {
+function GetReport({ photoId, distance }) {
   const { data, error, isLoading } = useSWR(`/api/photos/${photoId}`, fetcher);
   if (error) return <Typography>Something went wrong</Typography>;
   if (isLoading) return <CircularProgress />;
   if (data) {
     return (
-      <Paper sx={{ p: 3 }}>
-        <Typography>Distance: {`${Math.round(distance * 100)}%`}</Typography>
-        <Typography>Report: {data.reportId}</Typography>
-        <Typography>{data.missingPerson}</Typography>
-      </Paper>
+      <DisplayReportDetails reportId={data.reportId} distance={distance} />
     );
   }
 }
@@ -54,7 +112,9 @@ function FindMatches({ queryPhotoId }) {
       <Box>
         {data ? (
           data.matches.map((match) => {
-            return <Report photoId={match._label} distance={match._distance} />;
+            return (
+              <GetReport photoId={match._label} distance={match._distance} />
+            );
           })
         ) : (
           <Typography>No matches found</Typography>
@@ -75,24 +135,27 @@ function RenderMatches({ queryPhotoId }) {
   if (data) {
     return (
       <Box>
-        <Head
-          title="Matches"
-          component={
-            <Button startIcon={<RefreshIcon />}>
-              Reload
-            </Button>
-          }
-        />
+        <StackRow styles={{mb: 1}}>
+          <IconButton href="/authority/photos">
+            <ArrowBackIcon />
+          </IconButton>
+          <Typography variant="h5">Matches</Typography>
+        </StackRow>
+        <Divider sx={{mb: 2}} />
         <Grid container spacing={2}>
           <Grid item xs={12} md={4}>
             <Paper sx={{ p: 3 }} variant="outlined">
-              <Typography sx={{ mb: 1.5 }} variant="h6">Photo</Typography>
-              <Photo queryPhotoId={data.image} />
+              <Typography sx={{ mb: 1.5 }} variant="h6">
+                Photo
+              </Typography>
+              <QueryPhoto publicId={data.image} />
             </Paper>
           </Grid>
           <Grid item xs={12} md={8}>
             <Paper sx={{ p: 3 }} variant="outlined">
-              <Typography sx={{ mb: 1.5 }} variant="h6">Possible matches</Typography>
+              <Typography sx={{ mb: 1.5 }} variant="h6">
+                Possible matches
+              </Typography>
               <FindMatches queryPhotoId={data.image} />
             </Paper>
           </Grid>
@@ -102,7 +165,7 @@ function RenderMatches({ queryPhotoId }) {
   }
 }
 
-export default function Matches() {
+export default function Page() {
   const router = useRouter();
   const { photoId } = router.query;
   return (

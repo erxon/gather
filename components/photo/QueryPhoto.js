@@ -1,13 +1,15 @@
 import { AdvancedImage, responsive } from "@cloudinary/react";
 import { CloudinaryImage } from "@cloudinary/url-gen";
-import { limitFit, fill } from "@cloudinary/url-gen/actions/resize";
+import { limitFit, fill, fit, crop, pad, limitFill } from "@cloudinary/url-gen/actions/resize";
+import { color } from "@cloudinary/url-gen/qualifiers/background";
+import { autoGravity, compass } from "@cloudinary/url-gen/qualifiers/gravity";
 
 export default function QueryPhoto(props) {
   const image = new CloudinaryImage(`query-photos/${props.publicId}`, {
     cloudName: "dg0cwy8vx",
     apiKey: process.env.NEXT_PUBLIC_CLOUDINARY_KEY,
     apiSecret: process.env.NEXT_PUBLIC_CLOUDINARY_SECRET,
-  });
+  }).resize(limitFill().width(150).height(150).gravity(autoGravity()));
 
-  return <AdvancedImage cldImg={image} height="150px"/>;
+  return <AdvancedImage cldImg={image} />;
 }

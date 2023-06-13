@@ -20,6 +20,8 @@ import PersonIcon from "@mui/icons-material/Person";
 import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
 import EmailIcon from "@mui/icons-material/Email";
 
+
+
 function UploadedPhoto({ photoId }) {
   const { data, error, isLoading } = useSWR(`/api/photos/${photoId}`, fetcher);
   if (isLoading) return <CircularProgress />;
@@ -51,7 +53,7 @@ function Reporter(props) {
 function Report(props) {
   return (
     <Grid item xs={12} md={3} sm={6}>
-      <Card sx={{ maxWidth: "300px" }} variant="outlined">
+      <Card variant="outlined">
         <CardMedia sx={{ textAlign: "center" }}>
           <UploadedPhoto photoId={props.photoUploaded} />
         </CardMedia>
