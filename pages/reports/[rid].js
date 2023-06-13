@@ -140,7 +140,7 @@ export default function ReportPage({ data }) {
                         <Typography variant="body1">{data.email} </Typography>
                       ) : (
                         <Typography color="GrayText" variant="body1">
-                          {user.username === data.username
+                          {user && user.username === data.username
                             ? "Edit this report to add an email"
                             : "No email to show"}
                         </Typography>
@@ -173,7 +173,7 @@ export default function ReportPage({ data }) {
                 })
               ) : (
                 <Typography color="GrayText">
-                  {user.username === data.username
+                  {user && user.username === data.username
                     ? "Edit this report to add features"
                     : "No features added yet"}
                 </Typography>
@@ -194,7 +194,7 @@ export default function ReportPage({ data }) {
                       </Typography>
                     ) : (
                       <Typography color="GrayText">
-                        {user.username === data.username
+                        {user && user.username === data.username
                           ? "Link a Facebook account"
                           : "No Facebook account linked"}
                       </Typography>
@@ -213,7 +213,7 @@ export default function ReportPage({ data }) {
                       </Typography>
                     ) : (
                       <Typography color="GrayText">
-                        {user.username === data.username
+                        {user && user.username === data.username
                           ? "Link a twitter account"
                           : "No twitter account linked"}
                       </Typography>
@@ -222,7 +222,7 @@ export default function ReportPage({ data }) {
                 </Box>
               ) : (
                 <Typography color="GrayText">
-                  {user.username === data.username
+                  {user && user.username === data.username
                     ? "Edit this report to add social media accounts"
                     : "No social media accounts to show"}
                 </Typography>

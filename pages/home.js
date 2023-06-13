@@ -13,7 +13,11 @@ import {
   Divider,
   Snackbar,
   Alert,
+  Avatar,
+  Card,
+  CardContent,
 } from "@mui/material";
+import Link from "next/link";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
@@ -22,11 +26,13 @@ import FileUploadIcon from "@mui/icons-material/FileUpload";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import LocalPoliceIcon from "@mui/icons-material/LocalPolice";
 import PeopleIcon from "@mui/icons-material/People";
-import Data from "@/components/Data";
 import styles from "../public/style/home.module.css";
+import useSWR from "swr";
+import { fetcher } from "@/lib/hooks";
 
 import { createReport, uploadReportPhoto } from "@/lib/api-lib/api-reports";
 import Image from "next/image";
+import ReportPhoto from "@/components/photo/ReportPhoto";
 
 const ReportToManage = () => {
   const [gender, setGender] = useState("");
@@ -296,20 +302,70 @@ const ReportWithPhoto = () => {
   );
 };
 
-const DisplayData = () => {
+function Report({ reportId, photo, name }) {
   return (
-    <>
-      <Box>
-        <Paper elevation={2} sx={{ p: 3 }}>
-          <Typography sx={{ mb: 3 }} variant="h5">
-            Data
+    <Grid item xs={12} md={4}>
+      <Card
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: 'center',
+          p: 3,
+          flexDirection: { xs: "column", md: "row" },
+        }}
+        variant="outlined"
+      >
+        {photo ? (
+          <Avatar sx={{ width: 100, height: 100 }}>
+            <ReportPhoto publicId={photo} />
+          </Avatar>
+        ) : (
+          <Avatar
+            sx={{ width: 100, height: 100 }}
+            src="/assets/placeholder.png"
+          />
+        )}
+        <CardContent>
+          <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+            <Link
+              style={{ textDecoration: "none", color: "#000" }}
+              href={`/reports/${reportId}`}
+            >
+              {name}
+            </Link>
           </Typography>
-          <Data />
-        </Paper>
-      </Box>
-    </>
+        </CardContent>
+      </Card>
+    </Grid>
   );
-};
+}
+
+function Reports() {
+  const { data, error, isLoading } = useSWR(
+    "/api/reports/status/active",
+    fetcher
+  );
+
+  if (error) return <Typography>Something went wrong</Typography>;
+  if (isLoading) return <CircularProgress />;
+  return (
+    <Box sx={{ p: 3, mt: 1 }}>
+      <Typography variant="h5">Active Reports</Typography>
+      <Grid container spacing={1}>
+        {data.activeReports.map((report) => {
+          return (
+            <Report
+              key={report._id}
+              reportId={report._id}
+              name={`${report.firstName} ${report.lastName}`}
+              photo={report.photo}
+            />
+          );
+        })}
+      </Grid>
+    </Box>
+  );
+}
 
 export default function HomePage() {
   return (
@@ -324,8 +380,8 @@ export default function HomePage() {
         <Typography variant="h3">GATHER</Typography>
         <Box sx={{ my: 1, width: { xs: "75%", md: "50%" } }}>
           <Typography sx={{ mb: 1 }} variant="body1" color="secondary">
-            Gather is a platform where citizens and authorities could collaborate
-            to find missing people in the community.
+            Gather is a platform where citizens and authorities could
+            collaborate to find missing people in the community.
           </Typography>
           <Typography
             sx={{ fontWeight: "bold" }}
@@ -336,19 +392,16 @@ export default function HomePage() {
           </Typography>
         </Box>
         <Grid container spacing={2}>
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={6}>
             {/*ReportWithPhoto*/}
             <ReportWithPhoto />
           </Grid>
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={6}>
             {/*Report and manage*/}
             <ReportToManage />
           </Grid>
-          <Grid item xs={12} md={4}>
-            {/*Data*/}
-            <DisplayData />
-          </Grid>
         </Grid>
+        <Reports />
       </Box>
       <Box sx={{ p: 3 }}>
         <Typography sx={{ mb: 2 }} variant="h4">
