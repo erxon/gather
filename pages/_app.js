@@ -5,18 +5,19 @@ import SideNavBar from "@/components/SideNavBar";
 import { Box, Toolbar, Divider, Drawer, Typography } from "@mui/material";
 import { useState } from "react";
 import Layout from "@/utils/Layout";
+import Image from "next/image";
 import "@/public/style/global.css";
 
 export default function MyApp({ Component, pageProps }) {
   const [mobileOpen, setMobileOpen] = useState(false);
-  
+
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
   const handleChange = (event) => {
-    console.log(event)
-  }
+    console.log(event);
+  };
   return (
     <>
       <ThemeProvider theme={theme}>
@@ -30,7 +31,6 @@ export default function MyApp({ Component, pageProps }) {
             }}
             aria-label="mailbox folders"
           >
-            
             <Drawer
               variant="temporary"
               open={mobileOpen}
@@ -44,13 +44,23 @@ export default function MyApp({ Component, pageProps }) {
                   boxSizing: "border-box",
                   width: 240,
                   backgroundColor: "#F7FAF9",
-                  border: 'none',
+                  border: "none",
                 },
               }}
             >
-              <Typography>Gather</Typography>
-              <Toolbar />
-              <Divider />
+              <Box sx={{textAlign: "center", mt: 3}}>
+                  <Image
+                    quality={80}
+                    width={100}
+                    height={100}
+                    style={{
+                      objectFit: "cover",
+                      objectPosition: "50% 50%",
+                      borderRadius: "100%",
+                    }}
+                    src="/assets/logo.png"
+                  />
+                </Box>
               <SideNavBar />
             </Drawer>
             <Drawer
@@ -60,14 +70,27 @@ export default function MyApp({ Component, pageProps }) {
                   boxSizing: "border-box",
                   width: 240,
                   backgroundColor: "#F7FAF9",
-                  border: 'none',
+                  border: "none",
                 },
               }}
               variant="permanent"
               open
             >
-              <Box sx={{px: 3, pt: 3}}>
-                <Typography variant="h4">Gather</Typography>
+              <Box sx={{ px: 3, pt: 3 }}>
+                <Box sx={{textAlign: "center",}}>
+                  <Image
+                    quality={80}
+                    width={150}
+                    height={150}
+                    style={{
+                      
+                      objectFit: "cover",
+                      objectPosition: "50% 50%",
+                      borderRadius: "100%",
+                    }}
+                    src="/assets/logo.png"
+                  />
+                </Box>
               </Box>
               <SideNavBar onPageChange={handleChange} />
             </Drawer>
