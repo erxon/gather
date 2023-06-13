@@ -151,12 +151,12 @@ export default function ReportPage({ data }) {
                 <Grid item xs={12} md={6}>
                   {data.photo ? (
                     <ReportPhoto
-                      publicId={`report-photos/${data.photo}`}
+                      publicId={data.photo}
                     />
                   ) : (
                     <Image
-                      width={150}
-                      height={150}
+                      width={100}
+                      height={100}
                       alt="placeholder"
                       src="/assets/placeholder.png"
                     />

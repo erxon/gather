@@ -236,7 +236,7 @@ export default function EditReport({ data }) {
                   Photo
                 </Typography>
                 {data.photo ? (
-                  <ReportPhoto publicId={`report-photos/${data.photo}`} />
+                  <ReportPhoto publicId={data.photo} />
                 ) : (
                   <Image
                     width="150"

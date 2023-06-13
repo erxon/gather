@@ -15,6 +15,8 @@ const reportSchema = mongoose.Schema({
   lastName: {
     type: String,
   },
+  details: String,
+  condition: String,
   reportedAt: Date,
   updatedAt: Date,
   updatedByReporter: { type: mongoose.Schema.Types.ObjectId, ref: "Reporter" },
