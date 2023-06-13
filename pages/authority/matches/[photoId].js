@@ -113,7 +113,11 @@ function FindMatches({ queryPhotoId }) {
         {data ? (
           data.matches.map((match) => {
             return (
-              <GetReport photoId={match._label} distance={match._distance} />
+              <GetReport
+                key={match._label}
+                photoId={match._label}
+                distance={match._distance}
+              />
             );
           })
         ) : (
@@ -135,13 +139,13 @@ function RenderMatches({ queryPhotoId }) {
   if (data) {
     return (
       <Box>
-        <StackRow styles={{mb: 1}}>
+        <StackRow styles={{ mb: 1 }}>
           <IconButton href="/authority/photos">
             <ArrowBackIcon />
           </IconButton>
           <Typography variant="h5">Matches</Typography>
         </StackRow>
-        <Divider sx={{mb: 2}} />
+        <Divider sx={{ mb: 2 }} />
         <Grid container spacing={2}>
           <Grid item xs={12} md={4}>
             <Paper sx={{ p: 3 }} variant="outlined">
