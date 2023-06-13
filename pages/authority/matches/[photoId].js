@@ -97,7 +97,7 @@ function GetReport({ photoId, distance }) {
 
 function FindMatches({ queryPhotoId }) {
   const { data, error, isLoading } = useSWRImmutable(
-    `http://localhost:8000/matches/${queryPhotoId}`,
+    `https://face-recognition-for-gather-v2.onrender.com/matches/${queryPhotoId}`,
     fetcher
   );
   if (error) return <Typography>Something went wrong</Typography>;
