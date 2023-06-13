@@ -10,13 +10,13 @@ import {
   CardMedia,
   Grid,
   Box,
-  Stack,
   Chip,
   CircularProgress,
+  Avatar,
+  Stack,
   Divider,
 } from "@mui/material";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
-import GroupIcon from "@mui/icons-material/Group";
 import ProfilePhoto from "@/components/photo/ProfilePhoto";
 import { addToContactRequest } from "@/lib/api-lib/api-notifications";
 import Image from "next/image";
@@ -25,6 +25,7 @@ import Head from "@/components/Head";
 
 //display all users
 //display add contact if user is authenticated
+
 function User(props) {
   const { username, email, publicId, type } = props;
 
@@ -51,37 +52,31 @@ function User(props) {
         <Card
           sx={{
             display: "flex",
-            flexDirection: "column",
             alignItems: "center",
           }}
           variant="outlined"
         >
-          <Chip
-            sx={{ mt: 3 }}
-            color="primary"
-            size="small"
-            icon={<VerifiedUserIcon />}
-            label={`${type}`}
-          />
           <CardMedia sx={{ p: 3 }}>
             {publicId ? (
               <ProfilePhoto publicId={publicId} />
             ) : (
-              <Image
-                width="120"
-                height="120"
-                alt="placeholder"
+              <Avatar
+                sx={{ width: 56, height: 56 }}
                 src="/assets/placeholder.png"
               />
             )}
           </CardMedia>
           <Box>
-            <CardContent sx={{ textAlign: "center" }}>
+            <CardContent>
+              <Chip
+                color="primary"
+                size="small"
+                icon={<VerifiedUserIcon />}
+                label={`${type}`}
+              />
               <Typography variant="subtitle1">{username}</Typography>
               <Typography variant="subtitle2">{email}</Typography>
             </CardContent>
-          </Box>
-          <Box sx={{ width: "100%" }}>
             <CardActions>
               {buttonState === "noCurrentAction" && (
                 <Button
@@ -108,15 +103,13 @@ function User(props) {
                   Remove contact
                 </Button>
               )}
-            </CardActions>
-            <CardActions>
               <Button
-                fullWidth
+                sx={{ml: 1.5}}
                 variant="outlined"
                 size="small"
                 href={`profile/${props.id}`}
               >
-                View Profile
+                Profile
               </Button>
             </CardActions>
           </Box>
@@ -187,7 +180,7 @@ function UserList() {
             users.map((user) => {
               if (user._id !== currentUser._id) {
                 return (
-                  <Grid item xs={12} md={3} sm={4} key={user._id}>
+                  <Grid item xs={12} md={4} sm={4} key={user._id}>
                     <User
                       key={user._id}
                       id={user._id}
@@ -223,12 +216,9 @@ export default function Users() {
   if (user)
     return (
       <>
-        <div>
-          <Head title="Users" />
-
-          <UserList />
-          {/* <ContactList /> */}
-        </div>
+        <Head title="Users" />
+        <Divider sx={{mb: 2}} />
+        <UserList />
       </>
     );
 }

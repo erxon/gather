@@ -179,6 +179,16 @@ export default function ComponentNavbar(props) {
 
           {user ? (
             <Box sx={{ display: { xs: "none", md: "flex" } }}>
+              <IconButton
+                size="large"
+                aria-label="show 17 new notifications"
+                color="inherit"
+                onClick={handleNotificationsOpen}
+              >
+                <Badge badgeContent={17} color="error">
+                  <NotificationsIcon />
+                </Badge>
+              </IconButton>
               <Stack direction="row" spacing={1} alignItems="center">
                 <AccountCircleIcon />
                 <Typography>{user.username}</Typography>
@@ -224,6 +234,16 @@ export default function ComponentNavbar(props) {
           )}
           {user ? (
             <Box sx={{ display: { xs: "flex", md: "none" } }}>
+              <IconButton
+                size="large"
+                aria-label="show 17 new notifications"
+                color="inherit"
+                onClick={handleNotificationsOpen}
+              >
+                <Badge badgeContent={17} color="error">
+                  <NotificationsIcon />
+                </Badge>
+              </IconButton>
               <Stack direction="row" spacing={1} alignItems="center">
                 <AccountCircleIcon />
                 <Typography>{user.username}</Typography>

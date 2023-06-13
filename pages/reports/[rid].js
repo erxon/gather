@@ -237,8 +237,7 @@ export default function ReportPage({ data }) {
                 Share
               </Typography>
               <Stack spacing={2}>
-                <FacebookButton />
-                <TwitterButton />
+                <FacebookButton url={`https://gather-plum.vercel.app/reports/${data._id}`} />
               </Stack>
             </Paper>
           )}

@@ -17,7 +17,7 @@ import Data from "@/components/Data";
 import { useUser } from "@/lib/hooks";
 import Head from "@/components/Head";
 
-function DashboardMain() {
+function DashboardMain(user) {
   return (
     <>
       <Head title="Dashboard" />
@@ -39,11 +39,16 @@ function DashboardMain() {
           </Paper>
         </Grid>
         <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 3 }} variant="outlined">
-            <Typography variant="h6">Notifications</Typography>
-            <NotificationsMain />
-          </Paper>
-          <Paper sx={{ p: 3, mt: 3 }} variant="outlined">
+          {user.type === "authority" && (
+            <Paper sx={{ p: 3 }} variant="outlined">
+              <Typography variant="h6">Notifications</Typography>
+              <NotificationsMain />
+            </Paper>
+          )}
+          <Paper
+            sx={user.type === "authority" ? { p: 3, mt: 3 } : { p: 3 }}
+            variant="outlined"
+          >
             <Typography sx={{ mb: 3 }} variant="h6">
               Data
             </Typography>
@@ -63,11 +68,11 @@ export default function Dashboard() {
   const [user, { loading }] = useUser();
 
   useEffect(() => {
-    if(!user && !loading){
-        router.push("/login")
+    if (!user && !loading) {
+      router.push("/login");
     }
-  }, [user, loading])
+  }, [user, loading]);
 
   if (loading) return <CircularProgress />;
-  if (user) return <DashboardMain />
+  if (user) return <DashboardMain user={user} />;
 }

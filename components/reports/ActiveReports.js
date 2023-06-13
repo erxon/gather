@@ -18,6 +18,7 @@ import { AdvancedImage, responsive } from "@cloudinary/react";
 import { CloudinaryImage } from "@cloudinary/url-gen";
 import { limitFit, fill } from "@cloudinary/url-gen/actions/resize";
 import ReportDetails from "./ReportDetails";
+import Link from "next/link";
 
 function Report(props) {
   const { id, name, photo, lastSeen, age, gender } = props;
@@ -26,43 +27,34 @@ function Report(props) {
     cloudName: "dg0cwy8vx",
     apiKey: process.env.NEXT_PUBLIC_CLOUDINARY_KEY,
     apiSecret: process.env.NEXT_PUBLIC_CLOUDINARY_SECRET,
-  }).resize(fill().height(200).width(150));
+  }).resize(fill().height(100).width(100));
 
   return (
     <Card
       sx={{
         display: "flex",
-        my: 1
+        alignItems: "center",
+        my: 1,
+        p: 1,
       }}
       variant="outlined"
     >
       {photo ? (
-          <AdvancedImage cldImg={image} />
+        <AdvancedImage cldImg={image} />
       ) : (
         <CardMedia
           component="img"
-          sx={{ width: 150 }}
+          sx={{ width: 100, height: 100 }}
           image="/assets/placeholder.png"
         />
       )}
-      <Box sx={{ display: "flex", flexDirection: "column", py: 0.5, pl: 1 }}>
-        <Box>
-          <CardContent sx={{ flex: "1 0 auto" }}>
-            <Typography gutterBottom variant="h5" component="div">
-              {name}
-            </Typography>
-            <ReportDetails 
-              lastSeen={lastSeen}
-              age={age}
-              gender={gender}
-            />
-          </CardContent>
-        </Box>
-        <CardActions>
-          <Button variant="contained" size="small" href={`/reports/${id}`}>
-            View
-          </Button>
-        </CardActions>
+      <Box sx={{ display: "flex", flexDirection: "column", pl: 1 }}>
+        <CardContent sx={{ flex: "1 0 auto" }}>
+          <Typography gutterBottom variant="h5" component="div">
+            <Link style={{textDecoration: 'none', color: '#000000'}} href={`/reports/${id}`}>{name}</Link>
+          </Typography>
+          <ReportDetails lastSeen={lastSeen} age={age} gender={gender} />
+        </CardContent>
       </Box>
     </Card>
   );

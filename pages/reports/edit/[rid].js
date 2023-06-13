@@ -140,7 +140,7 @@ export default function EditReport({ data }) {
 
       body.photo = photoUpload.public_id;
     }
-
+    //if status set to active trigger a notification
     const update = {
       ...body,
       updatedBy: user._id,
@@ -239,8 +239,8 @@ export default function EditReport({ data }) {
                   <ReportPhoto publicId={`report-photos/${data.photo}`} />
                 ) : (
                   <Image
-                    width='150'
-                    height='150'
+                    width="150"
+                    height="150"
                     alt="placeholder"
                     src={
                       image.renderImage === ""
