@@ -20,6 +20,8 @@ import Button from "@mui/material/Button";
 import ArticleIcon from "@mui/icons-material/Article";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
+import LocalPoliceIcon from "@mui/icons-material/LocalPolice";
+import PeopleIcon from "@mui/icons-material/People";
 import Data from "@/components/Data";
 import styles from "../public/style/home.module.css";
 
@@ -189,11 +191,11 @@ const ReportWithPhoto = () => {
 
     //Upload photo to Cloudinary
     const cloudUpload = await uploadReportPhoto(formData);
-    const publicId = cloudUpload.public_id.substring(13)
+    const publicId = cloudUpload.public_id.substring(13);
 
     //Upload photo to Database
     const setValues = {
-      type: 'query',
+      type: "query",
       image: publicId,
       fileName: photo.fileName,
     };
@@ -255,7 +257,12 @@ const ReportWithPhoto = () => {
                 size="small"
               >
                 Select file
-                <input hidden type="file" name="file" accept="image/jpeg, image/png" />
+                <input
+                  hidden
+                  type="file"
+                  name="file"
+                  accept="image/jpeg, image/png"
+                />
               </Button>
             </Grid>
             <Grid item xs={12} md={6}>
@@ -307,17 +314,101 @@ const DisplayData = () => {
 export default function HomePage() {
   return (
     <>
-      <Box>
+      <Box
+        sx={{
+          p: 5,
+          borderRadius: "20px",
+          backgroundColor: "#F2F4F4",
+        }}
+      >
+        <Typography variant="h3">GATHER</Typography>
+        <Box sx={{ my: 1, width: { xs: "75%", md: "50%" } }}>
+          <Typography sx={{ mb: 1 }} variant="body1" color="secondary">
+            Gather is a platform where citizens and authorities could collaborate
+            to find missing people in the community.
+          </Typography>
+          <Typography
+            sx={{ fontWeight: "bold" }}
+            variant="body1"
+            color="primary"
+          >
+            Manage. Disseminate. Communicate. Locate.
+          </Typography>
+        </Box>
         <Grid container spacing={2}>
-          <Grid item xs={12} md={8}>
+          <Grid item xs={12} md={4}>
             {/*ReportWithPhoto*/}
             <ReportWithPhoto />
+          </Grid>
+          <Grid item xs={12} md={4}>
             {/*Report and manage*/}
             <ReportToManage />
           </Grid>
           <Grid item xs={12} md={4}>
             {/*Data*/}
             <DisplayData />
+          </Grid>
+        </Grid>
+      </Box>
+      <Box sx={{ p: 3 }}>
+        <Typography sx={{ mb: 2 }} variant="h4">
+          Help us bring missing people to their home.
+        </Typography>
+
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={6}>
+            <Paper sx={{ p: 3 }}>
+              <Stack
+                sx={{ mb: 1 }}
+                direction="row"
+                spacing={1}
+                alignItems="center"
+              >
+                <LocalPoliceIcon color="primary" />
+                <Typography variant="h5" color="primary">
+                  For Authorities
+                </Typography>
+              </Stack>
+              <Typography variant="body1">
+                Your information will be verified by the administrator. Prepare
+                your credentials to be verified.
+              </Typography>
+              <Button
+                href="/signup/authority"
+                sx={{ mt: 2 }}
+                disableElevation
+                variant="contained"
+              >
+                Create Account
+              </Button>
+            </Paper>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Paper sx={{ p: 3 }}>
+              <Stack
+                sx={{ mb: 1 }}
+                direction="row"
+                spacing={1}
+                alignItems="center"
+              >
+                <PeopleIcon color="primary" />
+                <Typography variant="h5" color="primary">
+                  For Concerned Citizens
+                </Typography>
+              </Stack>
+              <Typography variant="body1">
+                If you are an individual or organization who wants to Help find
+                missing people.
+              </Typography>
+              <Button
+                href="/signup/citizen"
+                sx={{ mt: 2 }}
+                disableElevation
+                variant="contained"
+              >
+                Create Account
+              </Button>
+            </Paper>
           </Grid>
         </Grid>
       </Box>

@@ -8,8 +8,11 @@ import { Box, Stack, Typography, Paper } from "@mui/material";
 import Button from "@mui/material/Button";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { signup } from "@/lib/api-lib/api-auth";
+import { useRouter } from "next/router";
 
 export default function Signup() {
+  const router = useRouter();
+  const { type } = router.query;
   const [user, { mutate }] = useUser();
   const [values, setValues] = useState({
     username: "",
@@ -42,7 +45,7 @@ export default function Signup() {
       username: values.username,
       password: values.password,
       email: values.email,
-      type: "authority",
+      type: type,
     };
 
     if (body.password !== values.rpassword) {
@@ -78,7 +81,7 @@ export default function Signup() {
           textAlign: "center",
         }}
       >
-        <Paper sx={{p: 3}}>
+        <Paper sx={{ p: 3 }}>
           <Stack
             direction="row"
             justifyContent="center"
@@ -91,6 +94,9 @@ export default function Signup() {
               Sign up
             </Typography>
           </Stack>
+          <Typography variant="h6">
+            {type && (type === 'authority' ? 'Authority' : 'Concerned Citizen')}
+          </Typography>
           <Stack sx={{ mb: 2 }}>
             <TextField
               label="username"

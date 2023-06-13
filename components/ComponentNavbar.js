@@ -139,14 +139,6 @@ export default function ComponentNavbar(props) {
     >
       <MenuList dense>
         <MenuItem>
-          <Link
-            href="/signup"
-            style={{ textDecoration: "none", color: "#000" }}
-          >
-            Signup
-          </Link>
-        </MenuItem>
-        <MenuItem>
           <Link href="/login" style={{ textDecoration: "none", color: "#000" }}>
             Login
           </Link>
@@ -216,18 +208,10 @@ export default function ComponentNavbar(props) {
                   color="primary"
                   href="/login"
                   variant="contained"
-                  size="small"
+                  size="large"
                   disableElevation
                 >
                   Login
-                </Button>
-                <Button
-                  size="small"
-                  href="/signup"
-                  variant="contained"
-                  disableElevation
-                >
-                  Signup
                 </Button>
               </Stack>
             </Box>
@@ -262,16 +246,15 @@ export default function ComponentNavbar(props) {
             </Box>
           ) : (
             <Box sx={{ display: { xs: "flex", md: "none" } }}>
-              <IconButton
-                size="large"
-                aria-label="show more"
-                aria-controls={mobileMenuId}
-                aria-haspopup="true"
-                onClick={handleMobileMenuOpen}
-                color="inherit"
-              >
-                <MoreIcon />
-              </IconButton>
+              <Button
+                  color="primary"
+                  href="/login"
+                  variant="contained"
+                  size="large"
+                  disableElevation
+                >
+                  Login
+                </Button>
             </Box>
           )}
         </Toolbar>
