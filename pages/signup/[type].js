@@ -13,13 +13,16 @@ import { useRouter } from "next/router";
 export default function Signup() {
   const router = useRouter();
   const { type } = router.query;
+
   const [user, { mutate }] = useUser();
+
   const [values, setValues] = useState({
     username: "",
     email: "",
     password: "",
     rpassword: "",
   });
+
   const [error, setError] = useState({
     show: false,
     message: "",
@@ -41,11 +44,14 @@ export default function Signup() {
       return;
     }
 
+    const status = type === "authority" ? "unverified" : "verified";
+
     const body = {
       username: values.username,
       password: values.password,
       email: values.email,
       type: type,
+      status: status,
     };
 
     if (body.password !== values.rpassword) {
@@ -68,7 +74,7 @@ export default function Signup() {
 
   useEffect(() => {
     if (user) {
-      Router.push("/profile");
+      Router.push("/profile/completion");
     }
   }, [user]);
 
@@ -95,7 +101,7 @@ export default function Signup() {
             </Typography>
           </Stack>
           <Typography variant="h6">
-            {type && (type === 'authority' ? 'Authority' : 'Concerned Citizen')}
+            {type && (type === "authority" ? "Authority" : "Concerned Citizen")}
           </Typography>
           <Stack sx={{ mb: 2 }}>
             <TextField

@@ -15,7 +15,7 @@ handler
     
   })
   .post((req, res) => {
-    const { username, password, email, type } = req.body
+    const { username, password, email, type, status } = req.body
     if (!username || !password || !email) {
       return res.status(400).send('Missing fields')
     }
@@ -31,7 +31,7 @@ handler
 
       } else {
         const userLogin = { username, password, email }
-        const userSignup = {username, password, email, type}
+        const userSignup = {username, password, email, type, status}
         const user = await createUser(req, userSignup)
         req.logIn(userLogin, (err) => {
           if (err) throw err
