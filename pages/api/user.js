@@ -45,7 +45,7 @@ handler
   })
   .put((req, res) => {
     const user = req.user;
-    const update = req.body
+    const update ={...req.body, updatedAt: Date.now()}
     user.then((user) => {
       updateUserByUsername(req, user.username, update).then((data) => {
         if (data && data.errors){

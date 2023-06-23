@@ -12,7 +12,7 @@ import {
   Divider,
 } from "@mui/material";
 import useSWR from "swr";
-import { fetcher } from "@/lib/hooks";
+import { fetcher, useUser } from "@/lib/hooks";
 import QueryPhoto from "@/components/photo/QueryPhoto";
 import IconTypography from "@/utils/layout/IconTypography";
 //Icons
@@ -23,6 +23,7 @@ import EmailIcon from "@mui/icons-material/Email";
 
 
 function UploadedPhoto({ photoId }) {
+
   const { data, error, isLoading } = useSWR(`/api/photos/${photoId}`, fetcher);
   if (isLoading) return <CircularProgress />;
   if (error) return <Typography>Something went wrong</Typography>;

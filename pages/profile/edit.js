@@ -201,7 +201,6 @@ export default function ProfileEdit() {
   }
 
   const handleImageChange = (event) => {
-    console.log(event.target.files[0]);
     if (event.target.files[0]) {
       setImage({
         file: event.target.files[0],

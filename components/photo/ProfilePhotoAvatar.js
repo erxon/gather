@@ -13,7 +13,7 @@ export default function ProfilePhotoAvatar({publicId}){
         apiSecret: process.env.NEXT_PUBLIC_CLOUDINARY_SECRET,
       })
       .resize(
-        fill().width(48).height(48)
+        fill().width(56).height(56)
       ).roundCorners(max()).delivery(format(auto())) ;
 
     return <>
