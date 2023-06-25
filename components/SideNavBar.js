@@ -10,8 +10,12 @@ import HomeIcon from "@mui/icons-material/Home";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
 import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
+import TableChartIcon from "@mui/icons-material/TableChart";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useUser } from "@/lib/hooks";
 import { useRouter } from "next/router";
+import { Collapse, Divider, Typography } from "@mui/material";
 
 function ListItems(props) {
   const router = useRouter();
@@ -55,7 +59,8 @@ function ListItems(props) {
         </ListItemButton>
         {user && (
           <List>
-            {" "}
+            <Divider />
+            <Typography sx={{ p: 2, fontWeight: "bold" }}>Connect</Typography>
             <ListItemButton
               onClick={() => {
                 router.push("/communicate");
@@ -87,16 +92,22 @@ function ListItems(props) {
               <ListItemText primary="My report" />
             </ListItemButton>
             {user.type === "authority" && (
-              <ListItemButton
-                onClick={() => {
-                  router.push("/authority/photos");
-                }}
-              >
-                <ListItemIcon>
-                  <PhotoLibraryIcon />
-                </ListItemIcon>
-                <ListItemText primary="Photos" />
-              </ListItemButton>
+              <div>
+                <Divider />
+                <Typography sx={{ p: 2, fontWeight: "bold" }}>
+                  Authorities
+                </Typography>
+                <ListItemButton
+                  onClick={() => {
+                    router.push("/authority/photos");
+                  }}
+                >
+                  <ListItemIcon>
+                    <PhotoLibraryIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Photos" />
+                </ListItemButton>
+              </div>
             )}
           </List>
         )}
