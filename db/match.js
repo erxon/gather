@@ -1,12 +1,8 @@
 import mongoose from "mongoose";
 
 const foundMatchSchema = new mongoose.Schema({
-  photoId: { type: mongoose.Schema.Types.ObjectId, ref: "Photo" },
-  matches: [
-    {
-      reportId: { type: mongoose.Schema.Types.ObjectId, ref: "Report" },
-    },
-  ],
+  photoId: String,
+  matches: {},
   createdAt: Date,
   updatedAt: Date,
 });
