@@ -1,7 +1,7 @@
+import { resetMatches } from "@/lib/controllers/faceRecognitionController";
 import auth from "@/middleware/auth";
-import nextConnect from "next-connect";
-import { updateMatches } from "@/lib/controllers/faceRecognitionController";
 import { isAuthority, isVerified } from "@/utils/api-helpers/authorize";
+import nextConnect from "next-connect";
 
 const handler = nextConnect();
 
@@ -13,8 +13,8 @@ handler
   .use((req, res, next) => {
     isVerified(req, res, next);
   })
-  .put((req, res) => {
-    updateMatches(req, res);
+  .delete((req, res) => {
+    resetMatches(req, res);
   });
 
 export default handler;

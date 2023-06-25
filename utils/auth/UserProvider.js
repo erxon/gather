@@ -9,7 +9,7 @@ export default function UserProvider(children) {
 
   if (loading) return <CircularProgress />;
 
-  if (!user) {
+  if (!user) {g
     return (
         <Home />
     )

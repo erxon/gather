@@ -1,6 +1,6 @@
 import dbConnect from "@/db/dbConnect";
 
-const checkType = async (req, res, next) => {
+const isAuthority = async (req, res, next) => {
   try {
     await dbConnect();
     const user = await req.user;
@@ -15,7 +15,7 @@ const checkType = async (req, res, next) => {
   }
 };
 
-const checkStatus = async (req, res, next) => {
+const isVerified = async (req, res, next) => {
   try {
     await dbConnect();
     const user = await req.user;
@@ -31,6 +31,6 @@ const checkStatus = async (req, res, next) => {
 };
 
 export {
-    checkStatus,
-    checkType
+    isAuthority,
+    isVerified
 }

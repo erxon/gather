@@ -96,17 +96,14 @@ function GetReport({ photoId, distance }) {
 }
 
 function FindMatches({ queryPhotoId }) {
+  
   const { data, error, isLoading } = useSWRImmutable(
-    `https://face-recognition-for-gather-v2.onrender.com/matches/${queryPhotoId}`,
+    `/api/face-recognition/${queryPhotoId}`,
     fetcher
   );
-  if (error) return <Typography>Something went wrong</Typography>;
-  if (isLoading)
-    return (
-      <Box>
-        <CircularProgress /> <Typography>Looking for matches...</Typography>
-      </Box>
-    );
+
+  if (error) return <Typography>Something went wrong fetching face matches.</Typography>
+  if (isLoading) return <CircularProgress />
   if (data) {
     return (
       <Box>
@@ -130,10 +127,11 @@ function FindMatches({ queryPhotoId }) {
 }
 
 function RenderMatches({ queryPhotoId }) {
-  const { data, error, isLoading } = useSWR(
+  const { data, error, isLoading } = useSWRImmutable(
     `/api/photos/${queryPhotoId}`,
     fetcher
   );
+
   if (isLoading) return <CircularProgress />;
   if (error) return <Typography>Something went wrong</Typography>;
   if (data) {
