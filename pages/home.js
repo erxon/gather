@@ -21,7 +21,6 @@ import Link from "next/link";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import ArticleIcon from "@mui/icons-material/Article";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import LocalPoliceIcon from "@mui/icons-material/LocalPolice";
@@ -346,8 +345,9 @@ function Reports() {
     fetcher
   );
 
-  if (error) return <Typography>Something went wrong</Typography>;
+  if (error) return <Typography>Something went wrong.</Typography>;
   if (isLoading) return <CircularProgress />;
+
   return (
     <Box sx={{ p: 3, mt: 1 }}>
       <Typography variant="h5">Active Reports</Typography>
