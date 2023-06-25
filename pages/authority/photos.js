@@ -19,11 +19,11 @@ import IconTypography from "@/utils/layout/IconTypography";
 import PersonIcon from "@mui/icons-material/Person";
 import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
 import EmailIcon from "@mui/icons-material/Email";
-
-
+import Head from "@/components/Head";
+import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
+import { useRouter } from "next/router";
 
 function UploadedPhoto({ photoId }) {
-
   const { data, error, isLoading } = useSWR(`/api/photos/${photoId}`, fetcher);
   if (isLoading) return <CircularProgress />;
   if (error) return <Typography>Something went wrong</Typography>;
@@ -36,32 +36,31 @@ function Reporter(props) {
   const { name, contact, email } = props;
   return (
     <Box>
+      <Typography sx={{ mb: 1.5 }} variant="body1">
+        Reported by {name}
+      </Typography>
       <IconTypography
         customStyles={{ mb: 0.5 }}
-        Icon={<PersonIcon />}
-        content={name}
-      />
-      <IconTypography
-        customStyles={{ mb: 0.5 }}
-        Icon={<LocalPhoneIcon />}
+        Icon={<LocalPhoneIcon htmlColor="GrayText" />}
         content={contact}
       />
-      <IconTypography Icon={<EmailIcon />} content={email} />
+      <IconTypography
+        Icon={<EmailIcon htmlColor="GrayText" />}
+        content={email}
+      />
     </Box>
   );
 }
 
 function Report(props) {
+  const router = useRouter();
   return (
     <Grid item xs={12} md={3} sm={6}>
-      <Card variant="outlined">
+      <Card variant="outlined" sx={{p: 2}}>
         <CardMedia sx={{ textAlign: "center" }}>
           <UploadedPhoto photoId={props.photoUploaded} />
         </CardMedia>
         <CardContent>
-          <Typography sx={{ mb: 2 }} variant="h5">
-            Reporter
-          </Typography>
           <Reporter
             name={`${props.firstName} ${props.lastName}`}
             contact={props.contactNumber}
@@ -70,8 +69,11 @@ function Report(props) {
         </CardContent>
         <CardActions>
           <Button
+            variant="contained"
             size="small"
-            href={`/authority/matches/${props.photoUploaded}`}
+            onClick={() =>
+              router.push(`/authority/matches/${props.photoUploaded}`)
+            }
           >
             View
           </Button>
@@ -89,10 +91,7 @@ function Reports() {
     const reporters = data.data;
     return (
       <Box>
-        <Box sx={{mb: 3}}>
-          <Typography variant="h5">Photos submitted</Typography>
-          <Divider />
-        </Box>
+        <Head title="Photos" icon={<InsertPhotoIcon />} />
         <Grid container spacing={1.25}>
           {reporters.map((reporter) => {
             return (

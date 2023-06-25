@@ -18,6 +18,8 @@ import StackRow from "@/utils/StackRow";
 
 import PlaceIcon from "@mui/icons-material/Place";
 import PersonIcon from "@mui/icons-material/Person";
+import ArticleIcon from "@mui/icons-material/Article";
+import Head from "@/components/Head";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
@@ -72,10 +74,12 @@ function GetReport(props) {
     `/api/reports/user/${props.username}`,
     fetcher
   );
-  console.log(props.username)
+  console.log(props.username);
 
   if (error) return <div>failed to load </div>;
   if (isLoading) return <CircularProgress />;
+  if (data.data.length === 0)
+    return <Typography variant="body1" color="GrayText">You have no reports</Typography>;
 
   return (
     <>
@@ -115,7 +119,7 @@ export default function ReportDashboard() {
     return (
       <>
         <Box>
-          <Typography variant="h5">Your Reports</Typography>
+          <Head title="Your Reports" icon={<ArticleIcon />} />
           <Box sx={{ my: 3 }}>
             <GetReport username={user.username} />
           </Box>

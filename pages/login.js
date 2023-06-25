@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Router from "next/router";
-import Link from "next/link";
 import { useUser } from "@/lib/hooks";
 import TextField from "@mui/material/TextField";
-import { Box, Stack, Typography, Snackbar, IconButton } from "@mui/material";
+import {Stack, Typography, Paper } from "@mui/material";
 import Button from "@mui/material/Button";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import CloseIcon from "@mui/icons-material/Close";
@@ -49,11 +48,12 @@ export default function Login() {
 
   return (
     <>
-      <Box
+      <Paper
         sx={{
+          p: 3,
           margin: "auto",
           textAlign: "center",
-          maxWidth: { xs: "100%", md: "40%" },
+          maxWidth: 300,
         }}
       >
         <Stack
@@ -91,7 +91,7 @@ export default function Login() {
             Login
           </Button>
         </form>
-      </Box>
+      </Paper>
     </>
   );
 }

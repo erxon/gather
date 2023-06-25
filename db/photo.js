@@ -9,7 +9,9 @@ const photoSchema = new mongoose.Schema({
   }],
   reportId: { type: mongoose.Schema.Types.ObjectId, ref: "Report" },
   missingPerson: String,
-  type: String
+  type: String,
+  createdAt: Date,
+  updatedAt: Date
 });
 
 const Photo = mongoose.models.Photo || mongoose.model("Photo", photoSchema);

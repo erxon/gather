@@ -1,27 +1,22 @@
 import { useUser } from "@/lib/hooks";
 import { CircularProgress } from "@mui/material";
 import ChatMain from "@/components/ChatMain";
-import Router, { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import useSWR from "swr";
-import { fetcher } from "@/lib/hooks";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
+
 export default function Communicate() {
-  const [user, { loading}] = useUser();
+  const [user, { loading }] = useUser();
   const router = useRouter();
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push('/login')
+      router.push("/login");
     }
   }, [user, loading]);
 
   if (loading) {
     return <CircularProgress />;
   }
-  
-  return (
-    <>
-      {user && <ChatMain user={user.username}/>}
-    </>
-  );
+
+  return <>{user && <ChatMain user={user.username} />}</>;
 }

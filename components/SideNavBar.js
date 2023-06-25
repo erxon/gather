@@ -10,61 +10,77 @@ import HomeIcon from "@mui/icons-material/Home";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
 import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
-import { Box, Divider, Drawer } from "@mui/material";
 import { useUser } from "@/lib/hooks";
-import styles from "@/public/style/sidenav.module.css";
-import Typography from "@mui/material/Typography";
-import { useState } from "react";
+import { useRouter } from "next/router";
 
 function ListItems(props) {
+  const router = useRouter();
   const [user] = useUser();
-
-  const styles = {
-    borderRadius: "5px",
-    margin: "10px",
-    height: 30,
-  };
 
   return (
     <>
       <List>
         {user ? (
-          <ListItemButton href="/dashboard" sx={styles}>
+          <ListItemButton
+            onClick={() => {
+              router.push("/dashboard");
+            }}
+          >
             <ListItemIcon>
               <DashboardIcon />
             </ListItemIcon>
             <ListItemText primary="Dashboard" />
           </ListItemButton>
         ) : (
-          <ListItemButton href="/" sx={styles} selected={true}>
+          <ListItemButton
+            onClick={() => {
+              router.push("/");
+            }}
+          >
             <ListItemIcon>
               <HomeIcon />
             </ListItemIcon>
             <ListItemText primary="Home" />
           </ListItemButton>
         )}
-        <ListItemButton href="/reports" sx={styles}>
+        <ListItemButton
+          onClick={() => {
+            router.push("/reports");
+          }}
+        >
           <ListItemIcon>
             <ArticleIcon />
           </ListItemIcon>
-          <ListItemText primary="Missing Person Reports" />
+          <ListItemText primary="Reports" />
         </ListItemButton>
         {user && (
           <List>
             {" "}
-            <ListItemButton href={`/communicate`} sx={styles}>
+            <ListItemButton
+              onClick={() => {
+                router.push("/communicate");
+              }}
+            >
               <ListItemIcon>
                 <ChatBubbleIcon />
               </ListItemIcon>
               <ListItemText primary="Communicate" />
             </ListItemButton>
-            <ListItemButton href="/users" sx={styles}>
+            <ListItemButton
+              onClick={() => {
+                router.push("/users");
+              }}
+            >
               <ListItemIcon>
                 <PeopleIcon />
               </ListItemIcon>
               <ListItemText primary="Users" />
             </ListItemButton>
-            <ListItemButton href="/myreport" sx={styles}>
+            <ListItemButton
+              onClick={() => {
+                router.push("/myreport");
+              }}
+            >
               <ListItemIcon>
                 <AssignmentIndIcon />
               </ListItemIcon>
@@ -72,8 +88,9 @@ function ListItems(props) {
             </ListItemButton>
             {user.type === "authority" && (
               <ListItemButton
-                href="/authority/photos"
-                sx={styles}
+                onClick={() => {
+                  router.push("/authority/photos");
+                }}
               >
                 <ListItemIcon>
                   <PhotoLibraryIcon />

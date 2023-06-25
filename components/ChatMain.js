@@ -14,13 +14,14 @@ import {
   IconButton,
   CircularProgress,
 } from "@mui/material";
-import SendIcon from "@mui/icons-material/Send";
 import ProfilePhotoAvatar from "@/components/photo/ProfilePhotoAvatar";
 import { useState} from "react";
 import useSWR from "swr";
 import { fetcher } from "@/lib/hooks";
 import ConversationBox from "./ConversationBox";
 import Head from "./Head";
+
+import ChatIcon from '@mui/icons-material/Chat';
 
 function Contact(props) {
   return (
@@ -75,7 +76,8 @@ export default function ChatMain({user}) {
 
   return (
     <>
-      <Head title="Communicate" />
+      
+      <Head title="Communicate" icon={<ChatIcon />}/>
       <Grid container spacing={3}>
         <Grid item xs={12} md={4}>
           <Paper sx={{p: 3}} variant="outlined">

@@ -9,7 +9,6 @@ import { useUser } from "@/lib/hooks";
 import { useState } from "react";
 import {
   Typography,
-  Stack,
   RadioGroup,
   FormControlLabel,
   Radio,
@@ -22,10 +21,12 @@ import {
   Grid,
   Chip,
 } from "@mui/material";
-import ArticleIcon from "@mui/icons-material/Article";
-import AddIcon from "@mui/icons-material/Add";
+
+import PersonIcon from "@mui/icons-material/Person";
+import PlaceIcon from "@mui/icons-material/Place";
 import { getReports } from "@/lib/api-lib/api-reports";
-import Head from "@/components/Head";
+import StackRowLayout from "@/utils/StackRowLayout";
+import ArticleIcon from "@mui/icons-material/Article";
 
 function Report(props) {
   const route = `/reports/${props.id}`;
@@ -35,14 +36,20 @@ function Report(props) {
       cloudName: "dg0cwy8vx",
       apiKey: process.env.CLOUDINARY_KEY,
       apiSecret: process.env.CLOUDINARY_SECRET,
-    }).resize(fill().width(345).height(200));
+    }).resize(fill().height(150));
   }
   return (
     <>
       <Box sx={{ mt: 3 }}>
-        <Card style={{ maxWidth: "300px" }} variant="outlined">
+        <Card style={{ maxWidth: "300px" }}>
           {image ? (
-            <CardMedia>
+            <CardMedia
+              sx={{
+                height: 150,
+                textAlign: "center",
+                backgroundColor: "#F2F4F4",
+              }}
+            >
               <AdvancedImage cldImg={image} />
             </CardMedia>
           ) : (
@@ -52,29 +59,30 @@ function Report(props) {
             />
           )}
           <CardContent>
-            <Typography gutterBottom variant="h5" component="div">
-              {props.firstName} {props.lastName}
-            </Typography>
-
-            <Typography>
-              <strong>Last seen: </strong> {props.lastSeen} <br />
-              <strong>Age: </strong> {props.age} <br />
-              <strong>Gender: </strong> {props.gender} <br />
-            </Typography>
-            <Chip
-              sx={{ mt: 2 }}
-              variant="outlined"
-              color="primary"
-              label={props.status}
-            />
+            <StackRowLayout spacing={1}>
+              <Typography variant="h6" sx={{ fontWeight: "bold", mb: 0.5 }}>
+                {props.firstName} {props.lastName}
+              </Typography>
+              <Chip
+                sx={{ mt: 2 }}
+                variant="filled"
+                color="success"
+                label={props.status}
+              />
+            </StackRowLayout>
+            <StackRowLayout spacing={1}>
+              <PersonIcon />
+              <Typography variant="body1">
+                {props.age}, {props.gender}
+              </Typography>
+            </StackRowLayout>
+            <StackRowLayout spacing={1}>
+              <PlaceIcon />
+              <Typography variant="body1">{props.lastSeen}</Typography>
+            </StackRowLayout>
 
             <CardActions sx={{ p: 0, mt: 2 }}>
-              <Button
-                variant="contained"
-                disableElevation
-                fullWidth
-                href={route}
-              >
+              <Button variant="contained" fullWidth href={route}>
                 View
               </Button>
             </CardActions>
@@ -97,38 +105,37 @@ export default function ReportPage({ data }) {
       setDisplayData(
         data.filter((report) => report.status === event.target.value)
       );
-      console.log(displayData);
     }
   };
   return (
     <div>
-      <Head
-        title="Reports"
-        component={
-          <Button startIcon={<AddIcon />} variant="contained">
-            Add new report
-          </Button>
-        }
-      />
-      <div className="row">
+      <Box sx={{ mb: 3 }}>
+        <StackRowLayout spacing={1}>
+          <ArticleIcon />
+          <Typography variant="h5">Reports</Typography>
+        </StackRowLayout>
+      </Box>
+      <div>
         {user && user.type === "authority" && (
           <RadioGroup onChange={handleChange} name="filter">
-            <FormControlLabel
-              value="pending"
-              control={<Radio />}
-              label="Pending"
-            />
-            <FormControlLabel
-              value="active"
-              control={<Radio />}
-              label="Active"
-            />
-            <FormControlLabel
-              value="closed"
-              control={<Radio />}
-              label="Closed"
-            />
-            <FormControlLabel value="all" control={<Radio />} label="All" />
+            <StackRowLayout>
+              <FormControlLabel
+                value="pending"
+                control={<Radio />}
+                label="Pending"
+              />
+              <FormControlLabel
+                value="active"
+                control={<Radio />}
+                label="Active"
+              />
+              <FormControlLabel
+                value="closed"
+                control={<Radio />}
+                label="Closed"
+              />
+              <FormControlLabel value="all" control={<Radio />} label="All" />
+            </StackRowLayout>
           </RadioGroup>
         )}
         <Grid container spacing={2}>
@@ -150,7 +157,9 @@ export default function ReportPage({ data }) {
               );
             })
           ) : (
-            <Typography sx={{ mt: 3 }}>Nothing to show</Typography>
+            <Typography sx={{ mt: 3, p: 3 }} color="GrayText" variant="body1">
+              Nothing to show
+            </Typography>
           )}
         </Grid>
       </div>

@@ -1,16 +1,13 @@
-import { Box, Typography, Divider, Stack } from "@mui/material";
+import { Box, Typography,} from "@mui/material";
+import StackRowLayout from "@/utils/StackRowLayout";
 
-export default function Head({ title, component }) {
+export default function Head({ title, icon }) {
   return (
     <Box sx={{ mb: 3 }}>
-      <Stack sx={{mb: 3}} direction="row" alignItems="center">
-        <Typography variant="h5">
-          {title}
-        </Typography>
-        <Box sx={{textAlign: 'right', width: '100%'}}>
-          {component}
-        </Box>
-      </Stack>
+      <StackRowLayout spacing={1}>
+        {icon}
+        <Typography variant="h5">{title}</Typography>
+      </StackRowLayout>
     </Box>
   );
 }

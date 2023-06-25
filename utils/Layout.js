@@ -104,8 +104,7 @@ export default function Layout({ children }) {
         >
           <Box
             sx={{
-              marginTop: "50px",
-              padding: "2%",
+              marginTop: 10,
               borderRadius: "20px",
             }}
           >

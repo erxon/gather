@@ -13,20 +13,24 @@ import {
   Chip,
   CircularProgress,
   Avatar,
-  Stack,
-  Divider,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import ProfilePhoto from "@/components/photo/ProfilePhoto";
 import { addToContactRequest } from "@/lib/api-lib/api-notifications";
-import Image from "next/image";
 import { useRouter } from "next/router";
 import Head from "@/components/Head";
+import PeopleIcon from "@mui/icons-material/People";
+import StackRowLayout from "@/utils/StackRowLayout";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import PersonIcon from '@mui/icons-material/Person';
 
 //display all users
 //display add contact if user is authenticated
 
 function User(props) {
+  const router = useRouter();
   const { username, email, publicId, type } = props;
 
   const button = props.contacts.includes(props.id)
@@ -68,35 +72,36 @@ function User(props) {
           </CardMedia>
           <Box>
             <CardContent>
-              <Chip
-                color="primary"
-                size="small"
-                icon={<VerifiedUserIcon />}
-                label={`${type}`}
-              />
-              <Typography variant="subtitle1">{username}</Typography>
+              <StackRowLayout spacing={1}>
+                <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+                  {username}
+                </Typography>
+                <Chip label={type} />
+              </StackRowLayout>
               <Typography variant="subtitle2">{email}</Typography>
             </CardContent>
             <CardActions>
               {buttonState === "noCurrentAction" && (
-                <Button
-                  fullWidth
-                  variant="outlined"
-                  size="small"
-                  onClick={() => handleClick("noCurrentAction")}
-                >
-                  Add Contact
-                </Button>
+                <Tooltip title="Add to contacts">
+                  <IconButton
+                    fullWidth
+                    variant="contained"
+                    size="small"
+                    onClick={() => handleClick("noCurrentAction")}
+                  >
+                    <PersonAddIcon color="primary" />
+                  </IconButton>
+                </Tooltip>
               )}
               {buttonState === "disable" && (
-                <Button fullWidth variant="outlined" size="small" disabled>
+                <Button fullWidth variant="contained" size="small" disabled>
                   Requested
                 </Button>
               )}
               {buttonState === "requestAccepted" && (
                 <Button
                   fullWidth
-                  variant="outlined"
+                  variant="contained"
                   size="small"
                   onClick={() => handleClick("requestAccepted")}
                 >
@@ -104,10 +109,11 @@ function User(props) {
                 </Button>
               )}
               <Button
-                sx={{ml: 1.5}}
+                startIcon={<PersonIcon />}
                 variant="outlined"
+                sx={{ ml: 1.5 }}
                 size="small"
-                href={`profile/${props.id}`}
+                onClick={() =>{ router.push(`profile/${props.id}`)}}
               >
                 Profile
               </Button>
@@ -216,8 +222,7 @@ export default function Users() {
   if (user)
     return (
       <>
-        <Head title="Users" />
-        <Divider sx={{mb: 2}} />
+        <Head title="Users" icon={<PeopleIcon />} />
         <UserList />
       </>
     );

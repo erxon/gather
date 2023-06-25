@@ -1,5 +1,4 @@
 import { createTheme } from "@mui/material/styles";
-import { purple } from "@mui/material/colors";
 import { themeGuide } from "./themeGuide";
 const theme = createTheme({
   palette: {
@@ -13,17 +12,7 @@ const theme = createTheme({
       light: "#CCE8E9",
     },
   },
-  typography: {
-    fontSize: 12
-  },
   components: {
-    MuiListItemText: {
-      styleOverrides: {
-        primary: {
-          fontSize: "12px",
-        },
-      },
-    },
     MuiAppBar: {
       styleOverrides: {
         root: {
