@@ -51,7 +51,7 @@ function Form({ publicId, photoId }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const body = {
-      photo: photoId,
+      photoUploaded: photoId,
       firstName: e.target.firstName.value,
       lastName: e.target.lastName.value,
       relationToMissing: e.target.relationToMissing.value,

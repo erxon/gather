@@ -32,6 +32,8 @@ handler
     pusher
       .trigger("notification", "new-report", {
         body,
+        type: "report-manage",
+        createdAt: Date.now()
       })
       .then(() => {
         next();
@@ -51,6 +53,7 @@ handler
           lastSeen: req.body.lastSeen,
           reportId: req.body.reportId
         },
+        type: "report-manage",
         channel: "notification",
         event: "new-report",
       });

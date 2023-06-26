@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 const notificationSchema = new mongoose.Schema({
   channel: String,
   event: String,
+  type: String,
   body: {
     type: Map,
     of: String
