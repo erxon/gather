@@ -4,7 +4,7 @@ import { uploadPhoto } from "@/lib/controllers/photoController";
 const handler = nextConnect();
 
 handler.post(async (req, res) => {
-  const result = await uploadPhoto(req.body);
+  const result = await uploadPhoto({ ...req.body, createdAt: Date.now() });
 
   if (result && result.error) {
     res.status(400).json({ error: result.error });

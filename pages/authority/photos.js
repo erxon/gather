@@ -22,13 +22,22 @@ import EmailIcon from "@mui/icons-material/Email";
 import Head from "@/components/Head";
 import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
 import { useRouter } from "next/router";
+import computeElapsedTime from "@/utils/helpers/computeElapsedTime";
 
 function UploadedPhoto({ photoId }) {
   const { data, error, isLoading } = useSWR(`/api/photos/${photoId}`, fetcher);
   if (isLoading) return <CircularProgress />;
   if (error) return <Typography>Something went wrong</Typography>;
   if (data) {
-    return <QueryPhoto publicId={data.image} />;
+    const startDate = new Date(data.createdAt)
+    const timeElapsed = computeElapsedTime(startDate);
+
+    return (
+      <Box>
+        <QueryPhoto publicId={data.image} />
+        <Typography variant="body2" color="GrayText">Uploaded {timeElapsed}</Typography>
+      </Box>
+    );
   }
 }
 
@@ -56,7 +65,7 @@ function Report(props) {
   const router = useRouter();
   return (
     <Grid item xs={12} md={3} sm={6}>
-      <Card variant="outlined" sx={{p: 2}}>
+      <Card variant="outlined" sx={{ p: 2 }}>
         <CardMedia sx={{ textAlign: "center" }}>
           <UploadedPhoto photoId={props.photoUploaded} />
         </CardMedia>

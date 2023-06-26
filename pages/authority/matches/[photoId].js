@@ -8,6 +8,7 @@ import {
   Stack,
   IconButton,
   Divider,
+  LinearProgress,
 } from "@mui/material";
 import Image from "next/image";
 import Authenticate from "@/utils/authority/Authenticate";
@@ -24,6 +25,7 @@ import PlaceIcon from "@mui/icons-material/Place";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import StackRow from "@/utils/StackRow";
 import RefreshIcon from "@mui/icons-material/Refresh";
+import { useState } from "react";
 
 function DisplayReportDetails({ reportId, distance }) {
   const { data, error, isLoading } = useSWR(
@@ -84,6 +86,7 @@ function DisplayReportDetails({ reportId, distance }) {
 
 function GetReport({ photoId, distance }) {
   const { data, error, isLoading } = useSWR(`/api/photos/${photoId}`, fetcher);
+
   if (error) return <Typography>Something went wrong</Typography>;
   if (isLoading) return <CircularProgress />;
   if (data) {
@@ -94,6 +97,7 @@ function GetReport({ photoId, distance }) {
 }
 
 function FindMatches({ queryPhotoId }) {
+  const [isReset, setReset] = useState(false);
   const { data, error, isLoading, mutate } = useSWRImmutable(
     `/api/face-recognition/${queryPhotoId}`,
     fetcher
@@ -110,30 +114,41 @@ function FindMatches({ queryPhotoId }) {
 
     await reset.json();
 
-    mutate({})
+    mutate({});
   };
   const handleReload = async () => {
-    const reload = await fetch('/api/face-recognition/reload', {
-      method: 'PUT',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({photoId: queryPhotoId})
-    })
+    setReset(true);
+    const reload = await fetch("/api/face-recognition/reload", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ photoId: queryPhotoId }),
+    });
 
     const result = await reload.json();
 
-    mutate(result.data)
-  }
+    mutate(result.data);
+    setReset(false);
+  };
 
   return (
     <Box>
       {data && (
-        <div>
-          <Button onClick={() => handleReset(data._id)}>Clear</Button>
-          <IconButton onClick={handleReload}>
+        <Box sx={{ mb: 2 }}>
+          <Button
+            disabled={isReset}
+            onClick={() => handleReset(data._id)}
+            variant="outlined"
+            size="small"
+          >
+            Clear
+          </Button>
+          <IconButton sx={{ml: 1}} disabled={isReset} onClick={handleReload}>
             <RefreshIcon color="primary" />
           </IconButton>
-        </div>
+        </Box>
       )}
+
+      {isReset && <LinearProgress sx={{mb: 1}} />}
       {data.matches ? (
         data.matches.map((match) => {
           return (
@@ -154,6 +169,7 @@ function FindMatches({ queryPhotoId }) {
 }
 
 function RenderMatches({ queryPhotoId }) {
+  const router = useRouter();
   const { data, error, isLoading } = useSWRImmutable(
     `/api/photos/${queryPhotoId}`,
     fetcher
@@ -165,7 +181,7 @@ function RenderMatches({ queryPhotoId }) {
     return (
       <Box>
         <StackRow styles={{ mb: 1 }}>
-          <IconButton href="/authority/photos">
+          <IconButton onClick={() => router.push("/authority/photos")}>
             <ArrowBackIcon />
           </IconButton>
           <Typography variant="h5">Matches</Typography>
