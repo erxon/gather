@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const foundMatchSchema = new mongoose.Schema({
   photoId: String,
-  matches: {},
+  matches: [],
   createdAt: Date,
   updatedAt: Date,
 });

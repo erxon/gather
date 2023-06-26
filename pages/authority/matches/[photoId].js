@@ -10,7 +10,6 @@ import {
   Divider,
 } from "@mui/material";
 import Image from "next/image";
-import ReportCardHorizontal from "@/components/reports/ReportCardHorizontal";
 import Authenticate from "@/utils/authority/Authenticate";
 import { useRouter } from "next/router";
 import useSWR from "swr";
@@ -18,14 +17,13 @@ import useSWRImmutable from "swr/immutable";
 import { fetcher } from "@/lib/hooks";
 import QueryPhoto from "@/components/photo/QueryPhoto";
 import ReportPhoto from "@/components/photo/ReportPhoto";
-import { useState, useEffect } from "react";
-import Head from "@/components/Head";
-import RefreshIcon from "@mui/icons-material/Refresh";
+
 import IconTypography from "@/utils/layout/IconTypography";
 import PersonIcon from "@mui/icons-material/Person";
 import PlaceIcon from "@mui/icons-material/Place";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import StackRow from "@/utils/StackRow";
+import RefreshIcon from "@mui/icons-material/Refresh";
 
 function DisplayReportDetails({ reportId, distance }) {
   const { data, error, isLoading } = useSWR(
@@ -96,33 +94,62 @@ function GetReport({ photoId, distance }) {
 }
 
 function FindMatches({ queryPhotoId }) {
-  
-  const { data, error, isLoading } = useSWRImmutable(
+  const { data, error, isLoading, mutate } = useSWRImmutable(
     `/api/face-recognition/${queryPhotoId}`,
     fetcher
   );
 
-  if (error) return <Typography>Something went wrong fetching face matches.</Typography>
-  if (isLoading) return <CircularProgress />
-  if (data) {
-    return (
-      <Box>
-        {data ? (
-          data.matches.map((match) => {
-            return (
-              <GetReport
-                key={match._label}
-                photoId={match._label}
-                distance={match._distance}
-              />
-            );
-          })
-        ) : (
-          <Typography>No matches found</Typography>
-        )}
-      </Box>
-    );
+  if (error)
+    return <Typography>Something went wrong fetching matches.</Typography>;
+  if (isLoading) return <CircularProgress />;
+
+  const handleReset = async (id) => {
+    const reset = await fetch(`/api/face-recognition/reset/${id}`, {
+      method: "DELETE",
+    });
+
+    await reset.json();
+
+    mutate({})
+  };
+  const handleReload = async () => {
+    const reload = await fetch('/api/face-recognition/reload', {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({photoId: queryPhotoId})
+    })
+
+    const result = await reload.json();
+
+    mutate(result.data)
   }
+
+  return (
+    <Box>
+      {data && (
+        <div>
+          <Button onClick={() => handleReset(data._id)}>Clear</Button>
+          <IconButton onClick={handleReload}>
+            <RefreshIcon color="primary" />
+          </IconButton>
+        </div>
+      )}
+      {data.matches ? (
+        data.matches.map((match) => {
+          return (
+            <GetReport
+              key={match._label}
+              photoId={match._label}
+              distance={match._distance}
+            />
+          );
+        })
+      ) : (
+        <Typography>No matches found</Typography>
+      )}
+    </Box>
+  );
+
   // return <ReportCardHorizontal distance={"Distance: 10%"} />;
 }
 
