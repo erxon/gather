@@ -68,7 +68,7 @@ function Notifications(props) {
   return (
     <>
       <Box>
-        {notifications.map((object) => {
+        {notifications.reverse().map((object) => {
           return (
             <Notification
               name={`${object.body.firstName} ${object.body.lastName}`}
@@ -116,12 +116,12 @@ function Notification(props) {
           <Stack direction="row" alignItems="center" spacing={2}>
             <CircleNotificationsIcon />
             <Box sx={{width: '100%'}}>
-              <Typography variant="body1">New report</Typography>
+              <Typography sx={{fontWeight: "bold"}} variant="body1">New report</Typography>
               <Typography variant="body2">
                 {props.name}, {props.lastSeen}
               </Typography>
               <Typography variant="body2">{props.reporter}</Typography>
-              <Typography variant="subtitle1">{elapsedTime}</Typography>
+              <Typography variant="subtitle2">{elapsedTime}</Typography>
               <Stack
                 sx={{ mt: 2 }}
                 direction="row"

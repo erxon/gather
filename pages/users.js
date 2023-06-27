@@ -15,8 +15,11 @@ import {
   Avatar,
   IconButton,
   Tooltip,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
-import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import ProfilePhoto from "@/components/photo/ProfilePhoto";
 import { addToContactRequest } from "@/lib/api-lib/api-notifications";
 import { useRouter } from "next/router";
@@ -24,7 +27,7 @@ import Head from "@/components/Head";
 import PeopleIcon from "@mui/icons-material/People";
 import StackRowLayout from "@/utils/StackRowLayout";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import PersonIcon from '@mui/icons-material/Person';
+import PersonIcon from "@mui/icons-material/Person";
 
 //display all users
 //display add contact if user is authenticated
@@ -113,7 +116,9 @@ function User(props) {
                 variant="outlined"
                 sx={{ ml: 1.5 }}
                 size="small"
-                onClick={() =>{ router.push(`profile/${props.id}`)}}
+                onClick={() => {
+                  router.push(`profile/${props.id}`);
+                }}
               >
                 Profile
               </Button>
@@ -131,6 +136,8 @@ function UserList() {
     error,
     isLoading,
   } = useSWR("/api/users", fetcher);
+
+  const [filterByType, setFilterByType] = useState("all");
   const [currentUser, { loading }] = useUser();
 
   const [contacts, setContacts] = useState([]);
@@ -139,12 +146,10 @@ function UserList() {
     if (currentUser && !loading) {
       setContacts(currentUser.contacts);
     }
-  }, [currentUser, contacts, loading]);
+  }, [currentUser, contacts, loading, users]);
 
   if (error) return <Typography>Something went wrong</Typography>;
   if (isLoading) return <CircularProgress />;
-
-  console.log(contacts);
 
   const handleAddContact = async (contact) => {
     setContacts((prev) => {
@@ -176,32 +181,58 @@ function UserList() {
     });
     console.log(res);
   };
+  const handleSelect = (event) => {
+    setFilterByType(event.target.value);
+  };
 
   return (
     <>
       <div>
+        <Box sx={{ mb: 2, maxWidth: 300 }}>
+          <FormControl fullWidth>
+            <InputLabel id="demo-simple-select-label">Type</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={filterByType}
+              label="Type"
+              onChange={handleSelect}
+            >
+              <MenuItem value="all">All</MenuItem>
+              <MenuItem value="citizen">Citizens</MenuItem>
+              <MenuItem value="authority">Authorities</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
         <Grid container spacing={3}>
           {!!users?.length &&
             currentUser &&
-            users.map((user) => {
-              if (user._id !== currentUser._id) {
-                return (
-                  <Grid item xs={12} md={4} sm={4} key={user._id}>
-                    <User
-                      key={user._id}
-                      id={user._id}
-                      publicId={user.photo && user.photo}
-                      username={user.username}
-                      type={user.type}
-                      email={user.email}
-                      contacts={contacts}
-                      onAdd={handleAddContact}
-                      onDelete={handleDeleteContact}
-                    />
-                  </Grid>
-                );
-              }
-            })}
+            users
+              .filter((user) => {
+                if (filterByType === "all") {
+                  return user;
+                }
+                return user.type === filterByType;
+              })
+              .map((user) => {
+                if (user._id !== currentUser._id) {
+                  return (
+                    <Grid item xs={12} md={4} sm={4} key={user._id}>
+                      <User
+                        key={user._id}
+                        id={user._id}
+                        publicId={user.photo && user.photo}
+                        username={user.username}
+                        type={user.type}
+                        email={user.email}
+                        contacts={contacts}
+                        onAdd={handleAddContact}
+                        onDelete={handleDeleteContact}
+                      />
+                    </Grid>
+                  );
+                }
+              })}
         </Grid>
       </div>
     </>

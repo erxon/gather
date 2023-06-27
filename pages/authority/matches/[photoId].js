@@ -28,6 +28,7 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import { useState } from "react";
 
 function DisplayReportDetails({ reportId, distance }) {
+  const router = useRouter()
   const { data, error, isLoading } = useSWR(
     `/api/reports/${reportId}`,
     fetcher
@@ -70,7 +71,7 @@ function DisplayReportDetails({ reportId, distance }) {
                 customStyles={{ mb: 0.5 }}
               />
               <Button
-                href={`/reports/${reportId}`}
+                onClick={() => {router.push(`/reports/${reportId}`)}}
                 size="small"
                 variant="contained"
               >
