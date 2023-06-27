@@ -116,7 +116,7 @@ export default function ReportPage({ data }) {
         </StackRowLayout>
       </Box>
       <div>
-        {user && user.type === "authority" && (
+        {user && user.status === "verified" && user.type === "authority" && (
           <RadioGroup onChange={handleChange} name="filter">
             <StackRowLayout>
               <FormControlLabel

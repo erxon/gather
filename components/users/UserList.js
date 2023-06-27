@@ -112,6 +112,7 @@ export default function UserList() {
                         type={user.type}
                         email={user.email}
                         contacts={contacts}
+                        status={user.status}
                         onAdd={handleAddContact}
                         onDelete={handleDeleteContact}
                       />

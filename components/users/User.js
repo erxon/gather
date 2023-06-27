@@ -17,12 +17,13 @@ import ProfilePhoto from "@/components/photo/ProfilePhoto";
 import StackRowLayout from "@/utils/StackRowLayout";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import PersonIcon from "@mui/icons-material/Person";
+import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 
 import { useState } from "react";
 
 export default function User(props) {
   const router = useRouter();
-  const { username, email, publicId, type } = props;
+  const { username, email, publicId, type, status } = props;
 
   const button = props.contacts.includes(props.id)
     ? "requestAccepted"
@@ -67,7 +68,8 @@ export default function User(props) {
                 <Typography variant="body1" sx={{ fontWeight: "bold" }}>
                   {username}
                 </Typography>
-                <Chip label={type} />
+                <Chip label={type} color="secondary" size="small" />
+                <Chip label={status} color="success" size="small" />
               </StackRowLayout>
               <Typography variant="subtitle2">{email}</Typography>
             </CardContent>
@@ -90,14 +92,12 @@ export default function User(props) {
                 </Button>
               )}
               {buttonState === "requestAccepted" && (
-                <Button
-                  fullWidth
-                  variant="contained"
+                <IconButton
                   size="small"
                   onClick={() => handleClick("requestAccepted")}
                 >
-                  Remove contact
-                </Button>
+                  <PersonRemoveIcon />
+                </IconButton>
               )}
               <Button
                 startIcon={<PersonIcon />}

@@ -337,6 +337,7 @@ export default function CreateAccount({ data }) {
       body: JSON.stringify({
         ...values,
         type: "citizen",
+        status: "unverified"
       }),
     });
     //Get the data

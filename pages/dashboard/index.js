@@ -23,9 +23,9 @@ function DashboardMain({ user, mutate }) {
   const router = useRouter();
 
   const handleLogout = async () => {
-    await fetch('/api/auth/logout')
-    mutate({})
-  }
+    await fetch("/api/auth/logout");
+    mutate({});
+  };
 
   return (
     <>
@@ -34,10 +34,21 @@ function DashboardMain({ user, mutate }) {
         <Typography variant="h5">Dashboard</Typography>
       </StackRowLayout>
       {user.status === "unverified" && (
-        <Box sx={{mt: 3}}>
-          <Typography sx={{mb: 1}}>Your account is not yet verified.</Typography>
-          <Button sx={{mr: 1}} size="small" variant="contained" onClick={() => router.push("/profile/completion")}>Profile</Button>
-          <Button size="small" variant="outlined" onClick={handleLogout}>Logout</Button>
+        <Box sx={{ mt: 3 }}>
+          <Typography sx={{ mb: 1 }}>
+            Your account is not yet verified.
+          </Typography>
+          <Button
+            sx={{ mr: 1 }}
+            size="small"
+            variant="contained"
+            onClick={() => router.push("/profile/completion")}
+          >
+            Profile
+          </Button>
+          <Button size="small" variant="outlined" onClick={handleLogout}>
+            Logout
+          </Button>
         </Box>
       )}
       <Grid container spacing={2} sx={{ mt: 3 }}>
@@ -58,14 +69,18 @@ function DashboardMain({ user, mutate }) {
           </Paper>
         </Grid>
         <Grid item xs={12} md={6}>
-          {user.type === "authority" && (
+          {user.type === "authority" && user.status === "verified" && (
             <Paper sx={{ p: 3 }} variant="outlined">
               <Typography variant="h6">Notifications</Typography>
               <NotificationsMain />
             </Paper>
           )}
           <Paper
-            sx={user.type === "authority" ? { p: 3, mt: 3 } : { p: 3 }}
+            sx={
+              user.type === "authority" && user.status === "verified"
+                ? { p: 3, mt: 3 }
+                : { p: 3 }
+            }
             variant="outlined"
           >
             <Typography sx={{ mb: 3 }} variant="h6">
@@ -84,7 +99,7 @@ function DashboardMain({ user, mutate }) {
 export default function Dashboard() {
   const router = useRouter();
 
-  const [user, { loading, mutate}] = useUser()
+  const [user, { loading, mutate }] = useUser();
 
   useEffect(() => {
     if (!user && !loading) {
