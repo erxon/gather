@@ -9,6 +9,7 @@ import {
   IconButton,
   Divider,
   LinearProgress,
+  Modal,
 } from "@mui/material";
 import Image from "next/image";
 import Authenticate from "@/utils/authority/Authenticate";
@@ -25,10 +26,49 @@ import PlaceIcon from "@mui/icons-material/Place";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import StackRow from "@/utils/StackRow";
 import RefreshIcon from "@mui/icons-material/Refresh";
+import CheckIcon from "@mui/icons-material/Check";
 import { useState } from "react";
 
-function DisplayReportDetails({ reportId, distance }) {
+function DisplayModal({ handleClose, openModal, matchId, userId }) {
   const router = useRouter()
+  const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 400,
+    bgcolor: "background.paper",
+    boxShadow: 24,
+    p: 4,
+  };
+
+  const handleConfirm = async () => {
+    const confirm = await fetch('/api/face-recognition/verify-match', {
+      method: 'PUT',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({matchId: matchId, userId: userId})
+    })
+    if(confirm.status === 200){
+      router.reload()
+    }
+  }
+
+  return (
+    <Modal open={openModal} handleClose={() => handleClose()}>
+      <Box sx={style}>
+        <Typography sx={{ fontWeight: "bold" }}>Match found</Typography>
+        <Typography>Verify match, and notify reporter.</Typography>
+        <Box sx={{mt: 2}}>
+          <Button onClick={handleConfirm} startIcon={<CheckIcon />} variant="contained" sx={{mr: 1}}>Confirm</Button>
+          <Button onClick={() => handleClose()} variant="outlined">Cancel</Button>
+        </Box>
+      </Box>
+    </Modal>
+  );
+}
+
+function DisplayReportDetails({ reportId, distance }) {
+  const router = useRouter();
   const { data, error, isLoading } = useSWR(
     `/api/reports/${reportId}`,
     fetcher
@@ -71,7 +111,9 @@ function DisplayReportDetails({ reportId, distance }) {
                 customStyles={{ mb: 0.5 }}
               />
               <Button
-                onClick={() => {router.push(`/reports/${reportId}`)}}
+                onClick={() => {
+                  router.push(`/reports/${reportId}`);
+                }}
                 size="small"
                 variant="contained"
               >
@@ -85,19 +127,20 @@ function DisplayReportDetails({ reportId, distance }) {
   }
 }
 
-function GetReport({ photoId, distance }) {
+function GetReport({ photoId, distance , matchId }) {
   const { data, error, isLoading } = useSWR(`/api/photos/${photoId}`, fetcher);
 
   if (error) return <Typography>Something went wrong</Typography>;
   if (isLoading) return <CircularProgress />;
   if (data) {
     return (
-      <DisplayReportDetails reportId={data.reportId} distance={distance} />
+      <DisplayReportDetails matchId={matchId} reportId={data.reportId} distance={distance} />
     );
   }
 }
 
 function FindMatches({ queryPhotoId }) {
+  const [openConfirmation, setOpenConfirmation] = useState(false);
   const [isReset, setReset] = useState(false);
   const { data, error, isLoading, mutate } = useSWRImmutable(
     `/api/face-recognition/${queryPhotoId}`,
@@ -107,6 +150,10 @@ function FindMatches({ queryPhotoId }) {
   if (error)
     return <Typography>Something went wrong fetching matches.</Typography>;
   if (isLoading) return <CircularProgress />;
+
+  const handleConfirmationClose = () => {
+    setOpenConfirmation(false);
+  };
 
   const handleReset = async (id) => {
     const reset = await fetch(`/api/face-recognition/reset/${id}`, {
@@ -133,6 +180,10 @@ function FindMatches({ queryPhotoId }) {
 
   return (
     <Box>
+      <DisplayModal
+        openModal={openConfirmation}
+        handleClose={handleConfirmationClose}
+      />
       {data && (
         <Box sx={{ mb: 2 }}>
           <Button
@@ -143,23 +194,34 @@ function FindMatches({ queryPhotoId }) {
           >
             Clear
           </Button>
-          <IconButton sx={{ml: 1}} disabled={isReset} onClick={handleReload}>
+          <IconButton sx={{ ml: 1 }} disabled={isReset} onClick={handleReload}>
             <RefreshIcon color="primary" />
           </IconButton>
         </Box>
       )}
 
-      {isReset && <LinearProgress sx={{mb: 1}} />}
-      {data.matches ? (
-        data.matches.map((match) => {
-          return (
-            <GetReport
-              key={match._label}
-              photoId={match._label}
-              distance={match._distance}
-            />
-          );
-        })
+      {isReset && <LinearProgress sx={{ mb: 1 }} />}
+      {data.matches.length > 0 ? (
+        <div>
+          {data.matches.map((match) => {
+            return (
+              <GetReport
+                key={match._label}
+                photoId={match._label}
+                distance={match._distance}
+                matchId={data._id}
+              />
+            );
+          })}
+          <Button
+            onClick={() => setOpenConfirmation(true)}
+            startIcon={<CheckIcon />}
+            sx={{ mt: 2 }}
+            variant="contained"
+          >
+            Verify
+          </Button>
+        </div>
       ) : (
         <Typography>No matches found</Typography>
       )}
