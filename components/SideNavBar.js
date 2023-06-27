@@ -15,17 +15,51 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useUser } from "@/lib/hooks";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { Collapse, Divider, Typography } from "@mui/material"
-import PersonIcon from '@mui/icons-material/Person';
+import { Collapse, Divider, Typography } from "@mui/material";
+import PersonIcon from "@mui/icons-material/Person";
+import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
 
-function ItemButtonUsers() {
-
-  const router = useRouter()
-  const [open, setOpen] = useState(false)
+function ItemButtonReports() {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
   const handleClick = () => {
-    setOpen(!open)
+    setOpen(!open);
+    router.push("/reports");
+  };
+  return (
+    <div>
+      <ListItemButton onClick={handleClick}>
+        <ListItemIcon>
+          <ArticleIcon />
+        </ListItemIcon>
+        <ListItemText primary="Reports" />
+        {open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+      </ListItemButton>
+      <Collapse in={open} timeout="auto" unmountOnExit>
+        <List component="div" disablePadding>
+          <ListItemButton
+            onClick={() => {
+              router.push("/reports/archive");
+            }}
+            sx={{ pl: 4 }}
+          >
+            <ListItemIcon>
+              <Inventory2OutlinedIcon />
+            </ListItemIcon>
+            <ListItemText primary="Archived reports" />
+          </ListItemButton>
+        </List>
+      </Collapse>
+    </div>
+  );
+}
+function ItemButtonUsers() {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const handleClick = () => {
+    setOpen(!open);
     router.push("/users");
-  }
+  };
   return (
     <div>
       <ListItemButton onClick={handleClick}>
@@ -37,7 +71,12 @@ function ItemButtonUsers() {
       </ListItemButton>
       <Collapse in={open} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
-          <ListItemButton onClick={() => {router.push("/users/unverified")}} sx={{ pl: 4 }}>
+          <ListItemButton
+            onClick={() => {
+              router.push("/users/unverified");
+            }}
+            sx={{ pl: 4 }}
+          >
             <ListItemIcon>
               <PersonIcon />
             </ListItemIcon>
@@ -79,16 +118,7 @@ function ListItems(props) {
             <ListItemText primary="Home" />
           </ListItemButton>
         )}
-        <ListItemButton
-          onClick={() => {
-            router.push("/reports");
-          }}
-        >
-          <ListItemIcon>
-            <ArticleIcon />
-          </ListItemIcon>
-          <ListItemText primary="Reports" />
-        </ListItemButton>
+        <ItemButtonReports />
         {user && (
           <List>
             <Divider />
@@ -103,7 +133,7 @@ function ListItems(props) {
               </ListItemIcon>
               <ListItemText primary="Communicate" />
             </ListItemButton>
-            {user.type === "authority" ? (
+            {user.type === "authority" && user.status === "verified" ? (
               <ItemButtonUsers />
             ) : (
               <ListItemButton
