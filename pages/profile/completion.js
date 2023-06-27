@@ -19,7 +19,7 @@ export default function Page() {
 
   return (
     <Paper variant="outlined" sx={{p: 3}}>
-      <Typography variant="h6">Authority completion form</Typography>
+      <Typography variant="h6">Complete your profile</Typography>
       <Divider sx={{my: 3}} />
       <CompletionForm user={user} />
     </Paper>

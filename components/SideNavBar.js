@@ -10,12 +10,44 @@ import HomeIcon from "@mui/icons-material/Home";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
 import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
-import TableChartIcon from "@mui/icons-material/TableChart";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useUser } from "@/lib/hooks";
 import { useRouter } from "next/router";
-import { Collapse, Divider, Typography } from "@mui/material";
+import { useState } from "react";
+import { Collapse, Divider, Typography } from "@mui/material"
+import PersonIcon from '@mui/icons-material/Person';
+
+function ItemButtonUsers() {
+
+  const router = useRouter()
+  const [open, setOpen] = useState(false)
+  const handleClick = () => {
+    setOpen(!open)
+    router.push("/users");
+  }
+  return (
+    <div>
+      <ListItemButton onClick={handleClick}>
+        <ListItemIcon>
+          <PeopleIcon />
+        </ListItemIcon>
+        <ListItemText primary="Users" />
+        {open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+      </ListItemButton>
+      <Collapse in={open} timeout="auto" unmountOnExit>
+        <List component="div" disablePadding>
+          <ListItemButton onClick={() => {router.push("/users/unverified")}} sx={{ pl: 4 }}>
+            <ListItemIcon>
+              <PersonIcon />
+            </ListItemIcon>
+            <ListItemText primary="Unverified users" />
+          </ListItemButton>
+        </List>
+      </Collapse>
+    </div>
+  );
+}
 
 function ListItems(props) {
   const router = useRouter();
@@ -71,16 +103,20 @@ function ListItems(props) {
               </ListItemIcon>
               <ListItemText primary="Communicate" />
             </ListItemButton>
-            <ListItemButton
-              onClick={() => {
-                router.push("/users");
-              }}
-            >
-              <ListItemIcon>
-                <PeopleIcon />
-              </ListItemIcon>
-              <ListItemText primary="Users" />
-            </ListItemButton>
+            {user.type === "authority" ? (
+              <ItemButtonUsers />
+            ) : (
+              <ListItemButton
+                onClick={() => {
+                  router.push("/users");
+                }}
+              >
+                <ListItemIcon>
+                  <PeopleIcon />
+                </ListItemIcon>
+                <ListItemText primary="Users" />
+              </ListItemButton>
+            )}
             <ListItemButton
               onClick={() => {
                 router.push("/myreport");

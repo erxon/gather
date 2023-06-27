@@ -19,13 +19,27 @@ import StackRowLayout from "@/utils/StackRowLayout";
 
 import DashboardIcon from "@mui/icons-material/Dashboard";
 
-function DashboardMain(user) {
+function DashboardMain({ user, mutate }) {
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await fetch('/api/auth/logout')
+    mutate({})
+  }
+
   return (
     <>
       <StackRowLayout spacing={1}>
         <DashboardIcon />
         <Typography variant="h5">Dashboard</Typography>
       </StackRowLayout>
+      {user.status === "unverified" && (
+        <Box sx={{mt: 3}}>
+          <Typography sx={{mb: 1}}>Your account is not yet verified.</Typography>
+          <Button sx={{mr: 1}} size="small" variant="contained" onClick={() => router.push("/profile/completion")}>Profile</Button>
+          <Button size="small" variant="outlined" onClick={handleLogout}>Logout</Button>
+        </Box>
+      )}
       <Grid container spacing={2} sx={{ mt: 3 }}>
         <Grid item xs={12} sm={12} md={6}>
           <Paper sx={{ p: 3 }} variant="outlined">
@@ -44,14 +58,14 @@ function DashboardMain(user) {
           </Paper>
         </Grid>
         <Grid item xs={12} md={6}>
-          {user.user.type === "authority" && (
+          {user.type === "authority" && (
             <Paper sx={{ p: 3 }} variant="outlined">
               <Typography variant="h6">Notifications</Typography>
               <NotificationsMain />
             </Paper>
           )}
           <Paper
-            sx={user.user.type === "authority" ? { p: 3, mt: 3 } : { p: 3 }}
+            sx={user.type === "authority" ? { p: 3, mt: 3 } : { p: 3 }}
             variant="outlined"
           >
             <Typography sx={{ mb: 3 }} variant="h6">
@@ -70,7 +84,7 @@ function DashboardMain(user) {
 export default function Dashboard() {
   const router = useRouter();
 
-  const [user, { loading }] = useUser();
+  const [user, { loading, mutate}] = useUser()
 
   useEffect(() => {
     if (!user && !loading) {
@@ -79,5 +93,5 @@ export default function Dashboard() {
   }, [user, loading]);
 
   if (loading) return <CircularProgress />;
-  if (user) return <DashboardMain user={user} />;
+  if (user) return <DashboardMain mutate={mutate} user={user} />;
 }

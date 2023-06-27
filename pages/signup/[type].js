@@ -44,14 +44,12 @@ export default function Signup() {
       return;
     }
 
-    const status = type === "authority" ? "unverified" : "verified";
-
     const body = {
       username: values.username,
       password: values.password,
       email: values.email,
       type: type,
-      status: status,
+      status: "unverified",
     };
 
     if (body.password !== values.rpassword) {
