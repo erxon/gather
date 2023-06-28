@@ -60,7 +60,7 @@ function ArchivedReports() {
     return (
       <div>
         {data.map((report) => {
-          return <Report report={report} />;
+          return <Report key={report._id} report={report} />;
         })}
       </div>
     );
