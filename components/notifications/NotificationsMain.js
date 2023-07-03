@@ -29,7 +29,7 @@ export default function NotificationsMain() {
   if (isLoading) return <CircularProgress />;
 
   return (
-    <>
+    <div>
       {data.length > 0 ? (
         <Notifications notifications={data} />
       ) : (
@@ -37,7 +37,7 @@ export default function NotificationsMain() {
           No new reports yet
         </Typography>
       )}
-    </>
+      </div>
   );
 }
 
