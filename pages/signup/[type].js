@@ -3,12 +3,24 @@ import Router from "next/router";
 import { useState } from "react";
 import { useUser } from "@/lib/hooks";
 import { useEffect } from "react";
-import TextField from "@mui/material/TextField";
-import { Box, Stack, Typography, Paper } from "@mui/material";
+import {
+  Box,
+  Stack,
+  Typography,
+  Paper,
+  Alert,
+  AlertTitle,
+  Collapse,
+  IconButton
+} from "@mui/material";
 import Button from "@mui/material/Button";
+import CloseIcon from "@mui/icons-material/Close";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { signup } from "@/lib/api-lib/api-auth";
 import { useRouter } from "next/router";
+
+import PasswordField from "@/components/forms/PasswordField";
+import TextFieldWithValidation from "@/components/forms/TextFieldWithValidation";
 
 export default function Signup() {
   const router = useRouter();
@@ -17,16 +29,19 @@ export default function Signup() {
   const [user, { mutate }] = useUser();
 
   const [values, setValues] = useState({
+    firstName: "",
+    lastName: "",
     username: "",
     email: "",
     password: "",
     rpassword: "",
   });
-
   const [error, setError] = useState({
+    title: "",
     show: false,
     message: "",
   });
+  const [isFormSubmitted, setFormSubmissionState] = useState(false);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -34,17 +49,34 @@ export default function Signup() {
   };
 
   const onSubmit = async () => {
+    setFormSubmissionState(true);
     if (
-      username === "" ||
-      email === "" ||
-      password === "" ||
-      rpassword === ""
+      values.firstName === "" ||
+      values.lastName === "" ||
+      values.username === "" ||
+      values.email === "" ||
+      values.password === "" ||
+      values.rpassword === ""
     ) {
-      setError({ show: true, message: "Missing fields" });
+      setError({
+        title: "Missing Fields",
+        show: true,
+        message: "Please fill all required fields.",
+      });
+      return;
+    }
+    if(values.password.length < 8){
+      setError({
+        title: "Password Error",
+        show: true,
+        message: "Password should have at least 8 characters."
+      })
       return;
     }
 
     const body = {
+      firstName: values.firstName,
+      lastName: values.lastName,
       username: values.username,
       password: values.password,
       email: values.email,
@@ -53,7 +85,11 @@ export default function Signup() {
     };
 
     if (body.password !== values.rpassword) {
-      setError({ show: true, message: `Password don't match` });
+      setError({
+        title: "Password don't match",
+        show: true,
+        message: "Please check your passwords.",
+      });
       return;
     }
     //Signup user
@@ -82,7 +118,6 @@ export default function Signup() {
         sx={{
           margin: "auto",
           width: { xs: "100%", md: "40%" },
-          textAlign: "center",
         }}
       >
         <Paper sx={{ p: 3 }}>
@@ -101,57 +136,83 @@ export default function Signup() {
           <Typography variant="h6">
             {type && (type === "authority" ? "Authority" : "Concerned Citizen")}
           </Typography>
-          <Stack sx={{ mb: 2 }}>
-            <TextField
+          <Stack sx={{ mb: 2, mt: 2 }}>
+            <Stack direction="row" spacing={1}>
+              <TextFieldWithValidation
+                changeHandler={handleChange}
+                name="firstName"
+                isSubmitted={isFormSubmitted}
+                value={values.firstName}
+                label="First name"
+              />
+              <TextFieldWithValidation
+                changeHandler={handleChange}
+                name="lastName"
+                isSubmitted={isFormSubmitted}
+                value={values.lastName}
+                label="Last name"
+              />
+            </Stack>
+            <TextFieldWithValidation
+              isSubmitted={isFormSubmitted}
+              style={{ mt: 1 }}
               label="username"
               variant="outlined"
-              id="username"
               type="text"
               name="username"
-              margin="dense"
-              onChange={handleChange}
-              error={error.show}
+              changeHandler={handleChange}
+              value={values.username}
               required
             />
-            <TextField
-              label="email"
+            <TextFieldWithValidation
+              isSubmitted={isFormSubmitted}
+              style={{ mt: 1 }}
+              label="Email"
               variant="outlined"
-              id="email"
               type="email"
               name="email"
-              margin="dense"
-              onChange={handleChange}
-              error={error.show}
+              changeHandler={handleChange}
+              value={values.email}
               required
             />
-            <TextField
-              label="password"
-              variant="outlined"
-              id="password"
-              type="password"
+            <PasswordField
+              styles={{ mt: 1 }}
+              isSubmitted={isFormSubmitted}
               name="password"
-              margin="dense"
-              onChange={handleChange}
-              error={error.show}
-              required
+              label="Password"
+              value={values.password}
+              handleChange={handleChange}
             />
-            <TextField
-              label="repeat password"
-              variant="outlined"
-              id="rpassword"
-              type="password"
+            <PasswordField
+              styles={{ mt: 1 }}
+              isSubmitted={isFormSubmitted}
               name="rpassword"
-              margin="dense"
-              onChange={handleChange}
-              error={error.show}
-              required
+              label="Repeat Password"
+              value={values.rpassword}
+              handleChange={handleChange}
             />
           </Stack>
-          {error.show && (
-            <Typography sx={{ mb: 2 }} color="red">
+          <Collapse in={error.show}>
+            <Alert
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setError({ show: false });
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+              severity="error"
+              sx={{ mb: 1 }}
+            >
+              <AlertTitle>{error.title}</AlertTitle>
               {error.message}
-            </Typography>
-          )}
+            </Alert>
+          </Collapse>
           <Button
             onClick={onSubmit}
             fullWidth

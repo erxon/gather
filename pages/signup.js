@@ -92,6 +92,10 @@ export default function Signup() {
             </Typography>
           </Stack>
           <Stack sx={{ mb: 2 }}>
+            <Box>
+              <TextField />
+              <TextField />
+            </Box>
             <TextField
               label="username"
               variant="outlined"

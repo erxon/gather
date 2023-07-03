@@ -1,6 +1,7 @@
 import { TextField } from "@mui/material";
 
 export default function TextFieldWithValidation({
+  type,
   label,
   name,
   value,
@@ -17,6 +18,7 @@ export default function TextFieldWithValidation({
       fullWidth={isFullWidth}
       error={isError}
       helperText={isError && "This field is required."}
+      type={type}
       label={label}
       name={name}
       value={value}
