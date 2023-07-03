@@ -8,7 +8,8 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 export default function Attachment({ validPhoto, setAccomplished }) {
   const [image, setImage] = useState(null);
-  const [uploaded, setUploaded] = useState(validPhoto ? true : false);
+  const [isValidPhotoExist, setValidPhotoState] = useState(validPhoto);
+  const [uploaded, setUploaded] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState({
     open: false,
     message: "",
@@ -23,6 +24,7 @@ export default function Attachment({ validPhoto, setAccomplished }) {
 
   const handleChange = (event) => {
     if (event.target.files[0]) {
+      setUploaded(false);
       setImage({
         file: event.target.files[0],
         fileName: URL.createObjectURL(event.target.files[0]),
@@ -66,10 +68,11 @@ export default function Attachment({ validPhoto, setAccomplished }) {
         setAccomplished((prev) => {
           return { ...prev, validPhoto: true };
         });
+        setValidPhotoState(uploadedPhoto.public_id);
         setUploaded(true);
         setOpenSnackbar({
           open: true,
-          message: "Image successfully uploaded.",
+          message: "Valid photo successfully uploaded",
         });
       }
     }
@@ -85,16 +88,18 @@ export default function Attachment({ validPhoto, setAccomplished }) {
         <Box sx={{ mb: 2 }}>
           <StackRowLayout spacing={1}>
             <Typography variant="h6">Valid ID</Typography>
-            {uploaded && <CheckCircleIcon color="success" />}
+            {isValidPhotoExist && <CheckCircleIcon color="success" />}
           </StackRowLayout>
         </Box>
         {/*If user have valid ID, render the image with cloudinary. 
         Else, jsut render the preview of the image to upload*/}
-        {uploaded ? (
-          <ValidPhoto publicId={validPhoto} />
-        ) : image ? (
+        {!image ? (
+          !validPhoto ? null : (
+            <ValidPhoto publicId={validPhoto} />
+          )
+        ) : (
           <img src={image.fileName} style={{ width: 300, height: 150 }} />
-        ) : null}
+        )}
         <Box sx={{ mt: 1 }}>
           <form onSubmit={handleSubmit}>
             <Button
@@ -113,7 +118,7 @@ export default function Attachment({ validPhoto, setAccomplished }) {
                 onChange={handleChange}
               />
             </Button>
-            {image && (
+            {image && !uploaded && (
               <Button size="small" type="submit" variant="contained">
                 Upload
               </Button>

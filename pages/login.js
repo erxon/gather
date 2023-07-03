@@ -78,8 +78,8 @@ export default function Login() {
           spacing={1}
           sx={{ mb: 3 }}
         >
-          <AccountCircleIcon />
-          <Typography variant="h5">Login</Typography>
+          <AccountCircleIcon color="primary" />
+          <Typography variant="h5" color="primary">Login</Typography>
         </Stack>
         <Stack justifyContent="center" spacing={3} useFlexGap sx={{ mb: 3 }}>
           <TextFieldWithValidation

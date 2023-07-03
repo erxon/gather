@@ -7,7 +7,8 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 export default function ProfilePhoto({ photo, setAccomplished }) {
   const [image, setImage] = useState(null);
-  const [uploaded, setUploaded] = useState(photo ? true : false);
+  const [isPhotoExist, setPhotoState] = useState(photo);
+  const [uploaded, setUploaded] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState({
     open: false,
     message: "",
@@ -22,11 +23,13 @@ export default function ProfilePhoto({ photo, setAccomplished }) {
 
   const handleChange = (event) => {
     if (event.target.files[0]) {
+      setUploaded(false)
       setImage({
         file: event.target.files[0],
         fileName: URL.createObjectURL(event.target.files[0]),
       });
     }
+    
   };
 
   const handleSubmit = async (event) => {
@@ -63,10 +66,11 @@ export default function ProfilePhoto({ photo, setAccomplished }) {
       setAccomplished((prev) => {
         return { ...prev, photo: true };
       });
+      setPhotoState(data.public_id)
       setUploaded(true);
       setOpenSnackbar({
         open: true,
-        message: "Image successfully uploaded.",
+        message: "Profile photo updated successfully",
       });
     }
   };
@@ -83,7 +87,7 @@ export default function ProfilePhoto({ photo, setAccomplished }) {
           <StackRowLayout spacing={1}>
             <Typography variant="h6">Profile photo</Typography>
 
-            {uploaded && <CheckCircleIcon color="success" />}
+            {isPhotoExist && <CheckCircleIcon color="success" />}
           </StackRowLayout>
         </Box>
         <StackRowLayout spacing={1}>
@@ -113,7 +117,7 @@ export default function ProfilePhoto({ photo, setAccomplished }) {
                   required
                 />
               </Button>
-              {image && !uploaded && (
+              {(image && !uploaded) && (
                 <Button type="submit" variant="contained">
                   Upload
                 </Button>

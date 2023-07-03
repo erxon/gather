@@ -1,4 +1,4 @@
-import { Grid, Typography, Stack } from "@mui/material";
+import { Grid, Typography, Stack, Alert } from "@mui/material";
 import { useState } from "react";
 import ProfilePhoto from "./ProfilePhoto";
 import Fields from "./Fields";
@@ -11,7 +11,7 @@ export default function CompletionForm({ user, mutate }) {
   const isFormComplete =
     user.firstName !== "" &&
     user.lastName !== "" &&
-    user.about !== "" &&
+    user.about !=="" &&
     user.email !== "" &&
     (user.facebook !== "" || user.twitter !== "" || user.instagram !== "");
 
@@ -29,12 +29,7 @@ export default function CompletionForm({ user, mutate }) {
     <div>
       
       {accomplished.form && accomplished.photo && accomplished.validPhoto && (
-        <StackRowLayout spacing={1}>
-          <CheckCircleIcon color="success" />
-          <Typography>
-            The form is complete, please wait for verification.
-          </Typography>
-        </StackRowLayout>
+        <Alert sx={{mb: 2}} severity="success">The form is complete, please wait for verification.</Alert>
       )}
       {user.updatedAt && (
         <Typography sx={{mb: 1}} variant="body2" color="GrayText">Updated {elapsedTimeSinceLastUpdate}</Typography>

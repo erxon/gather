@@ -7,8 +7,12 @@ import {
   Stack,
   InputAdornment,
   Button,
+  Collapse,
+  Alert,
+  IconButton,
 } from "@mui/material";
 
+import CloseIcon from "@mui/icons-material/Close";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import InsertLinkIcon from "@mui/icons-material/InsertLink";
@@ -17,6 +21,7 @@ import { useState } from "react";
 import DisplayConfirmationModal from "@/components/DisplayConfirmationModal";
 import TextFieldWithValidation from "@/components/forms/TextFieldWithValidation";
 import DisplaySnackbar from "@/components/DisplaySnackbar";
+import ErrorAlert from "@/components/ErrorAlert";
 
 function FormLayout({ heading, children }) {
   return (
@@ -102,9 +107,10 @@ function SocialMediaAccounts({ values, handleChange, isSubmitted }) {
         values.twitter === "" &&
         values.instagram === "" &&
         isSubmitted && (
-          <Typography sx={{ mb: 2 }} variant="subtitle2" color="#d84949">
-            Please link at least one of your social media accounts.
-          </Typography>
+          <Alert sx={{mb: 2}} severity="error">
+            Please add at least <span style={{ fontWeight: "bold" }}>one</span>{" "}
+            social media account
+          </Alert>
         )}
       <Stack sx={{ maxWidth: 350 }} spacing={2}>
         <StackRowLayout spacing={0.5}>
@@ -192,7 +198,7 @@ export default function Fields({ setAccomplished, user, mutate }) {
 
   const handleSnackbarClose = () => {
     setOpenSnackbar({
-      open: false
+      open: false,
     });
   };
 
@@ -268,8 +274,8 @@ export default function Fields({ setAccomplished, user, mutate }) {
     if (updateUser.status === 200) {
       setOpenSnackbar({
         open: true,
-        message: "Successfully saved."
-      })
+        message: "Form successfully saved",
+      });
       setAccomplished((prev) => {
         return { ...prev, form: true };
       });
@@ -310,11 +316,11 @@ export default function Fields({ setAccomplished, user, mutate }) {
         />
       </Box>
       <Paper variant="outlined" sx={{ p: 3, mt: 2 }}>
-        {error && (
-          <Typography sx={{ mb: 1 }} color="#d84949" variant="body1">
-            {error.message}
-          </Typography>
-        )}
+        <ErrorAlert
+          open={error.error}
+          message={error.message}
+          close={() => setError({ error: false })}
+        />
 
         <Button onClick={handleSubmit} sx={{ mr: 1 }} variant="contained">
           Save
