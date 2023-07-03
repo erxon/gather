@@ -7,16 +7,6 @@ const handler = nextConnect()
 handler
   .use(auth)
   .get(async (req, res) => {
-    // You do not generally want to return the whole user object
-    // because it may contain sensitive field such as !!password!! Only return what needed
-    // const { name, username, favoriteColor } = req.user
-    // res.json({ user: { name, username, favoriteColor } })
-    
-    // if (req.user) {
-    //   req.user.then((data) => {
-    //     res.json({user: data})
-    //   })
-    // }
     try{
       const data = await req.user;
       res.json({user: data});

@@ -1,12 +1,13 @@
 import StackRowLayout from "@/utils/StackRowLayout";
-import { Paper, Avatar, Button, Typography } from "@mui/material";
+import { Paper, Avatar, Button, Typography, Box } from "@mui/material";
 import { useState } from "react";
 import DisplaySnackbar from "@/components/DisplaySnackbar";
 import ProfilePhotoAvatar from "@/components/photo/ProfilePhotoAvatar";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 export default function ProfilePhoto({ photo }) {
-  console.log(photo);
   const [image, setImage] = useState(null);
+  const [uploaded, setUploaded] = useState(photo ? true : false);
   const [openSnackbar, setOpenSnackbar] = useState({
     open: false,
     message: "",
@@ -59,6 +60,7 @@ export default function ProfilePhoto({ photo }) {
     });
 
     if (updatePhoto.status === 200) {
+      setUploaded(true);
       setOpenSnackbar({
         open: true,
         message: "Image successfully uploaded.",
@@ -74,12 +76,16 @@ export default function ProfilePhoto({ photo }) {
         handleClose={handleSnackbarClose}
       />
       <Paper variant="outlined" sx={{ p: 3 }}>
-        <Typography sx={{ mb: 2 }} variant="h6">
-          Profile photo
-        </Typography>
-        <StackRowLayout spacing={2}>
+        <Box sx={{mb: 2}}>
+          <StackRowLayout spacing={1}>
+            <Typography variant="h6">Profile photo</Typography>
+
+            {uploaded && <CheckCircleIcon color="success" />}
+          </StackRowLayout>
+        </Box>
+        <StackRowLayout spacing={1}>
           {!image ? (
-            photo === "" ? (
+            !photo ? (
               <Avatar
                 sx={{ width: 56, height: 56 }}
                 src="/assets/placeholder.png"
@@ -94,7 +100,7 @@ export default function ProfilePhoto({ photo }) {
           <form onSubmit={handleSubmit}>
             <StackRowLayout spacing={0.5}>
               <Button component="label" variant="contained">
-                Photo
+                Select file
                 <input
                   onChange={handleChange}
                   hidden
@@ -104,7 +110,7 @@ export default function ProfilePhoto({ photo }) {
                   required
                 />
               </Button>
-              {image && (
+              {image && !uploaded && (
                 <Button type="submit" variant="contained">
                   Upload
                 </Button>

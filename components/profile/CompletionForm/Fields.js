@@ -13,79 +13,98 @@ import FacebookIcon from "@mui/icons-material/Facebook";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import InsertLinkIcon from "@mui/icons-material/InsertLink";
 import InstagramIcon from "@mui/icons-material/Instagram";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import DisplayConfirmationModal from "@/components/DisplayConfirmationModal";
+import TextFieldWithValidation from "@/components/forms/TextFieldWithValidation";
 
 function FormLayout({ heading, children }) {
   return (
     <Paper sx={{ p: 3 }} variant="outlined">
-      <Typography variant="h6" sx={{ mb: 2 }}>
-        {heading}
-      </Typography>
+      <StackRowLayout>
+        <Typography variant="h6" sx={{ mb: 2 }}>
+          {heading}
+        </Typography>
+      </StackRowLayout>
+
       {children}
     </Paper>
   );
 }
 
-function BasicInformation({ values, handleChange }) {
+function BasicInformation({ values, handleChange, isSubmitted }) {
   return (
     <FormLayout heading="Basic information">
       <Stack>
-        <StackRowLayout spacing={1}>
-          <TextField
-            fullWidth
+        <Stack direction="row" spacing={1}>
+          <TextFieldWithValidation
+            label="First name"
             name="firstName"
             value={values.firstName}
-            onChange={handleChange}
-            label="First name"
+            changeHandler={handleChange}
+            isSubmitted={isSubmitted}
+            isFullWidth={true}
           />
-          <TextField
-            fullWidth
+          <TextFieldWithValidation
+            label="Last name"
             name="lastName"
             value={values.lastName}
-            onChange={handleChange}
-            label="Last name"
+            changeHandler={handleChange}
+            isSubmitted={isSubmitted}
+            isFullWidth={true}
           />
-        </StackRowLayout>
-        <TextField
-          sx={{ mt: 2 }}
+        </Stack>
+        <TextFieldWithValidation
           label="About"
           name="about"
           value={values.about}
-          onChange={handleChange}
-          multiline
+          changeHandler={handleChange}
+          isSubmitted={isSubmitted}
+          isFullWidth={true}
+          isMultiline={true}
           rows={4}
+          style={{ mt: 2 }}
         />
       </Stack>
     </FormLayout>
   );
 }
 
-function ContactInformation({ values, handleChange }) {
+function ContactInformation({ values, handleChange, isSubmitted }) {
   return (
     <FormLayout heading="Contact information">
-      <StackRowLayout spacing={1}>
-        <TextField
-          fullWidth
+      <Stack direction="row" spacing={1}>
+        <TextFieldWithValidation
+          label="Email"
           name="email"
           value={values.email}
-          onChange={handleChange}
-          label="Email"
+          changeHandler={handleChange}
+          isSubmitted={isSubmitted}
+          isFullWidth={true}
         />
-        <TextField
-          fullWidth
+        <TextFieldWithValidation
+          label="Contact Number"
           name="contactNumber"
           value={values.contactNumber}
-          onChange={handleChange}
-          label="Contact number"
+          changeHandler={handleChange}
+          isSubmitted={isSubmitted}
+          isFullWidth={true}
         />
-      </StackRowLayout>
+      </Stack>
     </FormLayout>
   );
 }
 
-function SocialMediaAccounts({ values, handleChange }) {
+function SocialMediaAccounts({ values, handleChange, isSubmitted }) {
   return (
     <FormLayout heading="Social Media Accounts">
+      {values.facebook === "" &&
+        values.twitter === "" &&
+        values.instagram === "" &&
+        isSubmitted && (
+          <Typography sx={{ mb: 2 }} variant="subtitle2" color="#d84949">
+            Please link at least one of your social media accounts.
+          </Typography>
+        )}
       <Stack sx={{ maxWidth: 350 }} spacing={2}>
         <StackRowLayout spacing={0.5}>
           <InsertLinkIcon />
@@ -143,11 +162,11 @@ function SocialMediaAccounts({ values, handleChange }) {
   );
 }
 
-export default function Fields({ setAccomplished, user }) {
+export default function Fields({ setAccomplished, user, mutate }) {
   const [values, setValues] = useState({
     firstName: user.firstName,
     lastName: user.lastName,
-    about: user.about,
+    about: user.about ? user.about : "",
     email: user.email,
     contactNumber: user.contactNumber,
   });
@@ -163,6 +182,22 @@ export default function Fields({ setAccomplished, user }) {
     message: "",
   });
 
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+
+  const handleModal = () => {
+    setOpenModal(false);
+  };
+
+  const confirmAccountDelete = async () => {
+    //Fetch delete account api
+    await fetch("/api/user", {
+      method: "DELETE",
+    });
+    //mutate user
+    mutate({});
+  };
+
   const handleChange = (event) => {
     const { name, value } = event.target;
     setValues({ ...values, [name]: value });
@@ -174,7 +209,8 @@ export default function Fields({ setAccomplished, user }) {
   };
 
   const handleSubmit = async () => {
-    console.log(values, socialMediaAccounts);
+    setIsSubmitted(true);
+
     if (
       values.firstName === "" ||
       values.lastName === "" ||
@@ -197,7 +233,7 @@ export default function Fields({ setAccomplished, user }) {
       //send an error
       setError({
         error: true,
-        message: "Please give at least one social media account of yours.",
+        message: "Please fill all the necessary details",
       });
       return;
     }
@@ -205,6 +241,8 @@ export default function Fields({ setAccomplished, user }) {
     setError({
       error: false,
     });
+    
+    //Validate email
 
     // update the user
     const updateUser = await fetch("/api/user", {
@@ -225,26 +263,50 @@ export default function Fields({ setAccomplished, user }) {
 
   return (
     <Box>
-      <BasicInformation values={values} handleChange={handleChange} />
+      <DisplayConfirmationModal
+        openModal={openModal}
+        handleClose={handleModal}
+        onConfirm={confirmAccountDelete}
+        title="Confirm account delete."
+        body="Are you sure you want to cancel your account creation?"
+      />
+      <BasicInformation
+        values={values}
+        handleChange={handleChange}
+        isSubmitted={isSubmitted}
+      />
       <Box sx={{ mt: 1 }}>
-        <ContactInformation values={values} handleChange={handleChange} />
+        <ContactInformation
+          values={values}
+          handleChange={handleChange}
+          isSubmitted={isSubmitted}
+        />
       </Box>
       <Box sx={{ mt: 1 }}>
         <SocialMediaAccounts
           values={socialMediaAccounts}
+          isSubmitted={isSubmitted}
           handleChange={handleSocialMediaInputChange}
         />
       </Box>
       <Paper variant="outlined" sx={{ p: 3, mt: 2 }}>
         {error && (
-          <Typography sx={{ mb: 1 }} color="red" variant="body1">
+          <Typography sx={{ mb: 1 }} color="#d84949" variant="body1">
             {error.message}
           </Typography>
         )}
+
         <Button onClick={handleSubmit} sx={{ mr: 1 }} variant="contained">
           Save
         </Button>
-        <Button variant="outlined">Cancel</Button>
+        <Button
+          onClick={() => {
+            setOpenModal(true);
+          }}
+          variant="outlined"
+        >
+          Cancel
+        </Button>
       </Paper>
     </Box>
   );

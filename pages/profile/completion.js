@@ -7,21 +7,26 @@ import CompletionForm from "@/components/profile/CompletionForm/CompletionForm";
 
 export default function Page() {
   const router = useRouter();
-  const [user, { loading }] = useUser();
+  const [user, { loading, mutate }] = useUser();
 
   useEffect(() => {
     if (!user && !loading) {
-      router.push("/");
+      router.push("/login");
     }
   }, [user, loading]);
 
   if (loading) return <CircularProgress />;
-
-  return (
-    <Paper variant="outlined" sx={{p: 3}}>
-      <Typography variant="h6">Complete your profile</Typography>
-      <Divider sx={{my: 3}} />
-      <CompletionForm user={user} />
-    </Paper>
-  );
+  if (user) {
+    return (
+      <Paper variant="outlined" sx={{ p: 3 }}>
+        <Typography variant="h6">Complete your profile</Typography>
+        <Typography variant="body1">
+          Please wait while we verify your profile.
+          Fill all the necessary details.
+        </Typography>
+        <Divider sx={{ my: 3 }} />
+        <CompletionForm user={user} mutate={mutate} />
+      </Paper>
+    );
+  }
 }

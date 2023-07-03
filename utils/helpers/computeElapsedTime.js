@@ -15,7 +15,7 @@ export default function computeElapsedTime(date) {
 
   console.log(seconds, minutes, hours, days);
   if (minutes <= 0) {
-    displayTime = "recently uploaded";
+    displayTime = "recently";
   } else if (minutes > 0 && minutes < 60) {
     displayTime = `${minutes}m ago`;
   } else if (minutes >= 60 && minutes < 1440) {
