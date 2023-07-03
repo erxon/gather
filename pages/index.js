@@ -4,6 +4,7 @@ import { CircularProgress } from "@mui/material";
 
 export default function Index(){
   const router = useRouter();
+  
   useEffect(() => {
     fetch('/api/user/checkAuth').then((response) => {
       response.json().then((data) => {

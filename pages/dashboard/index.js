@@ -7,7 +7,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 
-import { Router, useRouter } from "next/router";
+import { useRouter } from "next/router";
 import { useEffect } from "react";
 
 //components

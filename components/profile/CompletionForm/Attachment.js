@@ -6,7 +6,7 @@ import { useState } from "react";
 import ValidPhoto from "./ValidPhoto";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
-export default function Attachment({ validPhoto }) {
+export default function Attachment({ validPhoto, setAccomplished }) {
   const [image, setImage] = useState(null);
   const [uploaded, setUploaded] = useState(validPhoto ? true : false);
   const [openSnackbar, setOpenSnackbar] = useState({
@@ -63,6 +63,9 @@ export default function Attachment({ validPhoto }) {
       });
 
       if (storeValidPhoto.status === 200) {
+        setAccomplished((prev) => {
+          return { ...prev, validPhoto: true };
+        });
         setUploaded(true);
         setOpenSnackbar({
           open: true,

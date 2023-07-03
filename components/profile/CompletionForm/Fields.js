@@ -13,9 +13,10 @@ import FacebookIcon from "@mui/icons-material/Facebook";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import InsertLinkIcon from "@mui/icons-material/InsertLink";
 import InstagramIcon from "@mui/icons-material/Instagram";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import DisplayConfirmationModal from "@/components/DisplayConfirmationModal";
 import TextFieldWithValidation from "@/components/forms/TextFieldWithValidation";
+import DisplaySnackbar from "@/components/DisplaySnackbar";
 
 function FormLayout({ heading, children }) {
   return (
@@ -183,7 +184,17 @@ export default function Fields({ setAccomplished, user, mutate }) {
   });
 
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState({
+    open: false,
+    message: "",
+  });
   const [openModal, setOpenModal] = useState(false);
+
+  const handleSnackbarClose = () => {
+    setOpenSnackbar({
+      open: false
+    });
+  };
 
   const handleModal = () => {
     setOpenModal(false);
@@ -241,7 +252,7 @@ export default function Fields({ setAccomplished, user, mutate }) {
     setError({
       error: false,
     });
-    
+
     //Validate email
 
     // update the user
@@ -255,6 +266,10 @@ export default function Fields({ setAccomplished, user, mutate }) {
     });
 
     if (updateUser.status === 200) {
+      setOpenSnackbar({
+        open: true,
+        message: "Successfully saved."
+      })
       setAccomplished((prev) => {
         return { ...prev, form: true };
       });
@@ -269,6 +284,11 @@ export default function Fields({ setAccomplished, user, mutate }) {
         onConfirm={confirmAccountDelete}
         title="Confirm account delete."
         body="Are you sure you want to cancel your account creation?"
+      />
+      <DisplaySnackbar
+        message={openSnackbar.message}
+        open={openSnackbar.open}
+        handleClose={handleSnackbarClose}
       />
       <BasicInformation
         values={values}

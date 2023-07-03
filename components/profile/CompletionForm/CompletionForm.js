@@ -4,11 +4,22 @@ import ProfilePhoto from "./ProfilePhoto";
 import Fields from "./Fields";
 import computeElapsedTime from "@/utils/helpers/computeElapsedTime";
 import Attachment from "./Attachment";
+import StackRowLayout from "@/utils/StackRowLayout";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 export default function CompletionForm({ user, mutate }) {
+  const isFormComplete =
+    user.firstName !== "" &&
+    user.lastName !== "" &&
+    user.about !== "" &&
+    user.email !== "" &&
+    (user.facebook !== "" || user.twitter !== "" || user.instagram !== "");
+
   const [accomplished, setAccomplished] = useState({
     photo: user && user.photo === "" ? false : true,
-    form: false,
+    validPhoto:
+      user && user.validPhoto && user.validPhoto === "" ? false : true,
+    form: isFormComplete,
   });
 
   const updatedAt = new Date(user.updatedAt);
@@ -16,14 +27,26 @@ export default function CompletionForm({ user, mutate }) {
 
   return (
     <div>
+      
+      {accomplished.form && accomplished.photo && accomplished.validPhoto && (
+        <StackRowLayout spacing={1}>
+          <CheckCircleIcon color="success" />
+          <Typography>
+            The form is complete, please wait for verification.
+          </Typography>
+        </StackRowLayout>
+      )}
       {user.updatedAt && (
-        <Typography>Updated {elapsedTimeSinceLastUpdate}</Typography>
+        <Typography sx={{mb: 1}} variant="body2" color="GrayText">Updated {elapsedTimeSinceLastUpdate}</Typography>
       )}
       <Grid container spacing={1}>
         <Grid item xs={12} md={4}>
-          <ProfilePhoto photo={user.photo} />
+          <ProfilePhoto photo={user.photo} setAccomplished={setAccomplished} />
           {user.type === "authority" && (
-            <Attachment validPhoto={user.validPhoto ? user.validPhoto : null} />
+            <Attachment
+              validPhoto={user.validPhoto ? user.validPhoto : null}
+              setAccomplished={setAccomplished}
+            />
           )}
         </Grid>
         <Grid item xs={12} md={8}>

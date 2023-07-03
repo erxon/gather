@@ -5,7 +5,7 @@ import DisplaySnackbar from "@/components/DisplaySnackbar";
 import ProfilePhotoAvatar from "@/components/photo/ProfilePhotoAvatar";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
-export default function ProfilePhoto({ photo }) {
+export default function ProfilePhoto({ photo, setAccomplished }) {
   const [image, setImage] = useState(null);
   const [uploaded, setUploaded] = useState(photo ? true : false);
   const [openSnackbar, setOpenSnackbar] = useState({
@@ -60,6 +60,9 @@ export default function ProfilePhoto({ photo }) {
     });
 
     if (updatePhoto.status === 200) {
+      setAccomplished((prev) => {
+        return { ...prev, photo: true };
+      });
       setUploaded(true);
       setOpenSnackbar({
         open: true,
@@ -76,7 +79,7 @@ export default function ProfilePhoto({ photo }) {
         handleClose={handleSnackbarClose}
       />
       <Paper variant="outlined" sx={{ p: 3 }}>
-        <Box sx={{mb: 2}}>
+        <Box sx={{ mb: 2 }}>
           <StackRowLayout spacing={1}>
             <Typography variant="h6">Profile photo</Typography>
 
