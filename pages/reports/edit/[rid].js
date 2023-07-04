@@ -32,11 +32,16 @@ import {
   uploadReportPhoto,
 } from "@/lib/api-lib/api-reports";
 import Image from "next/image";
+import UploadReferencePhotos from "@/components/myreports/UploadReferencePhotos";
+import ReferencePhotos from "@/components/myreports/ReferencePhotos";
+
+
 
 export default function EditReport({ data }) {
   const [user, { loading }] = useUser();
   const [image, setImage] = useState({ renderImage: "", file: null });
   const [status, setStatus] = useState(data.status);
+  const [photoId, setPhotoId] = useState(null);
   //for snackbar
   const [snackbarValues, setSnackbarValues] = useState({
     open: false,
@@ -119,6 +124,10 @@ export default function EditReport({ data }) {
       setFeatures((prev) => {
         return [...prev, value.feature];
       });
+      setSnackbarValues({
+        open: true,
+        message: "Feature added",
+      });
     }
 
     setValue({
@@ -143,6 +152,7 @@ export default function EditReport({ data }) {
     //if status set to active trigger a notification
     const update = {
       ...body,
+      photoId: photoId,
       updatedBy: user._id,
       updatedAt: new Date(),
       status: status,
@@ -403,7 +413,7 @@ export default function EditReport({ data }) {
                   </Stack>
                 </Box>
               </Paper>
-              <Paper sx={{ p: 3, mt: 3 }}>
+              <Paper sx={{ p: 3, my: 3 }}>
                 <Typography sx={{ mb: 3 }} variant="h6">
                   Features
                 </Typography>
@@ -471,6 +481,10 @@ export default function EditReport({ data }) {
                   </IconButton>
                 </Stack>
               </Paper>
+              <ReferencePhotos
+                reportId={data._id}
+                mpName={`${data.firstName} ${data.lastName}`}
+              />
             </Grid>
           </Grid>
         </form>
