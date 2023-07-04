@@ -47,6 +47,7 @@ handler
     try {
       const data = await saveNotification({
         body: {
+          status: req.body.status,
           reporter: req.body.reporter,
           firstName: req.body.firstName,
           lastName: req.body.lastName,
