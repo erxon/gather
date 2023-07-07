@@ -11,23 +11,17 @@ import Badge from "@mui/material/Badge";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import MenuList from "@mui/material/MenuList";
-import MailIcon from "@mui/icons-material/Mail";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import MoreIcon from "@mui/icons-material/MoreVert";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
-import { Avatar, Divider, Popover } from "@mui/material";
+import { Avatar, Divider, Popover, Paper } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { logout } from "@/lib/api-lib/api-auth";
-import ContactRequestMain from "./notifications/ContactRequestMain";
-import ContactAcceptedMain from "./notifications/ContactAcceptedMain";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import IconTypography from "@/utils/layout/IconTypography";
-import ProfilePhotoAvatar from "./photo/ProfilePhotoAvatar";
 import ProfilePhoto from "./photo/ProfilePhoto";
 import Notifications from "./appbar/Notifications";
 import Contacts from "./notifications/Contacts";
+import Image from "next/image";
 
 export default function ComponentNavbar(props) {
   const [user, { mutate }] = useUser();
@@ -76,7 +70,7 @@ export default function ComponentNavbar(props) {
       anchorEl={anchorEl}
       anchorOrigin={{
         vertical: "bottom",
-        horizontal: "left",
+        horizontal: "right",
       }}
       id={menuId}
       keepMounted
@@ -104,16 +98,16 @@ export default function ComponentNavbar(props) {
       id={popoverId}
       anchorOrigin={{
         vertical: "bottom",
-        horizontal: "left",
+        horizontal: "right",
       }}
       transformOrigin={{
         vertical: "top",
-        horizontal: "center",
+        horizontal: "right",
       }}
     >
       {user && (
-        <Box sx={{maxWidth: 350, p: 3}}>
-          <Typography sx={{my: 1}}>Notifications</Typography>
+        <Box sx={{ maxWidth: 350, p: 3 }}>
+          <Typography sx={{ my: 1 }}>Notifications</Typography>
           <Divider />
           <Contacts userId={user._id} />
         </Box>
@@ -172,23 +166,32 @@ export default function ComponentNavbar(props) {
 
           {user ? (
             <Box sx={{ display: { xs: "none", md: "flex" } }}>
-              <Notifications
-                handleNotificationsOpen={handleNotificationsOpen}
-                userId={user._id}
-              />
-              <IconButton
-                size="small"
-                edge="end"
-                aria-label="account of current user"
-                aria-controls={menuId}
-                aria-haspopup="true"
-                onClick={handleProfileMenuOpen}
-                color="inherit"
-              >
-                <Avatar>
-                  <ProfilePhoto publicId={user.photo} />
-                </Avatar>
-              </IconButton>
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <Notifications
+                  handleNotificationsOpen={handleNotificationsOpen}
+                  userId={user._id}
+                />
+                <IconButton
+                  sx={{ mr: 1 }}
+                  size="small"
+                  edge="end"
+                  aria-label="account of current user"
+                  aria-controls={menuId}
+                  aria-haspopup="true"
+                  onClick={handleProfileMenuOpen}
+                  color="inherit"
+                >
+                  <Avatar>
+                    <ProfilePhoto publicId={user.photo} />
+                  </Avatar>
+                </IconButton>
+                <Stack direction="column">
+                  <Typography sx={{ fontWeight: "bold" }} variant="body2">
+                    {user.firstName} {user.lastName}
+                  </Typography>
+                  <Typography variant="subtitle2">{user.username}</Typography>
+                </Stack>
+              </Stack>
             </Box>
           ) : (
             <Box
@@ -211,25 +214,32 @@ export default function ComponentNavbar(props) {
           )}
           {user ? (
             <Box sx={{ display: { xs: "flex", md: "none" } }}>
-              <Notifications
-                handleNotificationsOpen={handleNotificationsOpen}
-                userId={user._id}
-              />
-              <Stack direction="row" spacing={1} alignItems="center">
-                <AccountCircleIcon />
-                <Typography>{user.username}</Typography>
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <Notifications
+                  handleNotificationsOpen={handleNotificationsOpen}
+                  userId={user._id}
+                />
+                <IconButton
+                  sx={{ mr: 1 }}
+                  size="small"
+                  edge="end"
+                  aria-label="account of current user"
+                  aria-controls={menuId}
+                  aria-haspopup="true"
+                  onClick={handleProfileMenuOpen}
+                  color="inherit"
+                >
+                  <Avatar>
+                    <ProfilePhoto publicId={user.photo} />
+                  </Avatar>
+                </IconButton>
+                <Stack direction="column">
+                  <Typography sx={{ fontWeight: "bold" }} variant="body2">
+                    {user.firstName} {user.lastName}
+                  </Typography>
+                  <Typography variant="subtitle2">{user.username}</Typography>
+                </Stack>
               </Stack>
-              <IconButton
-                size="small"
-                edge="end"
-                aria-label="account of current user"
-                aria-controls={menuId}
-                aria-haspopup="true"
-                onClick={handleProfileMenuOpen}
-                color="inherit"
-              >
-                <ArrowDropDownIcon />
-              </IconButton>
             </Box>
           ) : (
             <Box sx={{ display: { xs: "flex", md: "none" } }}>

@@ -3,7 +3,7 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import useSWR from "swr";
 import { fetcher } from "@/lib/hooks";
 
-export default function Notifications({ handleNotificationsOpen, userId }) {
+export default function Notifications({ handleNotificationsOpen, userId, style }) {
   const { data } = useSWR(
     `/api/notification/count/contact-${userId}`,
     fetcher,
@@ -13,8 +13,7 @@ export default function Notifications({ handleNotificationsOpen, userId }) {
   if (data) {console.log(data)}
   return (
     <IconButton
-      size="large"
-      aria-label="show 17 new notifications"
+      sx={style}
       color="inherit"
       onClick={handleNotificationsOpen}
     >
