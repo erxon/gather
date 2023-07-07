@@ -16,8 +16,9 @@ import { useUser } from "@/lib/hooks";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { Collapse, Divider, Typography } from "@mui/material";
-import PersonIcon from "@mui/icons-material/Person";
+
 import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
+import UnverifedUsers from "./drawer/UnverifiedUsers";
 
 function ItemButtonReports() {
   const router = useRouter();
@@ -70,19 +71,7 @@ function ItemButtonUsers() {
         {open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
       </ListItemButton>
       <Collapse in={open} timeout="auto" unmountOnExit>
-        <List component="div" disablePadding>
-          <ListItemButton
-            onClick={() => {
-              router.push("/users/unverified");
-            }}
-            sx={{ pl: 4 }}
-          >
-            <ListItemIcon>
-              <PersonIcon />
-            </ListItemIcon>
-            <ListItemText primary="Unverified users" />
-          </ListItemButton>
-        </List>
+        <UnverifedUsers />
       </Collapse>
     </div>
   );

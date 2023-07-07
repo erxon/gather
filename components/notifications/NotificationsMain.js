@@ -37,7 +37,7 @@ export default function NotificationsMain() {
           No new reports yet
         </Typography>
       )}
-      </div>
+    </div>
   );
 }
 
@@ -46,7 +46,7 @@ function Notifications(props) {
 
   useEffect(() => {
     const channel = pusherJS.subscribe("notification");
-    channel.bind("new-report", (data) => {
+    channel.bind_global((eventName, data) => {
       setNotifications([data, ...notifications]);
     });
     return () => {
@@ -67,7 +67,7 @@ function Notifications(props) {
 
   return (
     <>
-      <Box sx={{overflowY: "scroll", height: 500}}>
+      <Box sx={{ overflowY: "scroll", height: 500 }}>
         {notifications.reverse().map((object) => {
           return (
             <Notification
@@ -114,14 +114,23 @@ function Notification(props) {
       <Box sx={{ my: 2 }}>
         <Paper sx={{ p: 2 }}>
           <Stack direction="row" alignItems="center" spacing={2}>
-            <CircleNotificationsIcon />
-            <Box sx={{width: '100%'}}>
-              <Typography sx={{fontWeight: "bold"}} variant="body1">New report</Typography>
-              <Typography variant="body2">
+            <Box sx={{ width: "100%" }}>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <Typography sx={{ fontWeight: "bold" }} variant="body1">
+                  New report
+                </Typography>
+                <Typography color="GrayText" variant="subtitle2">
+                  {elapsedTime}
+                </Typography>
+              </Stack>
+
+              <Typography color="GrayText" variant="body2">
                 {props.name}, {props.lastSeen}
               </Typography>
-              <Typography variant="body2">{props.reporter}</Typography>
-              <Typography variant="subtitle2">{elapsedTime}</Typography>
+              <Typography color="GrayText" variant="body2">
+                {props.reporter}
+              </Typography>
+
               <Stack
                 sx={{ mt: 2 }}
                 direction="row"

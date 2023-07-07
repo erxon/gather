@@ -50,8 +50,8 @@ export default function Layout({ children }) {
             <Box sx={{ textAlign: "center", mt: 3 }}>
               <Image
                 quality={80}
-                width={100}
-                height={100}
+                width={50}
+                height={50}
                 style={{
                   objectFit: "cover",
                   objectPosition: "50% 50%",
@@ -77,10 +77,9 @@ export default function Layout({ children }) {
           >
             <Box sx={{ px: 3, pt: 3 }}>
               <Box sx={{ textAlign: "center" }}>
-                <Image
-                  quality={80}
-                  width={150}
-                  height={150}
+                <img
+                  width={100}
+                  height={100}
                   style={{
                     objectFit: "cover",
                     objectPosition: "50% 50%",
