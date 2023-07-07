@@ -16,10 +16,13 @@ handler.get(async (req, res) => {
     const userDirectedNotifications = await getNotificationsByChannel(
       `notification-citizen-${userId}`
     );
-    const result = [...activeReportsNotifications,...userDirectedNotifications]
-    res
-      .status(200)
-      .json(result);
+    const general = await getNotificationsByChannel("notification");
+    const result = [
+      ...activeReportsNotifications,
+      ...userDirectedNotifications,
+      ...general,
+    ];
+    res.status(200).json(result);
   } catch (error) {
     res.status(400).json({ error: error, message: "Something went wrong." });
   }

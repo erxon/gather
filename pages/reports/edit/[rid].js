@@ -34,13 +34,13 @@ import {
 import Image from "next/image";
 import UploadReferencePhotos from "@/components/myreports/UploadReferencePhotos";
 import ReferencePhotos from "@/components/myreports/ReferencePhotos";
-
-
+import { useRouter } from "next/router";
 
 export default function EditReport({ data }) {
   const [user, { loading }] = useUser();
   const [image, setImage] = useState({ renderImage: "", file: null });
   const [status, setStatus] = useState(data.status);
+  const [isStatusChange, setStatusChange] = useState(false);
   const [photoId, setPhotoId] = useState(null);
   //for snackbar
   const [snackbarValues, setSnackbarValues] = useState({
@@ -89,7 +89,20 @@ export default function EditReport({ data }) {
 
   //Status
   const handleStatusChange = (event) => {
+    setStatusChange(event.target.value !== data.status);
     setStatus(event.target.value);
+  };
+
+  const handleStatusChangeSubmit = async () => {
+    const result = await fetch("/api/reports/status", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: data._id, status: status }),
+    });
+    if (result.status === 200) {
+      data.status = status
+      setSnackbarValues({ open: true, message: "Status updated" });
+    }
   };
 
   //Features
@@ -155,7 +168,6 @@ export default function EditReport({ data }) {
       photoId: photoId,
       updatedBy: user._id,
       updatedAt: new Date(),
-      status: status,
       socialMediaAccounts: { facebook: value.facebook, twitter: value.twitter },
       features: [...features],
     };
@@ -228,6 +240,14 @@ export default function EditReport({ data }) {
                   <MenuItem value="closed">Closed</MenuItem>
                 </Select>
               </FormControl>
+              <Button
+                sx={{ mt: 1 }}
+                onClick={handleStatusChangeSubmit}
+                disabled={!isStatusChange}
+                variant="outlined"
+              >
+                change status
+              </Button>
             </Box>
           )}
           {/*Save button*/}

@@ -17,7 +17,6 @@ import { fetcher } from "@/lib/hooks";
 import { useRouter } from "next/router";
 import computeElapsedTime from "@/utils/helpers/computeElapsedTime";
 import QueryPhoto from "../photo/QueryPhoto";
-
 import _ from "lodash";
 
 export default function NotificationsMain({ user }) {
@@ -29,7 +28,7 @@ export default function NotificationsMain({ user }) {
 
   if (error) return <Typography>Something went wrong</Typography>;
   if (isLoading) return <CircularProgress />;
-  console.log(data);
+
   const channel1 =
     user.type === "authority"
       ? "notification-authority"
@@ -39,7 +38,6 @@ export default function NotificationsMain({ user }) {
       ? `notification-authority-${user._id}`
       : `notification-citizen-${user._id}`;
 
-  console.log(channel1, channel2);
   return (
     <div>
       {data.length > 0 ? (
@@ -66,7 +64,7 @@ function Notifications(props) {
     const channel1 = pusherJS.subscribe(props.channel1);
     const channel2 = pusherJS.subscribe(props.channel2);
     pusherJS.bind_global((eventName, data) => {
-      console.log(eventName, data);
+      console.log(data)
       if (!_.isEmpty(data)) {
         setNotifications([data.body, ...notifications]);
       }
@@ -106,6 +104,7 @@ function Notifications(props) {
               name={`${object.body.firstName} ${object.body.lastName}`}
               lastSeen={object.body.lastSeen}
               reporter={object.body.reporter}
+              title={object.body.title}
               id={object._id}
               key={object._id}
               reportId={object.body.reportId}
@@ -149,7 +148,7 @@ function Notification(props) {
             <Box sx={{ width: "100%" }}>
               <Stack direction="row" spacing={1} alignItems="center">
                 <Typography sx={{ fontWeight: "bold" }} variant="body1">
-                  New report
+                  {props.title}
                 </Typography>
                 <Typography color="GrayText" variant="subtitle2">
                   {elapsedTime}
@@ -169,7 +168,7 @@ function Notification(props) {
                 spacing={1}
                 alignItems="center"
               >
-                {props.type === "report-manage" && (
+                {props.type === "report-manage" || props.type === "status-change" && (
                   <Button
                     onClick={() => {
                       router.push(`/reports/${props.reportId}`);
