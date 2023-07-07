@@ -31,6 +31,7 @@ const userSchema = mongoose.Schema({
   salt: String,
   hash: String,
   status: { type: String, enum: ["unverified", "verified"] },
+  contactRequests: []
 });
 
 const User = mongoose.models.User || mongoose.model("User", userSchema);

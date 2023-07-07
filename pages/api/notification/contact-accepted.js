@@ -15,7 +15,7 @@ handler
       const user = await req.user;
       try {
         let result = await getNotifications(
-          `notification-accepted-${user._id}`,
+          `contact-${user._id}`,
           "request-accepted"
         );
         res.json(result);
@@ -26,36 +26,39 @@ handler
       res.json(error);
     }
   })
-  .use((req, res, next) => {
-    const body = req.body;
-    console.log(body);
+  .post(async (req, res, next) => {
+    try {
+      const result = await saveNotification({
+        body: {
+          eventName: "request-accepted",
+          title: "Request Accepted",
+          message: req.body.message,
+          from: req.body.userId,
+          to: req.body.sendTo,
+          photo: req.body.photo,
+        },
+        channel: `contact-${req.body.sendTo}`,
+        event: "request-accepted",
+      });
+      req.notification = result;
+      next();
+    } catch (error) {
+      res.json(error);
+    }
+  })
+  .post((req, res) => {
+    const body = req.notification;
+    console.log(req.body.sendTo)
     pusher
-      .trigger(`notification-accepted-${body.contactId}`, "request-accepted", {
+      .trigger(`contact-${req.body.sendTo}`, "request-accepted", {
         body,
       })
       .then(() => {
-        next();
+        return res.status(200).json({message: "okay"})
       })
       .catch((error) => {
         res.json(error);
       });
-  })
-  .post(async (req, res) => {
-    try {
-      const result = await saveNotification({
-        body: {
-          message: req.body.message,
-          from: req.body.userId,
-          to: req.body.contactId,
-          photo: req.body.photo,
-        },
-        channel: `notification-accepted-${req.body.contactId}`,
-        event: "request-accepted",
-      });
-      res.json(result);
-    } catch (error) {
-      res.json(error);
-    }
   })
   .delete(async (req, res) => {
     try {

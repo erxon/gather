@@ -29,7 +29,7 @@ function ContactAccepted({ userId, data }) {
   const [notifications, setNotifications] = useState([...data]);
 
   const removeAll = async () => {
-    const channel = `notification-accepted-${userId}`;
+    const channel = `notification-${userId}`;
     const event = "request-accepted";
 
     const removeAllRequest = await fetch(
@@ -46,13 +46,13 @@ function ContactAccepted({ userId, data }) {
   };
 
   useEffect(() => {
-    const channel = pusherJS.subscribe(`notification-accepted-${userId}`);
+    const channel = pusherJS.subscribe(`notification-${userId}`);
     channel.bind("request-accepted", (data) => {
       setNotifications([...notifications, data]);
     });
     return () => {
       channel.unbind;
-      pusherJS.unsubscribe(`notification-accepted-${userId}`);
+      pusherJS.unsubscribe(`notification-${userId}`);
     };
   }, [notifications, userId]);
 

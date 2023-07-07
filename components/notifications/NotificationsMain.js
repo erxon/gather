@@ -67,7 +67,7 @@ function Notifications(props) {
 
   return (
     <>
-      <Box>
+      <Box sx={{overflowY: "scroll", height: 500}}>
         {notifications.reverse().map((object) => {
           return (
             <Notification

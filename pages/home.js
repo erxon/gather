@@ -303,7 +303,7 @@ const ReportWithPhoto = () => {
   );
 };
 
-function Report({ reportId, photo, name, lastSeen }) {
+function Report({ reportId, photo, name, lastSeen, gender, age }) {
   const router = useRouter();
   return (
     <Card
@@ -312,26 +312,22 @@ function Report({ reportId, photo, name, lastSeen }) {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        flexDirection: "column"
+        flexDirection: "column",
       }}
       variant="outlined"
     >
       {photo ? (
-        <Avatar sx={{ width: 100, height: 100 }}>
-          <ReportPhoto publicId={photo} />
-        </Avatar>
+        <ReportPhoto publicId={photo} />
       ) : (
-        <Avatar
-          sx={{ width: 100, height: 100 }}
-          src="/assets/placeholder.png"
-        />
+        <Image width={100} height={100} src="/assets/placeholder.png" />
       )}
       <Box>
-        <CardContent>
+        <CardContent sx={{textAlign: "center"}}>
           <Typography variant="body1" sx={{ fontWeight: "bold" }}>
             {name}
           </Typography>
           <Typography variant="body2">Last seen in {lastSeen}</Typography>
+          <Typography variant="body2">{gender}, {age}</Typography>
         </CardContent>
         <CardActions>
           <Button
@@ -339,8 +335,7 @@ function Report({ reportId, photo, name, lastSeen }) {
             onClick={() => {
               router.push(`/reports/${reportId}`);
             }}
-            size="small"
-            variant="contained"
+            variant="outlined"
           >
             View
           </Button>
@@ -358,10 +353,12 @@ function Reports() {
 
   if (error) return <Typography>Something went wrong.</Typography>;
   if (isLoading) return <CircularProgress />;
-
+  console.log(data)
   return (
     <Paper sx={{ p: 3, mt: 1 }}>
-      <Typography variant="h5" sx={{mb: 2}}>Active Reports</Typography>
+      <Typography variant="h6" sx={{ mb: 2 }}>
+        Recent reports
+      </Typography>
       {data.activeReports.map((report) => {
         return (
           <Report
@@ -370,6 +367,8 @@ function Reports() {
             name={`${report.firstName} ${report.lastName}`}
             photo={report.photo}
             lastSeen={report.lastSeen}
+            gender={report.gender}
+            age={report.age}
           />
         );
       })}

@@ -6,7 +6,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  CircularProgress
+  CircularProgress,
 } from "@mui/material";
 import User from "./User";
 
@@ -23,24 +23,24 @@ export default function UserList() {
     isLoading,
   } = useSWR("/api/users", fetcher);
 
+  const [currentUser, {mutate}] = useUser();
   const [filterByType, setFilterByType] = useState("all");
-  const [currentUser, { loading }] = useUser();
-
-  const [contacts, setContacts] = useState([]);
-
-  useEffect(() => {
-    if (currentUser && !loading) {
-      setContacts(currentUser.contacts);
-    }
-  }, [currentUser, contacts, loading, users]);
+  const [contacts, setContacts] = useState(currentUser.contacts);
+  const [contactRequests, setContactRequests] = useState(currentUser.contactRequests);
 
   if (error) return <Typography>Something went wrong</Typography>;
   if (isLoading) return <CircularProgress />;
 
   const handleAddContact = async (contact) => {
-    setContacts((prev) => {
-      return [...prev, contact];
-    });
+    contactRequests.push(contact)
+    setContactRequests(contactRequests);
+    //save requests to database
+    await fetch("/api/user", {
+      method: "PUT",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({contactRequests: contactRequests})
+    })
+    //send notification
     await addToContactRequest({
       message: `${currentUser.username} wants to add you as a contact`,
       userId: contact,
@@ -48,25 +48,22 @@ export default function UserList() {
       photo: currentUser.photo,
     });
   };
+
   const handleDeleteContact = async (contact) => {
-    let array = contacts;
-    let index = contacts.indexOf(contact);
-    if (index !== -1) {
-      array.splice(index, 1);
-      setContacts(array);
-    }
+    setContacts(
+      contacts.filter((contact) => {
+        return contact !== contact;
+      })
+    );
 
-    const body = {
-      contactId: contact,
-    };
-
-    const res = await fetch("/api/contacts", {
+    await fetch("/api/contacts", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
+      body: JSON.stringify({ contactId: contact }),
     });
-    console.log(res);
+    mutate()
   };
+  
   const handleSelect = (event) => {
     setFilterByType(event.target.value);
   };
@@ -112,6 +109,7 @@ export default function UserList() {
                         type={user.type}
                         email={user.email}
                         contacts={contacts}
+                        contactRequests={contactRequests}
                         status={user.status}
                         onAdd={handleAddContact}
                         onDelete={handleDeleteContact}

@@ -10,14 +10,14 @@ import {
   Chip,
   Tooltip,
   IconButton,
-  Avatar
+  Avatar,
 } from "@mui/material";
 import ProfilePhoto from "@/components/photo/ProfilePhoto";
 
 import StackRowLayout from "@/utils/StackRowLayout";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import PersonIcon from "@mui/icons-material/Person";
-import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
+import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
 
 import { useState } from "react";
 
@@ -25,21 +25,19 @@ export default function User(props) {
   const router = useRouter();
   const { username, email, publicId, type, status } = props;
 
-  const button = props.contacts.includes(props.id)
-    ? "requestAccepted"
-    : "noCurrentAction";
+  const [button, setButton] = useState({
+    inRequests: props.contactRequests.includes(props.id),
+    inContacts: props.contacts.includes(props.id),
+  });
 
-  const [buttonState, setButtonState] = useState(button);
-  console.log(buttonState);
+  const handleRequest = () => {
+    props.onAdd(props.id);
+    setButton({ ...button, inRequests: true });
+  };
 
-  const handleClick = (previousState) => {
-    if (previousState === "noCurrentAction") {
-      props.onAdd(props.id);
-      setButtonState("disable");
-    } else if (previousState === "requestAccepted") {
-      props.onDelete(props.id);
-      setButtonState("Add contact");
-    }
+  const handleRemove = () => {
+    props.onDelete(props.id);
+    setButton({ ...button, inContacts: false });
   };
 
   return (
@@ -74,30 +72,26 @@ export default function User(props) {
               <Typography variant="subtitle2">{email}</Typography>
             </CardContent>
             <CardActions>
-              {buttonState === "noCurrentAction" && (
+              {console.log(props.contactRequests)}
+              {button.inRequests ? (
+                <Button fullWidth variant="contained" size="small" disabled>
+                  Requested
+                </Button>
+              ) : button.inContacts ? (
+                <IconButton size="small" onClick={handleRemove}>
+                  <PersonRemoveIcon />
+                </IconButton>
+              ) : (
                 <Tooltip title="Add to contacts">
                   <IconButton
                     fullWidth
                     variant="contained"
                     size="small"
-                    onClick={() => handleClick("noCurrentAction")}
+                    onClick={handleRequest}
                   >
                     <PersonAddIcon color="primary" />
                   </IconButton>
                 </Tooltip>
-              )}
-              {buttonState === "disable" && (
-                <Button fullWidth variant="contained" size="small" disabled>
-                  Requested
-                </Button>
-              )}
-              {buttonState === "requestAccepted" && (
-                <IconButton
-                  size="small"
-                  onClick={() => handleClick("requestAccepted")}
-                >
-                  <PersonRemoveIcon />
-                </IconButton>
               )}
               <Button
                 startIcon={<PersonIcon />}

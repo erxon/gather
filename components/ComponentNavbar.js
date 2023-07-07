@@ -16,7 +16,7 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
-import { Popover } from "@mui/material";
+import { Avatar, Divider, Popover } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { logout } from "@/lib/api-lib/api-auth";
 import ContactRequestMain from "./notifications/ContactRequestMain";
@@ -24,6 +24,10 @@ import ContactAcceptedMain from "./notifications/ContactAcceptedMain";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import IconTypography from "@/utils/layout/IconTypography";
+import ProfilePhotoAvatar from "./photo/ProfilePhotoAvatar";
+import ProfilePhoto from "./photo/ProfilePhoto";
+import Notifications from "./appbar/Notifications";
+import Contacts from "./notifications/Contacts";
 
 export default function ComponentNavbar(props) {
   const [user, { mutate }] = useUser();
@@ -108,13 +112,10 @@ export default function ComponentNavbar(props) {
       }}
     >
       {user && (
-        <Box>
-          <ContactRequestMain
-            userId={user._id}
-            username={user.username}
-            photo={user.photo}
-          />
-          <ContactAcceptedMain userId={user._id} />
+        <Box sx={{maxWidth: 350, p: 3}}>
+          <Typography sx={{my: 1}}>Notifications</Typography>
+          <Divider />
+          <Contacts userId={user._id} />
         </Box>
       )}
     </Popover>
@@ -171,20 +172,10 @@ export default function ComponentNavbar(props) {
 
           {user ? (
             <Box sx={{ display: { xs: "none", md: "flex" } }}>
-              <IconButton
-                size="large"
-                aria-label="show 17 new notifications"
-                color="inherit"
-                onClick={handleNotificationsOpen}
-              >
-                <Badge badgeContent={17} color="error">
-                  <NotificationsIcon />
-                </Badge>
-              </IconButton>
-              <Stack direction="row" spacing={1} alignItems="center">
-                <AccountCircleIcon />
-                <Typography>{user.username}</Typography>
-              </Stack>
+              <Notifications
+                handleNotificationsOpen={handleNotificationsOpen}
+                userId={user._id}
+              />
               <IconButton
                 size="small"
                 edge="end"
@@ -194,7 +185,9 @@ export default function ComponentNavbar(props) {
                 onClick={handleProfileMenuOpen}
                 color="inherit"
               >
-                <ArrowDropDownIcon />
+                <Avatar>
+                  <ProfilePhoto publicId={user.photo} />
+                </Avatar>
               </IconButton>
             </Box>
           ) : (
@@ -218,16 +211,10 @@ export default function ComponentNavbar(props) {
           )}
           {user ? (
             <Box sx={{ display: { xs: "flex", md: "none" } }}>
-              <IconButton
-                size="large"
-                aria-label="show 17 new notifications"
-                color="inherit"
-                onClick={handleNotificationsOpen}
-              >
-                <Badge badgeContent={17} color="error">
-                  <NotificationsIcon />
-                </Badge>
-              </IconButton>
+              <Notifications
+                handleNotificationsOpen={handleNotificationsOpen}
+                userId={user._id}
+              />
               <Stack direction="row" spacing={1} alignItems="center">
                 <AccountCircleIcon />
                 <Typography>{user.username}</Typography>
@@ -247,14 +234,14 @@ export default function ComponentNavbar(props) {
           ) : (
             <Box sx={{ display: { xs: "flex", md: "none" } }}>
               <Button
-                  color="primary"
-                  href="/login"
-                  variant="contained"
-                  size="large"
-                  disableElevation
-                >
-                  Login
-                </Button>
+                color="primary"
+                href="/login"
+                variant="contained"
+                size="large"
+                disableElevation
+              >
+                Login
+              </Button>
             </Box>
           )}
         </Toolbar>

@@ -64,6 +64,7 @@ export default function ReportPage({ data }) {
   const timeElapsed = calculateTimeElapsed(reportedAt);
 
   return (
+    <>
     <Box>
       <Box sx={{ mb: 3 }}>
         <Typography variant="body1"> Reported by </Typography>{" "}
@@ -237,13 +238,14 @@ export default function ReportPage({ data }) {
                 Share
               </Typography>
               <Stack spacing={2}>
-                <FacebookButton url={`https://gather-plum.vercel.app/reports/${data._id}`} />
+                <FacebookButton name={data.firstName} url={`https://gather-plum.vercel.app/reports/${data._id}`} />
               </Stack>
             </Paper>
           )}
         </Grid>
       </Grid>
     </Box>
+    </>
   );
 }
 
