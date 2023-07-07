@@ -9,7 +9,6 @@ import {
   Typography,
   Button,
 } from "@mui/material";
-import CircleNotificationsIcon from "@mui/icons-material/CircleNotifications";
 
 import { useEffect, useState } from "react";
 import { removeNotification } from "@/lib/api-lib/api-notifications";
@@ -19,19 +18,36 @@ import { useRouter } from "next/router";
 import computeElapsedTime from "@/utils/helpers/computeElapsedTime";
 import QueryPhoto from "../photo/QueryPhoto";
 
-export default function NotificationsMain() {
-  const { data, error, isLoading } = useSWR(
-    "/api/notification/reports",
-    fetcher
-  );
+import _ from "lodash";
+
+export default function NotificationsMain({ user }) {
+  const api =
+    user.type === "authority"
+      ? "/api/notification/authority/reports"
+      : `/api/notification/citizen/${user._id}`;
+  const { data, error, isLoading } = useSWR(api, fetcher);
 
   if (error) return <Typography>Something went wrong</Typography>;
   if (isLoading) return <CircularProgress />;
+  console.log(data);
+  const channel1 =
+    user.type === "authority"
+      ? "notification-authority"
+      : "notification-citizen";
+  const channel2 =
+    user.type === "authority"
+      ? `notification-authority-${user._id}`
+      : `notification-citizen-${user._id}`;
 
+  console.log(channel1, channel2);
   return (
     <div>
       {data.length > 0 ? (
-        <Notifications notifications={data} />
+        <Notifications
+          notificationsFromDB={data}
+          channel1={channel1}
+          channel2={channel2}
+        />
       ) : (
         <Typography color="GrayText" variant="body1">
           No new reports yet
@@ -42,16 +58,24 @@ export default function NotificationsMain() {
 }
 
 function Notifications(props) {
-  const [notifications, setNotifications] = useState([...props.notifications]);
+  const [notifications, setNotifications] = useState([
+    ...props.notificationsFromDB,
+  ]);
 
   useEffect(() => {
-    const channel = pusherJS.subscribe("notification");
-    channel.bind_global((eventName, data) => {
-      setNotifications([data, ...notifications]);
+    const channel1 = pusherJS.subscribe(props.channel1);
+    const channel2 = pusherJS.subscribe(props.channel2);
+    pusherJS.bind_global((eventName, data) => {
+      console.log(eventName, data);
+      if (!_.isEmpty(data)) {
+        setNotifications([data.body, ...notifications]);
+      }
     });
     return () => {
-      channel.unbind;
-      pusherJS.unsubscribe("notification");
+      channel1.unbind;
+      channel2.unbind;
+      pusherJS.unsubscribe(props.channel1);
+      pusherJS.unsubscribe(props.channel2);
     };
   }, [notifications]);
 
@@ -69,7 +93,15 @@ function Notifications(props) {
     <>
       <Box sx={{ overflowY: "scroll", height: 500 }}>
         {notifications.reverse().map((object) => {
-          return (
+          return object.body.type === "match-found" ? (
+            <NotificationMatchFound
+              id={object._id}
+              message={object.body.message}
+              createdAt={object.createdAt}
+              reportId={object.reportId}
+              onRemove={handleDelete}
+            />
+          ) : (
             <Notification
               name={`${object.body.firstName} ${object.body.lastName}`}
               lastSeen={object.body.lastSeen}
@@ -108,7 +140,7 @@ function Notification(props) {
   const router = useRouter();
   const date = new Date(props.createdAt);
   const elapsedTime = computeElapsedTime(date);
-
+  console.log(props.id)
   return (
     <>
       <Box sx={{ my: 2 }}>
@@ -177,5 +209,50 @@ function Notification(props) {
         </Paper>
       </Box>
     </>
+  );
+}
+
+function NotificationMatchFound({
+  id,
+  message,
+  createdAt,
+  reportId,
+  onRemove,
+}) {
+  const elapsedTime = computeElapsedTime(createdAt);
+  const router = useRouter();
+
+  return (
+    <Paper sx={{ my: 2, p: 3 }}>
+      <Stack direction="row" spacing={1} alignItems="center">
+        <Typography sx={{ fontWeight: "bold" }} variant="body1">
+          Match found
+        </Typography>
+        <Typography color="GrayText" variant="subtitle2">
+          {elapsedTime}
+        </Typography>
+      </Stack>
+      <Typography sx={{ mb: 2 }} variant="body2">
+        {message}
+      </Typography>
+      <Button
+        size="small"
+        variant="contained"
+        onClick={() => {
+          router.push(`/reports/${reportId}`);
+        }}
+      >
+        View
+      </Button>
+      <Button
+        onClick={() => {
+          onRemove(id);
+        }}
+        disableElevation
+        size="small"
+      >
+        Dismiss
+      </Button>
+    </Paper>
   );
 }

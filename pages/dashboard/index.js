@@ -72,7 +72,7 @@ function DashboardMain({ user, mutate }) {
           {user.status === "verified" && (
             <Paper sx={{ p: 3 }} variant="outlined">
               <Typography variant="h6">Feeds</Typography>
-              <NotificationsMain />
+              <NotificationsMain user={user} />
             </Paper>
           )}
           <Paper
