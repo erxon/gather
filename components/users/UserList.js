@@ -16,14 +16,13 @@ import { useUser } from "@/lib/hooks";
 import useSWR from "swr";
 import { fetcher } from "@/lib/hooks";
 
-export default function UserList() {
+export default function UserList({currentUser}) {
   const {
     data: { users } = {},
     error,
     isLoading,
-  } = useSWR("/api/users", fetcher);
-
-  const [currentUser, {mutate}] = useUser();
+  } = useSWR("/api/users", fetcher, {refreshInterval: 1000});
+  
   const [filterByType, setFilterByType] = useState("all");
   const [contacts, setContacts] = useState(currentUser.contacts);
   const [contactRequests, setContactRequests] = useState(currentUser.contactRequests);
@@ -61,7 +60,6 @@ export default function UserList() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ contactId: contact }),
     });
-    mutate()
   };
   
   const handleSelect = (event) => {

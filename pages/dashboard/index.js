@@ -69,15 +69,15 @@ function DashboardMain({ user, mutate }) {
           </Paper>
         </Grid>
         <Grid item xs={12} md={6}>
-          {user.type === "authority" && user.status === "verified" && (
+          {user.status === "verified" && (
             <Paper sx={{ p: 3 }} variant="outlined">
-              <Typography variant="h6">Notifications</Typography>
+              <Typography variant="h6">Feeds</Typography>
               <NotificationsMain />
             </Paper>
           )}
           <Paper
             sx={
-              user.type === "authority" && user.status === "verified"
+              user.status === "verified"
                 ? { p: 3, mt: 3 }
                 : { p: 3 }
             }

@@ -14,6 +14,7 @@ import _ from "lodash";
 import useSWR, { mutate } from "swr";
 import { fetcher } from "@/lib/hooks";
 import NotificationsIcon from "@mui/icons-material/Notifications";
+import { useRouter } from "next/router";
 
 function Notification({
   notification,
@@ -22,6 +23,7 @@ function Notification({
   userId,
 }) {
   const [isAccepted, setAccepted] = useState(false);
+  const router = useRouter()
 
   const handleAccept = async () => {
     removeNotification(notificationID);
@@ -37,8 +39,6 @@ function Notification({
       }),
       
     });
-
-    console.log(userId)
     // Add the user to contact
     await fetch("/api/contacts", {
       method: "POST",
@@ -55,6 +55,7 @@ function Notification({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: notificationID }),
       });
+      router.reload()
     }
   };
 

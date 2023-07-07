@@ -23,7 +23,7 @@ export default function Users() {
       <>
         <UserStatus>
           <Head title="Users" icon={<PeopleIcon />} />
-          <UserList />
+          <UserList currentUser={user} />
         </UserStatus>
       </>
     );
