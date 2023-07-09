@@ -140,6 +140,7 @@ function Notification(props) {
   const date = new Date(props.createdAt);
   const elapsedTime = computeElapsedTime(date);
   console.log(props.id)
+  console.log(props.type)
   return (
     <>
       <Box sx={{ my: 2 }}>
