@@ -23,7 +23,8 @@ import { useState } from "react";
 
 export default function User(props) {
   const router = useRouter();
-  const { username, email, publicId, type, status } = props;
+  const { firstName, lastName, username, email, publicId, type, status } =
+    props;
 
   const [button, setButton] = useState({
     inRequests: props.contactRequests.includes(props.id),
@@ -46,13 +47,14 @@ export default function User(props) {
         <Card
           sx={{
             display: "flex",
-            alignItems: "center",
           }}
           variant="outlined"
         >
           <CardMedia sx={{ p: 3 }}>
             {publicId ? (
-              <ProfilePhoto publicId={publicId} />
+              <Avatar sx={{ width: 56, height: 56 }}>
+                <ProfilePhoto publicId={publicId} />
+              </Avatar>
             ) : (
               <Avatar
                 sx={{ width: 56, height: 56 }}
@@ -60,19 +62,25 @@ export default function User(props) {
               />
             )}
           </CardMedia>
-          <Box>
-            <CardContent>
+          <Box sx={{ width: "100%" }}>
+            <CardContent sx={{ height: 60 }}>
+              <Typography sx={{ fontWeight: "bold" }} variant="body1">
+                {firstName} {lastName}
+              </Typography>
               <StackRowLayout spacing={1}>
-                <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+                <Typography
+                  variant="body2"
+                  color="GrayText"
+                  sx={{ fontWeight: "bold" }}
+                >
                   {username}
                 </Typography>
-                <Chip label={type} color="secondary" size="small" />
-                <Chip label={status} color="success" size="small" />
+                <Chip label={type} size="small" />
+                <Chip label={status} size="small" />
               </StackRowLayout>
               <Typography variant="subtitle2">{email}</Typography>
             </CardContent>
-            <CardActions>
-              {console.log(props.contactRequests)}
+            <CardActions sx={{ width: "100%" }}>
               {button.inRequests ? (
                 <Button fullWidth variant="contained" size="small" disabled>
                   Requested

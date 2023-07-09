@@ -19,15 +19,20 @@ import { CloudinaryImage } from "@cloudinary/url-gen";
 import { limitFit, fill } from "@cloudinary/url-gen/actions/resize";
 import ReportDetails from "./ReportDetails";
 import Link from "next/link";
+import Image from "next/image";
 
 function Report(props) {
-  const { id, name, photo, lastSeen, age, gender } = props;
+  const { id, name, photo, lastSeen, age, gender, date } = props;
 
   const image = new CloudinaryImage(photo, {
     cloudName: "dg0cwy8vx",
     apiKey: process.env.NEXT_PUBLIC_CLOUDINARY_KEY,
     apiSecret: process.env.NEXT_PUBLIC_CLOUDINARY_SECRET,
-  }).resize(fill().height(100).width(100));
+  }).resize(fill().width(100).height(100));
+
+  const reportedDate = new Date(date);
+  const dateString = reportedDate.toDateString();
+  const timeString = reportedDate.toLocaleTimeString();
 
   return (
     <Card
@@ -37,21 +42,29 @@ function Report(props) {
         my: 1,
         p: 1,
       }}
-      variant="outlined"
     >
-      {photo ? (
-        <AdvancedImage cldImg={image} />
-      ) : (
-        <CardMedia
-          component="img"
-          sx={{ width: 100, height: 100 }}
-          image="/assets/placeholder.png"
-        />
-      )}
+      <CardMedia>
+        {photo ? (
+          <AdvancedImage cldImg={image} />
+        ) : (
+          <Image width={100} height={100} src="/assets/placeholder.png" />
+        )}
+      </CardMedia>
       <Box sx={{ display: "flex", flexDirection: "column", pl: 1 }}>
         <CardContent sx={{ flex: "1 0 auto" }}>
-          <Typography gutterBottom variant="h5" component="div">
-            <Link style={{textDecoration: 'none', color: '#000000'}} href={`/reports/${id}`}>{name}</Link>
+          <Typography sx={{ fontWeight: "bold" }} variant="h6">
+            <Link
+              style={{ textDecoration: "none", color: "#000000" }}
+              href={`/reports/${id}`}
+            >
+              {name}
+            </Link>
+          </Typography>
+          <Typography sx={{ mb: 1 }} variant="body1">
+            Reportedly missing on{" "}
+            <span style={{ fontWeight: "bold" }}>
+              {dateString} {timeString}
+            </span>
           </Typography>
           <ReportDetails lastSeen={lastSeen} age={age} gender={gender} />
         </CardContent>
@@ -94,6 +107,7 @@ export default function ActiveReports() {
                   lastSeen={report.lastSeen}
                   gender={report.gender}
                   age={report.age}
+                  date={report.reportedAt}
                 />
               );
             })}

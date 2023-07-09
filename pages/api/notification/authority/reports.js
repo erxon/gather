@@ -4,6 +4,7 @@ import {
   saveNotification,
   getNotifications,
   removeNotification,
+  getNotificationsByChannel,
 } from "@/lib/controllers/notificationController";
 import { pusher } from "@/utils/pusher";
 

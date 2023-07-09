@@ -19,7 +19,6 @@ export default function UnverifedUsers() {
     data.users.filter((user) => {
       return user.status === "unverified";
     });
-
   return (
     <List component="div" disablePadding>
       <ListItemButton
@@ -29,7 +28,7 @@ export default function UnverifedUsers() {
         sx={{ pl: 4 }}
       >
         <ListItemIcon>
-          <Badge badgeContent={unverifiedUsers.length} color="primary">
+          <Badge badgeContent={unverifiedUsers && unverifiedUsers.length} color="primary">
             <PersonIcon />
           </Badge>
         </ListItemIcon>

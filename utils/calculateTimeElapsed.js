@@ -4,7 +4,7 @@ const formatDate = (timeElapsed) => {
     (timeElapsed % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
   );
   let minutes = Math.floor((timeElapsed % (1000 * 60 * 60)) / (1000 * 60));
-  return `Days: ${days}, ${hours}hrs ${minutes}mins`
+  return `${days} days, ${hours} hrs, ${minutes} minutes`
 };
 
 export default function calculateTimeElapsed(time) {

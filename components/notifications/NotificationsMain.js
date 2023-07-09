@@ -18,6 +18,7 @@ import { useRouter } from "next/router";
 import computeElapsedTime from "@/utils/helpers/computeElapsedTime";
 import QueryPhoto from "../photo/QueryPhoto";
 import _ from "lodash";
+import { NotificationsNoneOutlined } from "@mui/icons-material";
 
 export default function NotificationsMain({ user }) {
   const api =
@@ -87,6 +88,8 @@ function Notifications(props) {
     await removeNotification(id);
   };
 
+  console.log(notifications)
+
   return (
     <>
       <Box sx={{ overflowY: "scroll", height: 500 }}>
@@ -96,7 +99,8 @@ function Notifications(props) {
               id={object._id}
               message={object.body.message}
               createdAt={object.createdAt}
-              reportId={object.reportId}
+              reportId={object.body.reportId}
+              photoUploaded={object.body.photoUploaded}
               onRemove={handleDelete}
             />
           ) : (
@@ -139,8 +143,6 @@ function Notification(props) {
   const router = useRouter();
   const date = new Date(props.createdAt);
   const elapsedTime = computeElapsedTime(date);
-  console.log(props.id)
-  console.log(props.type)
   return (
     <>
       <Box sx={{ my: 2 }}>
@@ -218,6 +220,7 @@ function NotificationMatchFound({
   createdAt,
   reportId,
   onRemove,
+  photoUploaded
 }) {
   const elapsedTime = computeElapsedTime(createdAt);
   const router = useRouter();
@@ -239,7 +242,7 @@ function NotificationMatchFound({
         size="small"
         variant="contained"
         onClick={() => {
-          router.push(`/reports/${reportId}`);
+          router.push(`/reporter/${photoUploaded}`);
         }}
       >
         View

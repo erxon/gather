@@ -15,8 +15,8 @@ export default function ReportDetails(props) {
 
   return (
     <Box>
-      <IconTypography Icon={<PlaceIcon />} content={lastSeen} />
-      <IconTypography Icon={<PersonIcon />} content={`${age} ${gender}`}/>
+      <IconTypography Icon={<PlaceIcon color="disabled" />} content={lastSeen} />
+      <IconTypography Icon={<PersonIcon color="disabled" />} content={`${age} ${gender}`}/>
     </Box>
   );
 }

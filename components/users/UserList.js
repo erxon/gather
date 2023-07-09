@@ -106,6 +106,8 @@ export default function UserList({currentUser}) {
                         username={user.username}
                         type={user.type}
                         email={user.email}
+                        firstName={user.firstName}
+                        lastName={user.lastName}
                         contacts={contacts}
                         contactRequests={contactRequests}
                         status={user.status}

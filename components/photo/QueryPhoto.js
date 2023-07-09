@@ -9,7 +9,7 @@ export default function QueryPhoto(props) {
     cloudName: "dg0cwy8vx",
     apiKey: process.env.NEXT_PUBLIC_CLOUDINARY_KEY,
     apiSecret: process.env.NEXT_PUBLIC_CLOUDINARY_SECRET,
-  }).resize(limitFill().width(150).height(150).gravity(autoGravity()));
+  }).resize(limitFill().width(300).height(300).gravity(autoGravity()));
 
   return <AdvancedImage cldImg={image} />;
 }

@@ -84,6 +84,8 @@ export default function AddReportForm({ handleClose, username }) {
           reporter: username,
         }),
       });
+      setValues({ age: "", firstName: "", lastName: "", lastSeen: "" });
+      setSubmittedState(false)
     } else if (addReport.status === 400) {
       setAlert({
         open: true,
@@ -93,7 +95,7 @@ export default function AddReportForm({ handleClose, username }) {
     //Display Snackbar
 
     mutate(`/api/reports/user/${username}`);
-    
+
     setSnackbar({
       open: true,
       message: addReportResult.message,

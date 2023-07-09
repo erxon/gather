@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const reportSchema = mongoose.Schema({
   reporter: { type: mongoose.Schema.Types.ObjectId, ref: "Reporter" },
   status: String,
+  found: Boolean,
   username: { type: String, ref: "User" },
   account: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   photo: {

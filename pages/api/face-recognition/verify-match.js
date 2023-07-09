@@ -2,9 +2,10 @@ import nextConnect from "next-connect";
 import {
   saveNotification,
   notifyReporter,
-  verifyMatch,
+  updateReport
 } from "@/lib/controllers/faceRecognitionController";
 import { isAuthority, isVerified } from "@/utils/api-helpers/authorize";
+import auth from "@/middleware/auth";
 
 const handler = nextConnect();
 
@@ -23,7 +24,7 @@ handler
     saveNotification(req, res, next);
   })
   .put((req, res) => {
-    verifyMatch(req, res);
+    updateReport(req, res);
   });
 
 export default handler;

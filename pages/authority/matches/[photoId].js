@@ -10,6 +10,12 @@ import {
   Divider,
   LinearProgress,
   Modal,
+  Collapse,
+  Alert,
+  Card,
+  CardMedia,
+  CardContent,
+  CardActions,
 } from "@mui/material";
 import Image from "next/image";
 import Authenticate from "@/utils/authority/Authenticate";
@@ -27,10 +33,10 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import StackRow from "@/utils/StackRow";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import CheckIcon from "@mui/icons-material/Check";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function DisplayModal({ handleClose, openModal, matchId, userId }) {
-  const router = useRouter()
+  const router = useRouter();
   const style = {
     position: "absolute",
     top: "50%",
@@ -43,36 +49,102 @@ function DisplayModal({ handleClose, openModal, matchId, userId }) {
   };
 
   const handleConfirm = async () => {
-    const confirm = await fetch('/api/face-recognition/verify-match', {
-      method: 'PUT',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({matchId: matchId, userId: userId})
-    })
-    if(confirm.status === 200){
-      router.reload()
+    const confirm = await fetch("/api/face-recognition/verify-match", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ matchId: matchId, userId: userId }),
+    });
+    if (confirm.status === 200) {
+      router.reload();
     }
-  }
+  };
 
   return (
     <Modal open={openModal} handleClose={() => handleClose()}>
       <Box sx={style}>
         <Typography sx={{ fontWeight: "bold" }}>Match found</Typography>
         <Typography>Verify match, and notify reporter.</Typography>
-        <Box sx={{mt: 2}}>
-          <Button onClick={handleConfirm} startIcon={<CheckIcon />} variant="contained" sx={{mr: 1}}>Confirm</Button>
-          <Button onClick={() => handleClose()} variant="outlined">Cancel</Button>
+        <Box sx={{ mt: 2 }}>
+          <Button
+            onClick={handleConfirm}
+            startIcon={<CheckIcon />}
+            variant="contained"
+            sx={{ mr: 1 }}
+          >
+            Confirm
+          </Button>
+          <Button onClick={() => handleClose()} variant="outlined">
+            Cancel
+          </Button>
         </Box>
       </Box>
     </Modal>
   );
 }
 
-function DisplayReportDetails({ reportId, distance }) {
+function DisplayReferencePhotos({ reportId, style }) {
+  const { data, error, isLoading } = useSWR(
+    `/api/photos/report/${reportId}`,
+    fetcher
+  );
+
+  if (error)
+    return (
+      <Typography>Something went wrong fetching reference photos.</Typography>
+    );
+  if (isLoading) return <CircularProgress />;
+
+  return (
+    <Box sx={style}>
+      <Typography sx={{ my: 2, fontWeight: "bold" }} variant="body2">
+        Reference Photos
+      </Typography>
+      {data.images.map((image) => {
+        return <ReportPhoto publicId={`report-photos/${image.publicId}`} />;
+      })}
+    </Box>
+  );
+}
+
+function FoundButton({ photoUploadedId, account, reportId, found }) {
+  const [isFound, setFound] = useState(found);
+
+  const handleMatchFoundClick = async () => {
+    const result = await fetch("/api/face-recognition/verify-match", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        photoUploadedId: photoUploadedId,
+        userId: account,
+        reportId: reportId,
+      }),
+    });
+    const resultJson = await result.json();
+    console.log(resultJson);
+    setFound(true);
+  };
+
+  return (
+    <div>
+      {!isFound ? (
+        <Button onClick={handleMatchFoundClick} size="small" variant="outlined">
+          this is a match
+        </Button>
+      ) : (
+        <Alert severity="success">This missing person has been found.</Alert>
+      )}
+    </div>
+  );
+}
+
+function DisplayReportDetails({ photoUploadedId, reportId, distance }) {
   const router = useRouter();
+
   const { data, error, isLoading } = useSWR(
     `/api/reports/${reportId}`,
     fetcher
   );
+
   if (error) return <Typography>Something went wrong</Typography>;
   if (isLoading) return <CircularProgress />;
   if (data) {
@@ -84,63 +156,99 @@ function DisplayReportDetails({ reportId, distance }) {
           }}
           variant="outlined"
         >
-          <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
-            {data.photo ? (
-              <ReportPhoto publicId={data.photo} />
-            ) : (
-              <Image
-                width={150}
-                height={150}
-                src="/assets/placeholder.png"
-                alt="placeholder"
-              />
-            )}
-            <Box>
-              <Typography>Distance {Math.round(distance * 100)}%</Typography>
-              <Typography variant="h6">
-                {data.firstName} {data.lastName}
-              </Typography>
-              <IconTypography
-                customStyles={{ mb: 0.5 }}
-                Icon={<PlaceIcon />}
-                content={data.lastSeen}
-              />
-              <IconTypography
-                Icon={<PersonIcon />}
-                content={`${data.gender}, ${data.age}`}
-                customStyles={{ mb: 0.5 }}
-              />
-              <Button
-                onClick={() => {
-                  router.push(`/reports/${reportId}`);
-                }}
-                size="small"
-                variant="contained"
-              >
-                View
-              </Button>
+          <Card
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", md: "row" },
+              width: "100%",
+              alignItems: { xs: "center", md: "left" },
+            }}
+            variant="elevation"
+          >
+            <CardMedia sx={{ p: 2 }}>
+              {data.photo ? (
+                <ReportPhoto publicId={photo} />
+              ) : (
+                <Image src="/assets/placeholder.png" width={150} height={150} />
+              )}
+            </CardMedia>
+            <Box sx={{ display: "flex", flexDirection: "column" }}>
+              <CardContent>
+                <Typography variant="h6" color="primary">
+                  {Math.round(distance * 100)}% Similarity
+                </Typography>
+
+                <Typography
+                  sx={{ mb: 0.25, mt: 0.5, fontWeight: "bold" }}
+                  variant="body1"
+                >
+                  {data.firstName} {data.lastName}
+                </Typography>
+                <IconTypography
+                  customStyles={{ mb: 0.5 }}
+                  Icon={<PlaceIcon color="disabled" />}
+                  content={data.lastSeen}
+                />
+                <IconTypography
+                  Icon={<PersonIcon color="disabled" />}
+                  content={`${data.gender}, ${data.age}`}
+                  customStyles={{ mb: 0.5 }}
+                />
+              </CardContent>
+              <CardActions>
+                <Stack
+                  direction={{ xs: "column", md: "row" }}
+                  alignItems="center"
+                  spacing={1}
+                >
+                  <Button
+                    sx={{ width: { xs: "100%", md: "75px" } }}
+                    onClick={() => {
+                      router.push(`/reports/${reportId}`);
+                    }}
+                    size="small"
+                    variant="contained"
+                  >
+                    View
+                  </Button>
+                  <FoundButton
+                    photoUploadedId={photoUploadedId}
+                    account={data.account}
+                    found={data.found}
+                    reportId={data._id}
+                  />
+                </Stack>
+              </CardActions>
             </Box>
-          </Stack>
+          </Card>
+          <Paper sx={{ mt: 1, p: 3}}>
+            <DisplayReferencePhotos style={{ mb: 2 }} reportId={reportId} />
+          </Paper>
         </Paper>
       </Box>
     );
   }
 }
 
-function GetReport({ photoId, distance , matchId }) {
+function GetReport({ photoUploadedId, photoId, distance, matchId }) {
   const { data, error, isLoading } = useSWR(`/api/photos/${photoId}`, fetcher);
 
   if (error) return <Typography>Something went wrong</Typography>;
   if (isLoading) return <CircularProgress />;
   if (data) {
     return (
-      <DisplayReportDetails matchId={matchId} reportId={data.reportId} distance={distance} />
+      <DisplayReportDetails
+        photoUploadedId={photoUploadedId}
+        photoId={photoId}
+        matchId={matchId}
+        reportId={data.reportId}
+        distance={distance}
+      />
     );
   }
 }
 
-function FindMatches({ queryPhotoId }) {
-  const [openConfirmation, setOpenConfirmation] = useState(false);
+function FindMatches({ photoUploadedId, queryPhotoId }) {
   const [isReset, setReset] = useState(false);
   const { data, error, isLoading, mutate } = useSWRImmutable(
     `/api/face-recognition/${queryPhotoId}`,
@@ -150,10 +258,6 @@ function FindMatches({ queryPhotoId }) {
   if (error)
     return <Typography>Something went wrong fetching matches.</Typography>;
   if (isLoading) return <CircularProgress />;
-
-  const handleConfirmationClose = () => {
-    setOpenConfirmation(false);
-  };
 
   const handleReset = async (id) => {
     const reset = await fetch(`/api/face-recognition/reset/${id}`, {
@@ -180,10 +284,6 @@ function FindMatches({ queryPhotoId }) {
 
   return (
     <Box>
-      <DisplayModal
-        openModal={openConfirmation}
-        handleClose={handleConfirmationClose}
-      />
       {data && (
         <Box sx={{ mb: 2 }}>
           <Button
@@ -206,6 +306,7 @@ function FindMatches({ queryPhotoId }) {
           {data.matches.map((match) => {
             return (
               <GetReport
+                photoUploadedId={photoUploadedId}
                 key={match._label}
                 photoId={match._label}
                 distance={match._distance}
@@ -213,14 +314,6 @@ function FindMatches({ queryPhotoId }) {
               />
             );
           })}
-          <Button
-            onClick={() => setOpenConfirmation(true)}
-            startIcon={<CheckIcon />}
-            sx={{ mt: 2 }}
-            variant="contained"
-          >
-            Verify
-          </Button>
         </div>
       ) : (
         <Typography>No matches found</Typography>
@@ -256,7 +349,16 @@ function RenderMatches({ queryPhotoId }) {
               <Typography sx={{ mb: 1.5 }} variant="h6">
                 Photo
               </Typography>
-              <QueryPhoto publicId={data.image} />
+              <Box
+                sx={{
+                  p: 1,
+                  backgroundColor: "#F2F4F4",
+                  textAlign: "center",
+                  borderRadius: "10px",
+                }}
+              >
+                <QueryPhoto publicId={data.image} />
+              </Box>
             </Paper>
           </Grid>
           <Grid item xs={12} md={8}>
@@ -264,7 +366,10 @@ function RenderMatches({ queryPhotoId }) {
               <Typography sx={{ mb: 1.5 }} variant="h6">
                 Possible matches
               </Typography>
-              <FindMatches queryPhotoId={data.image} />
+              <FindMatches
+                photoUploadedId={queryPhotoId}
+                queryPhotoId={data.image}
+              />
             </Paper>
           </Grid>
         </Grid>

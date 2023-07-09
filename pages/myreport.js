@@ -29,62 +29,9 @@ import StackRowLayout from "@/utils/StackRowLayout";
 import CloseIcon from "@mui/icons-material/Close";
 import DisplaySnackbar from "@/components/DisplaySnackbar";
 import ErrorAlert from "@/components/ErrorAlert";
+import ReportCard from "@/components/reports/ReportCard";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
-
-function Report(props) {
-  return (
-    <>
-      <Grid item xs={12} md={3} sm={4} sx={{mb: 2}}>
-        <Box>
-          <Card>
-            {props.photo ? (
-              <CardMedia
-                sx={{ width: "100%", height: 200, textAlign: "center" }}
-              >
-                <ReportPhoto publicId={`report-photos/${props.photo}`} />
-              </CardMedia>
-            ) : (
-              <Box
-                sx={{
-                  backgroundColor: "#D9D9D9",
-                  height: "200px",
-                }}
-              ></Box>
-            )}
-            <CardContent sx={{ p: 3 }}>
-              <Box sx={{ mb: 1 }}>
-                <Typography variant="h5" sx={{ mb: 0.5 }}>
-                  {props.firstName} {props.lastName}
-                </Typography>
-                <Chip label={props.status} size="small" color="secondary" />
-              </Box>
-              <StackRow>
-                <PlaceIcon />
-                <Typography variant="body2">{props.lastSeen}</Typography>
-              </StackRow>
-              <StackRow>
-                <PersonIcon />
-                <Typography variant="body2">
-                  {props.gender}, {props.age}
-                </Typography>
-              </StackRow>
-            </CardContent>
-            <CardActions>
-              <Button
-                fullWidth
-                variant="contained"
-                href={`/reports/${props.id}`}
-              >
-                View
-              </Button>
-            </CardActions>
-          </Card>
-        </Box>
-      </Grid>
-    </>
-  );
-}
 
 function GetReport(props) {
   const [openAddReportForm, setAddReportForm] = useState(false);
@@ -144,20 +91,22 @@ function GetReport(props) {
           }}
         />
       </Collapse>
-      <Grid container spacing={1} >
+      <Grid container spacing={2}>
         {data.data.map((report) => {
           return (
-            <Report
-              key={report._id}
-              id={report._id}
-              photo={report.photoId}
-              firstName={report.firstName}
-              lastName={report.lastName}
-              lastSeen={report.lastSeen}
-              age={report.age}
-              status={report.status}
-              gender={report.gender}
-            />
+            <Grid key={report._id} item xs={12} md={3}>
+              <ReportCard
+                key={report._id}
+                id={report._id}
+                photo={report.photo}
+                firstName={report.firstName}
+                lastName={report.lastName}
+                lastSeen={report.lastSeen}
+                age={report.age}
+                status={report.status}
+                gender={report.gender}
+              />
+            </Grid>
           );
         })}
       </Grid>
