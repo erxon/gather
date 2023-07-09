@@ -53,7 +53,12 @@ function ReferencePhotos({ reportId }) {
       <Typography variant="body1">Reference Photos</Typography>
       {data ? (
         data.images.map((image) => {
-          return <ReportPhoto publicId={`report-photos/${image.publicId}`} />;
+          return (
+            <ReportPhoto
+              key={image._id}
+              publicId={`report-photos/${image.publicId}`}
+            />
+          );
         })
       ) : (
         <Typography color="GrayText">
@@ -132,8 +137,8 @@ export default function ReportPage({ data }) {
           sx={{
             display: "flex",
             flexDirection: { xs: "column", md: "row" },
-            width: {xs: 400, md: "auto" },
-            height: {xs: "auto", md: 500}
+            width: { xs: 400, md: "auto" },
+            height: { xs: "auto", md: 500 },
           }}
         >
           <CardMedia sx={{ textAlign: "center" }}>
@@ -143,7 +148,7 @@ export default function ReportPage({ data }) {
               <Image
                 width={400}
                 height={500}
-                style={{objectFit: "cover"}}
+                style={{ objectFit: "cover" }}
                 alt="placeholder"
                 src="/assets/placeholder.png"
               />

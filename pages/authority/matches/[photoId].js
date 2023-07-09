@@ -100,7 +100,12 @@ function DisplayReferencePhotos({ reportId, style }) {
         Reference Photos
       </Typography>
       {data.images.map((image) => {
-        return <ReportPhoto publicId={`report-photos/${image.publicId}`} />;
+        return (
+          <ReportPhoto
+            key={image._id}
+            publicId={`report-photos/${image.publicId}`}
+          />
+        );
       })}
     </Box>
   );
@@ -221,7 +226,7 @@ function DisplayReportDetails({ photoUploadedId, reportId, distance }) {
               </CardActions>
             </Box>
           </Card>
-          <Paper sx={{ mt: 1, p: 3}}>
+          <Paper sx={{ mt: 1, p: 3 }}>
             <DisplayReferencePhotos style={{ mb: 2 }} reportId={reportId} />
           </Paper>
         </Paper>
