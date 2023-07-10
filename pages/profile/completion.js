@@ -12,13 +12,15 @@ export default function Page() {
   useEffect(() => {
     if (!user && !loading) {
       router.push("/login");
+    } else if (user && user.status === "verified") {
+      router.push("/dashboard");
     }
   }, [user, loading]);
 
   if (user) {
     return (
       <div>
-        {user.status === "unverified" ? (
+        {user && user.status === "unverified" && (
           <Paper variant="outlined" sx={{ p: 3 }}>
             <Typography variant="h6">Complete your profile</Typography>
             <Typography variant="body1">
@@ -28,8 +30,6 @@ export default function Page() {
             <Divider sx={{ my: 3 }} />
             <CompletionForm user={user} mutate={mutate} />
           </Paper>
-        ) : (
-          router.push("/dashboard")
         )}
       </div>
     );

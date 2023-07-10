@@ -63,7 +63,7 @@ function ReferencePhotos({ reportId }) {
       ) : (
         <Typography color="GrayText">
           Please add reference photos. This will help our system to accurately
-          match your report to photos being submitted.
+          match the report to photos being submitted.
         </Typography>
       )}
     </Box>

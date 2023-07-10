@@ -86,7 +86,7 @@ function User({ user }) {
         handleClose={handleCloseModal}
         userId={user._id}
       />
-      <Card sx={{ display: "flex", alignItems: "center", maxWidth: 400, p: 2 }}>
+      <Card sx={{ display: "flex", alignItems: "center", maxWidth: 400, p: 2, mb: 2 }}>
         <CardMedia>
           {user.photo ? (
             <Avatar>

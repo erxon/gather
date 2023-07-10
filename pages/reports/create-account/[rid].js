@@ -12,6 +12,7 @@ import {
   Snackbar,
   Alert,
   Grid,
+  CircularProgress,
 } from "@mui/material";
 
 //Icons
@@ -28,6 +29,7 @@ import {
   uploadReportPhoto,
 } from "@/lib/api-lib/api-reports";
 import Image from "next/image";
+import TextFieldWithValidation from "@/components/forms/TextFieldWithValidation";
 //Signup user
 //Update the report
 
@@ -72,6 +74,7 @@ function UploadPhoto({ mpName, reportId, getPhotoId }) {
   });
 
   const [uploaded, isUploaded] = useState(false);
+  const [isLoading, setLoading] = useState(false);
 
   const handleSnackbarClose = () => {
     setSnackbar({ open: false, severity: "", message: "" });
@@ -110,30 +113,33 @@ function UploadPhoto({ mpName, reportId, getPhotoId }) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setLoading(true);
     let snackbarContent = {};
     let uploadedPhotos = [];
 
     //Upload photo to Cloudinary
     const form = event.currentTarget;
 
-    for(let i = 0; i < 3; i++){
+    for (let i = 0; i < 3; i++) {
       for (const file of form.elements[i].files) {
         const formData = new FormData();
         formData.append("file", file);
         formData.append("upload_preset", "report-photos");
         const data = await uploadReportPhoto(formData);
-        uploadedPhotos.push({publicId: data.public_id.substring(14, 34), fileName: file.name})
+        uploadedPhotos.push({
+          publicId: data.public_id.substring(14, 34),
+          fileName: file.name,
+        });
       }
     }
 
     //Save photo to Photo database
     const photosData = {
       images: [...uploadedPhotos],
-      type: 'reference',
+      type: "reference",
       reportId: reportId,
       missingPerson: mpName,
     };
-   
 
     // //Store response message
     const upload = await uploadToDatabase(photosData);
@@ -143,9 +149,10 @@ function UploadPhoto({ mpName, reportId, getPhotoId }) {
 
     setSnackbar(snackbarContent);
     isUploaded(true);
+    setLoading(false);
     // Link the photo to report
     getPhotoId(newPhotos.data._id);
-    setSnackbar(snackbarContent)
+    setSnackbar(snackbarContent);
   };
 
   return (
@@ -169,31 +176,6 @@ function UploadPhoto({ mpName, reportId, getPhotoId }) {
         Missing person photo
       </Typography>
 
-      {/*Display photo preview before upload*/}
-      {/* {photo.src !== "" && (
-        <Box>
-          <Box
-            sx={{
-              borderRadius: "10px",
-              border: "0.5px solid grey",
-              width: 150,
-              height: 150,
-            }}
-          >
-            <Image
-              style={{ objectFit: "contain" }}
-              src={photo.src}
-              width={150}
-              height={150}
-              alt={photo.fileName}
-            />
-          </Box>
-          <Typography variant="subtitle1" color="secondary">
-            {photo.fileName}
-          </Typography>
-        </Box>
-      )} */}
-
       {/* If the photo is already uploaded, remove the form */}
       {!uploaded ? (
         <form onChange={handleChange} onSubmit={handleSubmit}>
@@ -210,7 +192,7 @@ function UploadPhoto({ mpName, reportId, getPhotoId }) {
                 hidden
                 type="file"
                 name="photo1"
-                accept="image/png, image/jpeg"
+                accept="image/png image/jpeg"
               />
             </Button>
             <Button
@@ -225,7 +207,7 @@ function UploadPhoto({ mpName, reportId, getPhotoId }) {
                 hidden
                 type="file"
                 name="photo2"
-                accept="image/png, image/jpeg"
+                accept="image/png image/jpeg"
               />
             </Button>
             <Button
@@ -240,14 +222,27 @@ function UploadPhoto({ mpName, reportId, getPhotoId }) {
                 hidden
                 type="file"
                 name="photo3"
-                accept="image/png, image/jpeg"
+                accept="image/png image/jpeg"
               />
             </Button>
-            {photos.length === 3 && (
-              <Button type="submit" size="small" variant="contained">
-                Upload
-              </Button>
-            )}
+            {photos.length === 3 &&
+              (!isLoading ? (
+                <Button type="submit" size="small" variant="contained">
+                  Upload
+                </Button>
+              ) : (
+                <div>
+                  <Stack
+                    direction="row"
+                    justifyItems="center"
+                    alignItems="center"
+                    spacing={1}
+                  >
+                    <CircularProgress />
+                    <Typography color="GrayText">Uploading</Typography>
+                  </Stack>
+                </div>
+              ))}
           </Stack>
         </form>
       ) : (
@@ -316,11 +311,15 @@ export default function CreateAccount({ data }) {
   const [user, { mutate }] = useUser();
   //Control input fields
   const [values, setValues] = useState({
+    firstName: "",
+    lastName: "",
     username: "",
     email: "",
     password: "",
   });
   const [photoId, setPhotoId] = useState(null);
+  const [isSubmitted, setSubmissionState] = useState(false);
+  const [isLoading, setLoading] = useState(false);
 
   const handleChange = (event) => {
     const { value, name } = event.target;
@@ -331,13 +330,14 @@ export default function CreateAccount({ data }) {
   //Handle submit for signup and report update.
   const handleSubmit = async () => {
     //Signup the user first
+    setSubmissionState(true);
     const registerUser = await fetch("/api/users", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...values,
         type: "citizen",
-        status: "unverified"
+        status: "unverified",
       }),
     });
     //Get the data
@@ -363,7 +363,6 @@ export default function CreateAccount({ data }) {
       //Update user
 
       mutate(newUser);
-      // Router.push(`/reports/edit/${response.data._id}`)
     }
   };
 
@@ -396,47 +395,57 @@ export default function CreateAccount({ data }) {
           <Typography sx={{ mb: 2 }} variant="h6">
             Signup
           </Typography>
-          <TextField
-            variant="outlined"
+          <Stack sx={{ mb: 2 }} spacing={1} direction="row">
+            <TextFieldWithValidation
+              label="First name"
+              type="text"
+              name="firstName"
+              value={values.firstName}
+              isFullWidth={true}
+              changeHandler={handleChange}
+              isSubmitted={isSubmitted}
+            />
+            <TextFieldWithValidation
+              label="Last name"
+              type="text"
+              name="lastName"
+              value={values.lastName}
+              isFullWidth={true}
+              changeHandler={handleChange}
+              isSubmitted={isSubmitted}
+            />
+          </Stack>
+          <TextFieldWithValidation
+            style={{ mb: 2 }}
             label="username"
             type="text"
             name="username"
             value={values.username}
-            onChange={handleChange}
-            required
-            fullWidth
+            changeHandler={handleChange}
+            isFullWidth={true}
+            isSubmitted={isSubmitted}
           />
-          <br />
-          <TextField
-            margin="dense"
-            variant="outlined"
+          <TextFieldWithValidation
+            style={{ mb: 2 }}
             label="email"
             type="email"
             name="email"
             value={values.email}
-            onChange={handleChange}
-            required
-            fullWidth
+            changeHandler={handleChange}
+            isFullWidth={true}
+            isSubmitted={isSubmitted}
           />
-          <br />
-          <TextField
-            margin="dense"
-            variant="outlined"
+          <TextFieldWithValidation
+            style={{ mb: 2 }}
             label="password"
             type="password"
             name="password"
             value={values.password}
-            onChange={handleChange}
-            required
-            fullWidth
+            changeHandler={handleChange}
+            isFullWidth={true}
+            isSubmitted={isSubmitted}
           />
-          <br />
-          <Button
-            sx={{ mt: 2 }}
-            fullWidth
-            variant="contained"
-            onClick={handleSubmit}
-          >
+          <Button sx={{ mt: 2 }} variant="contained" onClick={handleSubmit}>
             Signup
           </Button>
         </Paper>
