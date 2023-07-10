@@ -18,6 +18,8 @@ import { useUser } from "@/lib/hooks";
 import StackRowLayout from "@/utils/StackRowLayout";
 
 import DashboardIcon from "@mui/icons-material/Dashboard";
+import SearchBar from "@/components/searchBars/SearchBar";
+import SearchBarReports from "@/components/searchBars/SearchBarReports";
 
 function DashboardMain({ user, mutate }) {
   const router = useRouter();
@@ -31,7 +33,10 @@ function DashboardMain({ user, mutate }) {
     <>
       <StackRowLayout spacing={1}>
         <DashboardIcon />
-        <Typography variant="h5">Dashboard</Typography>
+        <Typography sx={{mr: 3}} variant="h5">
+          Dashboard
+        </Typography>
+        <SearchBarReports />
       </StackRowLayout>
       {user.status === "unverified" && (
         <Box sx={{ mt: 3 }}>
