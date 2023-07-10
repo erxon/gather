@@ -13,7 +13,10 @@ const handler = nextConnect();
 handler
   .get(async (req, res) => {
     try {
-      const data = await getNotifications('notification-authority', 'new-report');
+      const data = await getNotifications(
+        "notification-authority",
+        "new-report"
+      );
       res.json(data);
     } catch (err) {
       res.json(err);
@@ -37,15 +40,18 @@ handler
           firstName: req.body.firstName,
           lastName: req.body.lastName,
           lastSeen: req.body.lastSeen,
-          reportId: req.body.reportId
+          reportId: req.body.reportId,
+          title: "New report",
+          type: "report-manage",
         },
         createdAt: Date.now(),
         type: "report-manage",
+        title: "New report",
         channel: "notification-authority",
         event: "new-report",
       });
-      req.notification = data
-      next()
+      req.notification = data;
+      next();
     } catch (err) {
       res.json(err);
     }
@@ -55,15 +61,14 @@ handler
 
     pusher
       .trigger("notification-authority", "new-report", {
-        body
+        body,
       })
       .then(() => {
-        res.status(200).json({message: "okay"})
+        res.status(200).json({ message: "okay" });
       })
       .catch((err) => {
         res.json(err);
       });
-  })
-  
+  });
 
 export default handler;

@@ -33,6 +33,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import StackRow from "@/utils/StackRow";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import CheckIcon from "@mui/icons-material/Check";
+import SearchIcon from "@mui/icons-material/Search";
 import { useEffect, useState } from "react";
 
 function DisplayModal({ handleClose, openModal, matchId, userId }) {
@@ -172,7 +173,7 @@ function DisplayReportDetails({ photoUploadedId, reportId, distance }) {
           >
             <CardMedia sx={{ p: 2 }}>
               {data.photo ? (
-                <ReportPhoto publicId={photo} />
+                <ReportPhoto publicId={data.photo} />
               ) : (
                 <Image src="/assets/placeholder.png" width={150} height={150} />
               )}
@@ -255,14 +256,22 @@ function GetReport({ photoUploadedId, photoId, distance, matchId }) {
 
 function FindMatches({ photoUploadedId, queryPhotoId }) {
   const [isReset, setReset] = useState(false);
+  const [isSearchPressed, searchButtonPressed] = useState(false);
+
   const { data, error, isLoading, mutate } = useSWRImmutable(
-    `/api/face-recognition/${queryPhotoId}`,
+    `/api/face-recognition/past-matches/${queryPhotoId}`,
     fetcher
   );
 
-  if (error)
-    return <Typography>Something went wrong fetching matches.</Typography>;
-  if (isLoading) return <CircularProgress />;
+  const handleFindMatch = async () => {
+    searchButtonPressed(true);
+
+    const getMatches = await fetch(`/api/face-recognition/${queryPhotoId}`);
+    const result = await getMatches.json();
+
+    mutate(result);
+    searchButtonPressed(false);
+  };
 
   const handleReset = async (id) => {
     const reset = await fetch(`/api/face-recognition/reset/${id}`, {
@@ -271,8 +280,9 @@ function FindMatches({ photoUploadedId, queryPhotoId }) {
 
     await reset.json();
 
-    mutate({});
+    mutate();
   };
+
   const handleReload = async () => {
     setReset(true);
     const reload = await fetch("/api/face-recognition/reload", {
@@ -286,6 +296,20 @@ function FindMatches({ photoUploadedId, queryPhotoId }) {
     mutate(result.data);
     setReset(false);
   };
+
+  console.log(data);
+
+  if (error)
+    return (
+      <Typography>Something went wrong while fetching matches.</Typography>
+    );
+  if (isLoading)
+    return (
+      <div>
+        <CircularProgress />
+        <Typography>Please wait...</Typography>
+      </div>
+    );
 
   return (
     <Box>
@@ -304,9 +328,8 @@ function FindMatches({ photoUploadedId, queryPhotoId }) {
           </IconButton>
         </Box>
       )}
-
       {isReset && <LinearProgress sx={{ mb: 1 }} />}
-      {data.matches.length > 0 ? (
+      {data&& data.matches.length > 0 ? (
         <div>
           {data.matches.map((match) => {
             return (
@@ -321,7 +344,23 @@ function FindMatches({ photoUploadedId, queryPhotoId }) {
           })}
         </div>
       ) : (
-        <Typography>No matches found</Typography>
+        <div>
+          <Typography sx={{ mb: 1 }}>No matches found.</Typography>
+          {!isSearchPressed ? (
+            <Button
+              startIcon={<SearchIcon />}
+              variant="contained"
+              onClick={handleFindMatch}
+            >
+              Search
+            </Button>
+          ) : (
+            <div>
+              <CircularProgress />
+              <Typography>Please wait.</Typography>
+            </div>
+          )}
+        </div>
       )}
     </Box>
   );

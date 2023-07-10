@@ -151,7 +151,7 @@ const ReportWithPhoto = () => {
   //Snackbar
   const [snackbar, setSnackbar] = useState({
     open: false,
-    severity: "",
+    severity: "error",
     message: "",
   });
 

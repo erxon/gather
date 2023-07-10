@@ -15,7 +15,7 @@ export default function UserStatus({ children }) {
 
   if (loading) return <CircularProgress />;
   //if user is unverified return a text: You should be a verified user to access this section.
-  if (user.status === "unverified") {
+  if (user && user.status === "unverified") {
     return (
       <div>
         <Typography>

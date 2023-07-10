@@ -1,5 +1,8 @@
+import {
+  getMatches,
+  pastMatches,
+} from "@/lib/controllers/faceRecognitionController";
 import nextConnect from "next-connect";
-import { findMatches, storeMatches } from "@/lib/controllers/faceRecognitionController";
 import auth from "@/middleware/auth";
 import { isAuthority, isVerified } from "@/utils/api-helpers/authorize";
 
@@ -13,11 +16,11 @@ handler
   .use((req, res, next) => {
     isVerified(req, res, next);
   })
-  .use((req, res, next) => {
-    findMatches(req, res, next);
+  .get((req, res, next) => {
+    getMatches(req, res, next);
   })
   .get((req, res) => {
-    storeMatches(req, res);
-  })
-  
+    pastMatches(req, res);
+  });
+
 export default handler;

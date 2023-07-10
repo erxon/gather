@@ -12,11 +12,6 @@ import {
   Grid,
   Paper,
   Stack,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  InputAdornment,
   CircularProgress,
 } from "@mui/material";
 
@@ -34,7 +29,6 @@ export default function Upload() {
 
 function Form({ publicId, photoId }) {
   const [submitted, isSubmitted] = useState(false);
-  const [gender, setGender] = useState("");
 
   const myImage = new CloudinaryImage(`query-photos/${publicId}`, {
     cloudName: "dg0cwy8vx",
@@ -45,26 +39,22 @@ function Form({ publicId, photoId }) {
   //uploaded photo
   //reporter information
   //report information
-  const handleGenderSelect = (event) => {
-    setGender(event.target.value);
-  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     const body = {
       photoUploaded: photoId,
+      location: e.target.location.value,
       firstName: e.target.firstName.value,
       lastName: e.target.lastName.value,
-      relationToMissing: e.target.relationToMissing.value,
       contactNumber: e.target.contactNumber.value,
       email: e.target.email.value,
     };
-    const res = await fetch("/api/reports/upload", {
+    await fetch("/api/reports/upload", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
 
-    const data = await res.json();
     isSubmitted(true);
   };
 
@@ -146,12 +136,12 @@ function Form({ publicId, photoId }) {
                       required
                     />
                   </Stack>
-                  <TextField
+                  <TextField 
                     fullWidth
                     variant="outlined"
-                    label="Relation to missing"
+                    label="Location"
                     type="text"
-                    name="relationToMissing"
+                    name="location"
                     required
                   />
                 </Paper>

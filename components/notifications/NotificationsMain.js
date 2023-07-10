@@ -143,6 +143,7 @@ function Notification(props) {
   const router = useRouter();
   const date = new Date(props.createdAt);
   const elapsedTime = computeElapsedTime(date);
+  console.log(props.type)
   return (
     <>
       <Box sx={{ my: 2 }}>
@@ -171,7 +172,7 @@ function Notification(props) {
                 spacing={1}
                 alignItems="center"
               >
-                {props.type === "report-manage" || props.type === "status-change" && (
+                {(props.type === "report-manage" || props.type === "status-change") && (
                   <Button
                     onClick={() => {
                       router.push(`/reports/${props.reportId}`);
