@@ -67,6 +67,17 @@ function DashboardMain({ user, mutate }) {
               View All
             </Button>
           </Paper>
+          <Paper
+            sx={user.status === "verified" ? { p: 3, mt: 3 } : { p: 3 }}
+            variant="outlined"
+          >
+            <Typography sx={{ mb: 3 }} variant="h6">
+              Data
+            </Typography>
+            <Box>
+              <Data />
+            </Box>
+          </Paper>
         </Grid>
         <Grid item xs={12} md={6}>
           {user.status === "verified" && (
@@ -75,21 +86,6 @@ function DashboardMain({ user, mutate }) {
               <NotificationsMain user={user} />
             </Paper>
           )}
-          <Paper
-            sx={
-              user.status === "verified"
-                ? { p: 3, mt: 3 }
-                : { p: 3 }
-            }
-            variant="outlined"
-          >
-            <Typography sx={{ mb: 3 }} variant="h6">
-              Data
-            </Typography>
-            <Box sx={{ width: 300, margin: "auto" }}>
-              <Data />
-            </Box>
-          </Paper>
         </Grid>
       </Grid>
     </>
