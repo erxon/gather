@@ -26,7 +26,7 @@ export default function ReportCard(props) {
     }).resize(fill().width(300).height(300));
   }
   return (
-    <Card sx={{width: 300}}>
+    <Card sx={{ width: 300 }}>
       {image ? (
         <CardMedia
           sx={{
@@ -54,9 +54,15 @@ export default function ReportCard(props) {
       )}
       <CardContent>
         <StackRowLayout spacing={1.25}>
-          <Typography variant="h6" sx={{ fontWeight: "bold", mb: 0.5 }}>
-            {props.firstName} {props.lastName}
-          </Typography>
+          {props.lastName && props.firstName ? (
+            <Typography variant="h6" sx={{ fontWeight: "bold", mb: 0.5 }}>
+              {props.firstName} {props.lastName}
+            </Typography>
+          ) : (
+            <Typography variant="h6" sx={{ fontWeight: "bold", mb: 0.5 }}>
+              Unknown
+            </Typography>
+          )}
           <Chip
             sx={{ mt: 2 }}
             variant="filled"
@@ -67,15 +73,27 @@ export default function ReportCard(props) {
         </StackRowLayout>
         <StackRowLayout spacing={1}>
           <PersonIcon color="disabled" />
-          <Typography color="GrayText" variant="body1">
-            {props.age}, {props.gender}
-          </Typography>
+          {props.age && props.gender ? (
+            <Typography color="GrayText" variant="body1">
+              {props.age}, {props.gender}
+            </Typography>
+          ) : (
+            <Typography color="GrayText" variant="body1">
+              Unknown
+            </Typography>
+          )}
         </StackRowLayout>
         <StackRowLayout spacing={1}>
           <PlaceIcon color="disabled" />
-          <Typography color="GrayText" variant="body1">
-            {props.lastSeen}
-          </Typography>
+          {props.location ? (
+            <Typography color="GrayText" variant="body1">
+              {props.location}
+            </Typography>
+          ) : (
+            <Typography color="GrayText" variant="body1">
+              {props.lastSeen}
+            </Typography>
+          )}
         </StackRowLayout>
 
         <CardActions sx={{ p: 0, mt: 2 }}>

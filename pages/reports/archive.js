@@ -56,15 +56,18 @@ function ArchivedReports() {
       <Typography>Something went wrong fetching archived reports.</Typography>
     );
   if (isLoading) return <CircularProgress />;
-  if (data) {
-    return (
-      <div>
-        {data.map((report) => {
+
+  return (
+    <div>
+      {data.length > 0 ? (
+        data.map((report) => {
           return <Report key={report._id} report={report} />;
-        })}
-      </div>
-    );
-  }
+        })
+      ) : (
+        <Typography color="GrayText">There were no archived reports.</Typography>
+      )}
+    </div>
+  );
 }
 
 export default function Page() {

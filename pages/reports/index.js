@@ -18,8 +18,6 @@ import StackRowLayout from "@/utils/StackRowLayout";
 import ArticleIcon from "@mui/icons-material/Article";
 import ReportCard from "@/components/reports/ReportCard";
 
-
-
 export default function ReportPage({ data }) {
   const [user, { mutate }] = useUser();
   const [displayData, setDisplayData] = useState(
@@ -76,6 +74,7 @@ export default function ReportPage({ data }) {
                     firstName={report.firstName}
                     lastName={report.lastName}
                     lastSeen={report.lastSeen}
+                    location={report.reporter && report.reporter.location}
                     age={report.age}
                     gender={report.gender}
                     status={report.status}

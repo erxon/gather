@@ -158,7 +158,9 @@ export default function ReportPage({ data }) {
             <Box sx={{ mb: 2 }}>
               <Stack direction="row" spacing={0.75} alignItems="center">
                 <Typography variant="h4" sx={{ mb: 0.5 }}>
-                  {data.firstName} {data.lastName}
+                  {data.firstName && data.lastName.length
+                    ? `${data.firstName} ${data.lastName}`
+                    : "Unknown"}
                 </Typography>
                 <Chip label={data.status} size="small" color="primary" />
               </Stack>
@@ -194,9 +196,15 @@ export default function ReportPage({ data }) {
                 spacing={1}
               >
                 <PersonIcon />
-                <Typography variant="body1">
-                  {data.age} years old, {data.gender}
-                </Typography>
+                {data.age && data.gender ? (
+                  <Typography variant="body1">
+                    {data.age} years old, {data.gender}
+                  </Typography>
+                ) : (
+                  <Typography variant="body1" color="GrayText">
+                    Unknown age and gender.
+                  </Typography>
+                )}
               </Stack>
               <Stack
                 sx={{ mb: 0.75 }}
@@ -205,7 +213,11 @@ export default function ReportPage({ data }) {
                 spacing={1}
               >
                 <PlaceIcon />
-                <Typography variant="body1">{data.lastSeen}</Typography>
+                {data.reporter ? (
+                  <Typography variant="body1">{data.reporter.location}</Typography>
+                ) : (
+                  <Typography variant="body1">{data.lastSeen}</Typography>
+                )}
               </Stack>
               <Stack direction="row" alignItems="center" spacing={1}>
                 <EmailIcon />

@@ -17,7 +17,10 @@ import MessageIcon from "@mui/icons-material/Message";
 import useSWR from "swr";
 import { fetcher } from "@/lib/hooks";
 import ProfilePhotoAvatar from "./photo/ProfilePhotoAvatar";
+import { useRouter } from "next/router";
+
 function Contact(props) {
+  const router = useRouter();
   return (
     <>
       <Card sx={{ mb: 3 }} variant="outlined">
@@ -37,6 +40,9 @@ function Contact(props) {
           </CardContent>
           <CardActions sx={{ float: "right" }}>
             <IconButton
+              onClick={() => {
+                router.push("/communicate");
+              }}
               color="primary"
               size="small"
               disableElevation

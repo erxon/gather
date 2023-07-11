@@ -11,8 +11,8 @@ export default function Data() {
     return <Typography>Something went wrong fetching data.</Typography>;
   if (isLoading) return <CircularProgress />;
 
-  const activeReportsPercentage = (data.activeReports / data.allReports) * 100;
-  const closedReportsPercentage = (data.closedReports / data.allReports) * 100;
+  const activeReportsPercentage = Math.round((data.activeReports / data.allReports) * 100);
+  const closedReportsPercentage = Math.round((data.closedReports / data.allReports) * 100);
 
   const chartData = [
     {

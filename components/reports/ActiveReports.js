@@ -92,6 +92,8 @@ export default function ActiveReports() {
   }
 
   const reportsToShow = data.activeReports.slice(0, 3);
+  const remaining = data.activeReports.length - reportsToShow.length;
+
   return (
     <>
       <Box>
@@ -111,6 +113,7 @@ export default function ActiveReports() {
                 />
               );
             })}
+            {remaining > 0 && <Typography color="primary">+{remaining} more reports</Typography>}
           </Box>
         ) : (
           <Typography color="GrayText" variant="body1">

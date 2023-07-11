@@ -50,7 +50,7 @@ function Reporter(props) {
       <Typography variant="subtitle2" component="label">
         Reported by
       </Typography>
-      <Typography sx={{ mb: 1.5, fontWeight: "bold" }} variant="body1">
+      <Typography sx={{ mb: 1.5, fontWeight: "bold" }} variant="h6">
         {name}
       </Typography>
       <IconTypography
