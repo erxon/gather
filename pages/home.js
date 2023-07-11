@@ -309,6 +309,7 @@ function Report({ reportId, photo, name, lastSeen, gender, age }) {
     <Card
       sx={{
         p: 2,
+        mb: 2,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",

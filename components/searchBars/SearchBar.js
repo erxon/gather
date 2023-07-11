@@ -119,7 +119,7 @@ export default function SearchBar(props) {
       />
       <Collapse sx={{ position: "absolute" }} in={open}>
         <Paper sx={{ maxWidth: 500, p: 1 }}>
-          {result.map((data) => {
+          {result && result.map((data) => {
             return (
               <ResultCard
                 key={data._id}

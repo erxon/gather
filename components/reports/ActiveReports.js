@@ -20,6 +20,7 @@ import { limitFit, fill } from "@cloudinary/url-gen/actions/resize";
 import ReportDetails from "./ReportDetails";
 import Link from "next/link";
 import Image from "next/image";
+import { ampmTimeFormat } from "@/utils/helpers/ampmTimeFormat";
 
 function Report(props) {
   const { id, name, photo, lastSeen, age, gender, date } = props;
@@ -28,11 +29,11 @@ function Report(props) {
     cloudName: "dg0cwy8vx",
     apiKey: process.env.NEXT_PUBLIC_CLOUDINARY_KEY,
     apiSecret: process.env.NEXT_PUBLIC_CLOUDINARY_SECRET,
-  }).resize(fill().width(100).height(100));
+  }).resize(fill().width(150).height(150));
 
   const reportedDate = new Date(date);
   const dateString = reportedDate.toDateString();
-  const timeString = reportedDate.toLocaleTimeString();
+  const timeString = ampmTimeFormat(reportedDate);
 
   return (
     <Card
@@ -40,19 +41,18 @@ function Report(props) {
         display: "flex",
         alignItems: "center",
         my: 1,
-        p: 1,
       }}
     >
-      <CardMedia>
+      <CardMedia sx={{height: 150}}>
         {photo ? (
           <AdvancedImage cldImg={image} />
         ) : (
-          <Image width={100} height={100} src="/assets/placeholder.png" />
+          <Image width={150} height={150} src="/assets/placeholder.png" />
         )}
       </CardMedia>
       <Box sx={{ display: "flex", flexDirection: "column", pl: 1 }}>
         <CardContent sx={{ flex: "1 0 auto" }}>
-          <Typography sx={{ fontWeight: "bold" }} variant="h6">
+          <Typography sx={{fontWeight: "bold"}} variant="body1">
             <Link
               style={{ textDecoration: "none", color: "#000000" }}
               href={`/reports/${id}`}
@@ -60,11 +60,8 @@ function Report(props) {
               {name}
             </Link>
           </Typography>
-          <Typography sx={{ mb: 1 }} variant="body1">
-            Reportedly missing on{" "}
-            <span style={{ fontWeight: "bold" }}>
-              {dateString} {timeString}
-            </span>
+          <Typography sx={{ mb: 1 }} variant="subtitle2">
+            {dateString} {timeString}
           </Typography>
           <ReportDetails lastSeen={lastSeen} age={age} gender={gender} />
         </CardContent>
@@ -113,7 +110,9 @@ export default function ActiveReports() {
                 />
               );
             })}
-            {remaining > 0 && <Typography color="primary">+{remaining} more reports</Typography>}
+            {remaining > 0 && (
+              <Typography color="primary">+{remaining} more reports</Typography>
+            )}
           </Box>
         ) : (
           <Typography color="GrayText" variant="body1">

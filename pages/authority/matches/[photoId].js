@@ -255,7 +255,7 @@ function GetReport({ photoUploadedId, photoId, distance, matchId }) {
 }
 
 function FindMatches({ photoUploadedId, queryPhotoId }) {
-  const router = useRouter()
+  const router = useRouter();
   const [isReset, setReset] = useState(false);
   const [isSearchPressed, searchButtonPressed] = useState(false);
   const [matchResult, setMatchResult] = useState({
@@ -338,7 +338,7 @@ function FindMatches({ photoUploadedId, queryPhotoId }) {
         </Box>
       )}
       {isReset && <LinearProgress sx={{ mb: 1 }} />}
-      {(data && data.matches.length > 0) ? (
+      {data && data.matches.length > 0 ? (
         <div>
           {data.matches.map((match) => {
             return (
@@ -356,9 +356,13 @@ function FindMatches({ photoUploadedId, queryPhotoId }) {
         <div>
           <Typography sx={{ mb: 1 }}>No matches found.</Typography>
           {matchResult.isSearchedForMatch && !matchResult.data && (
-            <Button onClick={() => {
-              router.push(`/reports/create-report/${photoUploadedId}`)
-            }} variant="outlined" sx={{ mr: 1 }}>
+            <Button
+              onClick={() => {
+                router.push(`/reports/create-report/${photoUploadedId}`);
+              }}
+              variant="outlined"
+              sx={{ mr: 1 }}
+            >
               Create report
             </Button>
           )}

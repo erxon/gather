@@ -58,16 +58,15 @@ function DashboardMain({ user, mutate }) {
       )}
       <Grid container spacing={2} sx={{ mt: 3 }}>
         <Grid item xs={12} sm={12} md={6}>
-          <Paper sx={{ p: 3 }} variant="outlined">
+          <Paper sx={{ padding: "3% 5%"}} variant="outlined">
             <Typography variant="h6">Active Reports</Typography>
-            <Box sx={{ my: 2 }}>
+            <Box sx={{ my: 4 }}>
               <ActiveReports />
             </Box>
             <Button
               href="/reports"
               size="small"
               variant="contained"
-              disableElevation
             >
               View All
             </Button>
