@@ -8,6 +8,11 @@ import {
   Stack,
   Typography,
   Button,
+  Card,
+  CardActions,
+  CardHeader,
+  CardMedia,
+  Avatar,
 } from "@mui/material";
 
 import { useEffect, useState } from "react";
@@ -65,7 +70,7 @@ function Notifications(props) {
     const channel1 = pusherJS.subscribe(props.channel1);
     const channel2 = pusherJS.subscribe(props.channel2);
     pusherJS.bind_global((eventName, data) => {
-      console.log(data)
+      console.log(data);
       if (!_.isEmpty(data)) {
         setNotifications([data.body, ...notifications]);
       }
@@ -88,7 +93,7 @@ function Notifications(props) {
     await removeNotification(id);
   };
 
-  console.log(notifications)
+  console.log(notifications);
 
   return (
     <>
@@ -143,73 +148,83 @@ function Notification(props) {
   const router = useRouter();
   const date = new Date(props.createdAt);
   const elapsedTime = computeElapsedTime(date);
-  console.log(props.type)
+  console.log(props.type);
   return (
     <>
       <Box sx={{ my: 2 }}>
-        <Paper sx={{ p: 2 }}>
-          <Stack direction="row" alignItems="center" spacing={2}>
-            <Box sx={{ width: "100%" }}>
-              <Stack direction="row" spacing={1} alignItems="center">
-                <Typography sx={{ fontWeight: "bold" }} variant="body1">
-                  {props.title}
-                </Typography>
-                <Typography color="GrayText" variant="subtitle2">
-                  {elapsedTime}
-                </Typography>
-              </Stack>
+        <Card>
+          <CardHeader
+            avatar={
+              <Avatar>
+                {props.name.charAt(0)}
+              </Avatar>
+            }
+            title={props.title}
+            subheader={`${
+              props.name
+            } ${elapsedTime}`}
+          />
 
-              <Typography color="GrayText" variant="body2">
-                {props.name}, {props.lastSeen}
-              </Typography>
-              <Typography color="GrayText" variant="body2">
-                {props.reporter}
-              </Typography>
+          {props.photo ? (
+            <CardMedia
+              sx={{
+                height: 300,
+                backgroundColor: "#ECEEEE",
+                textAlign: "center",
+              }}
+            >
+              <DisplayPhoto id={props.photo} />
+            </CardMedia>
+          ) : (
+            <CardMedia
+              component="img"
+              image="/assets/placeholder.png"
+              sx={{ height: 300 }}
+            />
+          )}
 
-              <Stack
-                sx={{ mt: 2 }}
-                direction="row"
-                spacing={1}
-                alignItems="center"
-              >
-                {(props.type === "report-manage" || props.type === "status-change") && (
-                  <Button
-                    onClick={() => {
-                      router.push(`/reports/${props.reportId}`);
-                    }}
-                    disableElevation
-                    size="small"
-                    variant="contained"
-                  >
-                    View
-                  </Button>
-                )}
-                {props.type === "upload-photo" && (
-                  <Button
-                    onClick={() => {
-                      router.push(`/authority/matches/${props.photo}`);
-                    }}
-                    disableElevation
-                    size="small"
-                    variant="contained"
-                  >
-                    View
-                  </Button>
-                )}
+          <CardActions>
+            <Stack
+              sx={{ mt: 2 }}
+              direction="row"
+              spacing={1}
+              alignItems="center"
+            >
+              {(props.type === "report-manage" ||
+                props.type === "status-change") && (
                 <Button
                   onClick={() => {
-                    props.onRemove(props.id);
+                    router.push(`/reports/${props.reportId}`);
                   }}
-                  disableElevation
                   size="small"
+                  variant="contained"
                 >
-                  Dismiss
+                  View
                 </Button>
-              </Stack>
-            </Box>
-            {props.photo && <DisplayPhoto id={props.photo} />}
-          </Stack>
-        </Paper>
+              )}
+              {props.type === "upload-photo" && (
+                <Button
+                  onClick={() => {
+                    router.push(`/authority/matches/${props.photo}`);
+                  }}
+                  size="small"
+                  variant="contained"
+                >
+                  View
+                </Button>
+              )}
+              <Button
+                onClick={() => {
+                  props.onRemove(props.id);
+                }}
+                disableElevation
+                size="small"
+              >
+                Dismiss
+              </Button>
+            </Stack>
+          </CardActions>
+        </Card>
       </Box>
     </>
   );
@@ -221,7 +236,7 @@ function NotificationMatchFound({
   createdAt,
   reportId,
   onRemove,
-  photoUploaded
+  photoUploaded,
 }) {
   const elapsedTime = computeElapsedTime(createdAt);
   const router = useRouter();

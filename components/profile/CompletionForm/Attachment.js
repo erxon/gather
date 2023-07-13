@@ -5,6 +5,7 @@ import AttachFileIcon from "@mui/icons-material/AttachFile";
 import { useState } from "react";
 import ValidPhoto from "./ValidPhoto";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import Image from "next/image";
 
 export default function Attachment({ validPhoto, setAccomplished }) {
   const [image, setImage] = useState(null);
@@ -98,7 +99,7 @@ export default function Attachment({ validPhoto, setAccomplished }) {
             <ValidPhoto publicId={validPhoto} />
           )
         ) : (
-          <img src={image.fileName} style={{ width: 300, height: 150 }} />
+          <Image src={image.fileName} width={300} height={150} style={{objectFit: "cover"}} />
         )}
         <Box sx={{ mt: 1 }}>
           <form onSubmit={handleSubmit}>
@@ -108,6 +109,7 @@ export default function Attachment({ validPhoto, setAccomplished }) {
               variant="outlined"
               component="label"
               sx={{ mr: 1 }}
+              disabled={!!image}
             >
               Attach File
               <input

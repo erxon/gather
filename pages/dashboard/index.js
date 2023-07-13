@@ -5,6 +5,7 @@ import {
   Button,
   Paper,
   CircularProgress,
+  Stack,
 } from "@mui/material";
 
 import { useRouter } from "next/router";
@@ -21,6 +22,9 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import SearchBar from "@/components/searchBars/SearchBar";
 import SearchBarReports from "@/components/searchBars/SearchBarReports";
 
+import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
+import DynamicFeedOutlinedIcon from "@mui/icons-material/DynamicFeedOutlined";
+
 function DashboardMain({ user, mutate }) {
   const router = useRouter();
 
@@ -33,7 +37,7 @@ function DashboardMain({ user, mutate }) {
     <>
       <StackRowLayout spacing={1}>
         <DashboardIcon />
-        <Typography sx={{mr: 3}} variant="h5">
+        <Typography sx={{ mr: 3 }} variant="h5">
           Dashboard
         </Typography>
         <SearchBarReports />
@@ -58,19 +62,27 @@ function DashboardMain({ user, mutate }) {
       )}
       <Grid container spacing={2} sx={{ mt: 3 }}>
         <Grid item xs={12} sm={12} md={6}>
-          <Paper sx={{ padding: "3% 5%"}} variant="outlined">
-            <Typography variant="h6">Active Reports</Typography>
+          <Box
+            sx={{
+              padding: "3% 5%",
+            }}
+          >
+            <Stack
+              direction="row"
+              sx={{ mt: 2 }}
+              spacing={2}
+              alignItems="center"
+            >
+              <ArticleOutlinedIcon />
+              <Typography variant="h6">Active reports</Typography>
+            </Stack>
             <Box sx={{ my: 4 }}>
               <ActiveReports />
             </Box>
-            <Button
-              href="/reports"
-              size="small"
-              variant="contained"
-            >
+            <Button href="/reports" size="small" variant="contained">
               View All
             </Button>
-          </Paper>
+          </Box>
           <Paper
             sx={user.status === "verified" ? { p: 3, mt: 3 } : { p: 3 }}
             variant="outlined"
@@ -85,10 +97,19 @@ function DashboardMain({ user, mutate }) {
         </Grid>
         <Grid item xs={12} md={6}>
           {user.status === "verified" && (
-            <Paper sx={{ p: 3 }} variant="outlined">
-              <Typography variant="h6">Feeds</Typography>
+            <Box>
+              <Stack
+                direction="row"
+                alignItems="center"
+                spacing={2}
+                sx={{ mt: 4, mb: 2 }}
+              >
+                <DynamicFeedOutlinedIcon />
+                <Typography variant="h6">Feeds</Typography>
+              </Stack>
+
               <NotificationsMain user={user} />
-            </Paper>
+            </Box>
           )}
         </Grid>
       </Grid>

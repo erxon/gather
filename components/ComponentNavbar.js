@@ -181,9 +181,13 @@ export default function ComponentNavbar(props) {
                   onClick={handleProfileMenuOpen}
                   color="inherit"
                 >
-                  <Avatar>
-                    <ProfilePhoto publicId={user.photo} />
-                  </Avatar>
+                  {user.photo ? (
+                    <Avatar>
+                      <ProfilePhoto publicId={user.photo} />
+                    </Avatar>
+                  ) : (
+                    <Avatar src="/asests/placeholder.png" />
+                  )}
                 </IconButton>
                 <Stack direction="column">
                   <Typography sx={{ fontWeight: "bold" }} variant="body2">

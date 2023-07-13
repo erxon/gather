@@ -34,21 +34,48 @@ import { fetcher } from "@/lib/hooks";
 import { createReport, uploadReportPhoto } from "@/lib/api-lib/api-reports";
 import Image from "next/image";
 import ReportPhoto from "@/components/photo/ReportPhoto";
+import TextFieldWithValidation from "@/components/forms/TextFieldWithValidation";
+import ErrorAlert from "@/components/ErrorAlert";
 
 const ReportToManage = () => {
   const [gender, setGender] = useState("");
-  //Handle submission of Report and Manage form
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const [isSubmitted, setSubissionState] = useState(false);
+  const [alert, setAlert] = useState({
+    open: false,
+    message: "",
+  });
+  const [values, setValues] = useState({
+    firstName: "",
+    lastName: "",
+    lastSeen: "",
+    age: "",
+  });
 
+  const handleChange = (event) => {
+    const { value, name } = event.target;
+    setValues({ ...values, [name]: value });
+  };
+  //Handle submission of Report and Manage form
+  const handleSubmit = async () => {
+    setSubissionState(true);
+    if (
+      values.firstName === "" ||
+      values.lastName === "" ||
+      values.age === "" ||
+      values.lastSeen === ""
+    ) {
+      setAlert({ open: true, message: "Please fill all the required fields." });
+      return;
+    }
     const body = {
-      firstName: e.currentTarget.firstName.value,
-      lastName: e.currentTarget.lastName.value,
-      lastSeen: e.currentTarget.lastSeen.value,
-      age: e.currentTarget.age.value,
+      firstName: values.firstName,
+      lastName: values.lastName,
+      lastSeen: values.lastSeen,
+      age: values.age,
       gender: gender,
       status: "pending",
     };
+
     //Create new report
     const data = await createReport(body);
 
@@ -64,77 +91,89 @@ const ReportToManage = () => {
         <Typography sx={{ my: 2 }} variant="body1">
           Manage, and keep updated on the report you have filed.
         </Typography>
-        <form onSubmit={handleSubmit}>
-          <Stack sx={{ mb: 3 }} direction="row" spacing={1} alignItems="center">
-            <TextField
-              id="age"
-              label="Age"
-              name="age"
-              variant="outlined"
-              type="text"
-              size="small"
-              required
-            />
-            <FormControl size="small" sx={{ minWidth: 120 }}>
-              <InputLabel>Gender</InputLabel>
-              <Select
-                onChange={(event) => {
-                  setGender(event.target.value);
-                }}
-                value={gender}
-                label="Gender"
-              >
-                <MenuItem value={"male"}>Male</MenuItem>
-                <MenuItem value={"female"}>Female</MenuItem>
-              </Select>
-            </FormControl>
-          </Stack>
-          <Divider sx={{ mb: 3 }} />
-          <Stack sx={{ mb: 2 }} direction="row" spacing={1} alignItems="center">
-            {/*First name*/}
-            <TextField
-              id="firstName"
-              label="First Name"
-              variant="outlined"
-              name="firstName"
-              type="text"
-              size="small"
-              fullWidth
-              required
-            />
-            {/*Last name*/}
-            <TextField
-              id="lastName"
-              label="Last Name"
-              variant="outlined"
-              name="lastName"
-              type="text"
-              size="small"
-              fullWidth
-              required
-            />
-          </Stack>
-          {/*Last seen*/}
-          <TextField
-            id="lastSeen"
-            label="Last Seen"
+        <Stack sx={{ mb: 3 }} direction="row" spacing={1}>
+          <TextFieldWithValidation
+            id="age"
+            label="Age"
+            name="age"
             variant="outlined"
-            name="lastSeen"
             type="text"
             size="small"
-            fullWidth
-            required
+            isSubmitted={isSubmitted}
+            value={values.age}
+            changeHandler={handleChange}
           />
-          <Button
-            startIcon={<ArticleIcon />}
+          <FormControl sx={{ minWidth: 120 }}>
+            <InputLabel>Gender</InputLabel>
+            <Select
+              onChange={(event) => {
+                setGender(event.target.value);
+              }}
+              value={gender}
+              label="Gender"
+            >
+              <MenuItem value={"male"}>Male</MenuItem>
+              <MenuItem value={"female"}>Female</MenuItem>
+            </Select>
+          </FormControl>
+        </Stack>
+        <Divider sx={{ mb: 3 }} />
+        <Stack sx={{ mb: 2 }} direction="row" spacing={1}>
+          {/*First name*/}
+          <TextFieldWithValidation
+            id="firstName"
+            label="First Name"
+            variant="outlined"
+            name="firstName"
+            type="text"
+            isSubmitted={isSubmitted}
+            value={values.firstName}
+            isFullWidth={true}
+            changeHandler={handleChange}
+          />
+          {/*Last name*/}
+          <TextFieldWithValidation
+            id="lastName"
+            label="Last Name"
+            variant="outlined"
+            name="lastName"
+            type="text"
             size="small"
-            sx={{ my: 2 }}
-            type="submit"
-            variant="contained"
-          >
-            Report
-          </Button>
-        </form>
+            isSubmitted={isSubmitted}
+            value={values.lastName}
+            isFullWidth={true}
+            changeHandler={handleChange}
+          />
+        </Stack>
+        {/*Last seen*/}
+        <TextFieldWithValidation
+          id="lastSeen"
+          label="Last Seen"
+          variant="outlined"
+          name="lastSeen"
+          type="text"
+          size="small"
+          style={{ mb: 1 }}
+          isSubmitted={isSubmitted}
+          value={values.lastSeen}
+          isFullWidth={true}
+          changeHandler={handleChange}
+        />
+        <ErrorAlert
+          open={alert.open}
+          message={alert.message}
+          close={() => setAlert({ open: false })}
+        />
+        <Button
+          startIcon={<ArticleIcon />}
+          size="small"
+          sx={{ my: 2 }}
+          type="submit"
+          variant="contained"
+          onClick={handleSubmit}
+        >
+          Report
+        </Button>
       </Paper>
     </>
   );
@@ -262,6 +301,7 @@ const ReportWithPhoto = () => {
                 variant="contained"
                 component="label"
                 size="small"
+                disabled={!!photo.src}
               >
                 Select file
                 <input
@@ -275,7 +315,13 @@ const ReportWithPhoto = () => {
             <Grid item xs={12} md={6}>
               {photo.src && (
                 <div className={styles.imagecontainer}>
-                  <Image width={150} height={150} alt="" src={photo.src} />
+                  <Image
+                    width={150}
+                    height={150}
+                    alt=""
+                    style={{ objectFit: "cover" }}
+                    src={photo.src}
+                  />
                 </div>
               )}
               {photo.src && !uploadData && (
@@ -323,12 +369,14 @@ function Report({ reportId, photo, name, lastSeen, gender, age }) {
         <Image width={100} height={100} src="/assets/placeholder.png" />
       )}
       <Box>
-        <CardContent sx={{textAlign: "center"}}>
+        <CardContent sx={{ textAlign: "center" }}>
           <Typography variant="body1" sx={{ fontWeight: "bold" }}>
             {name}
           </Typography>
           <Typography variant="body2">Last seen in {lastSeen}</Typography>
-          <Typography variant="body2">{gender}, {age}</Typography>
+          <Typography variant="body2">
+            {gender}, {age}
+          </Typography>
         </CardContent>
         <CardActions>
           <Button
@@ -354,13 +402,13 @@ function Reports() {
 
   if (error) return <Typography>Something went wrong.</Typography>;
   if (isLoading) return <CircularProgress />;
-  console.log(data)
+  console.log(data);
   return (
     <Paper sx={{ p: 3, mt: 1 }}>
       <Typography variant="h6" sx={{ mb: 2 }}>
         Recent reports
       </Typography>
-      {data.activeReports.map((report) => {
+      {data.activeReports.length > 0 ? data.activeReports.map((report) => {
         return (
           <Report
             key={report._id}
@@ -372,7 +420,7 @@ function Reports() {
             age={report.age}
           />
         );
-      })}
+      }) : <Typography color="GrayText">No active reports yet.</Typography>}
     </Paper>
   );
 }
