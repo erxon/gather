@@ -11,7 +11,7 @@ export default function CompletionForm({ user, mutate }) {
   const isFormComplete =
     user.firstName !== "" &&
     user.lastName !== "" &&
-    user.about !=="" &&
+    user.about !== "" &&
     user.email !== "" &&
     (user.facebook !== "" || user.twitter !== "" || user.instagram !== "");
 
@@ -27,22 +27,23 @@ export default function CompletionForm({ user, mutate }) {
 
   return (
     <div>
-      
       {accomplished.form && accomplished.photo && accomplished.validPhoto && (
-        <Alert sx={{mb: 2}} severity="success">The form is complete, please wait for verification.</Alert>
+        <Alert sx={{ mb: 2 }} severity="success">
+          The form is complete, please wait for verification.
+        </Alert>
       )}
       {user.updatedAt && (
-        <Typography sx={{mb: 1}} variant="body2" color="GrayText">Updated {elapsedTimeSinceLastUpdate}</Typography>
+        <Typography sx={{ mb: 1 }} variant="body2" color="GrayText">
+          Updated {elapsedTimeSinceLastUpdate}
+        </Typography>
       )}
       <Grid container spacing={1}>
         <Grid item xs={12} md={4}>
           <ProfilePhoto photo={user.photo} setAccomplished={setAccomplished} />
-          {user.type === "authority" && (
-            <Attachment
-              validPhoto={user.validPhoto ? user.validPhoto : null}
-              setAccomplished={setAccomplished}
-            />
-          )}
+          <Attachment
+            validPhoto={user.validPhoto ? user.validPhoto : null}
+            setAccomplished={setAccomplished}
+          />
         </Grid>
         <Grid item xs={12} md={8}>
           <Fields

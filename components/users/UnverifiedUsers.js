@@ -123,7 +123,7 @@ function User({ user }) {
         <CardActions sx={{ ml: 1 }}>
           <Stack direction="column" spacing={0.5}>
             <Button
-              onClick={() => router.push(`/profile/${user._id}`)}
+              onClick={() => router.push(`/users/unverified/${user._id}`)}
               variant="contained"
               size="small"
             >

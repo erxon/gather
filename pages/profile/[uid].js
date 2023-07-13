@@ -11,6 +11,7 @@ import {
   Card,
   CardMedia,
   CardContent,
+  Modal,
   CardActions,
   IconButton,
 } from "@mui/material";
@@ -26,6 +27,19 @@ import EmailIcon from "@mui/icons-material/Email";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import { getUser } from "@/lib/api-lib/api-users";
+import { useState } from "react";
+import Link from "next/link";
+
+function DisplayLink({ open, handleClose, url }) {
+  console.log(url);
+  return (
+    <Modal open={open} onClose={handleClose}>
+      <Box>
+        <iframe src={url} title="Account"></iframe>
+      </Box>
+    </Modal>
+  );
+}
 
 function Contact(props) {
   return (
@@ -53,9 +67,20 @@ function Contact(props) {
 
 export default function ProfileIndex({ data }) {
   const user = data;
+  const [openFrame, setOpenFrame] = useState({
+    open: false,
+    url: "",
+  });
 
   return (
     <>
+      <DisplayLink
+        open={openFrame.open}
+        url={openFrame.url}
+        handleClose={() => {
+          setOpenFrame({ open: false });
+        }}
+      />
       <Box>
         <Typography variant="h5" sx={{ mb: 3 }}>
           Profile
@@ -134,7 +159,11 @@ export default function ProfileIndex({ data }) {
                     <FacebookIcon />
                     {user.socialMediaAccounts.facebook ? (
                       <Typography variant="body1">
-                        {user.socialMediaAccounts.facebook}
+                        <Link
+                          href={`https://${user.socialMediaAccounts.facebook}`}
+                        >
+                          {user.socialMediaAccounts.facebook}
+                        </Link>
                       </Typography>
                     ) : (
                       <Typography color="GrayText" variant="body1">
