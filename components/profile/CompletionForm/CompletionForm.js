@@ -1,5 +1,5 @@
 import { Grid, Typography, Stack, Alert } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ProfilePhoto from "./ProfilePhoto";
 import Fields from "./Fields";
 import computeElapsedTime from "@/utils/helpers/computeElapsedTime";
@@ -7,7 +7,7 @@ import Attachment from "./Attachment";
 import StackRowLayout from "@/utils/StackRowLayout";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
-export default function CompletionForm({ user, mutate }) {
+export default function CompletionForm({ setCompleted, user, mutate }) {
   const isFormComplete =
     user.firstName !== "" &&
     user.lastName !== "" &&
@@ -16,11 +16,16 @@ export default function CompletionForm({ user, mutate }) {
     (user.facebook !== "" || user.twitter !== "" || user.instagram !== "");
 
   const [accomplished, setAccomplished] = useState({
-    photo: user && user.photo === "" ? false : true,
-    validPhoto:
-      user && user.validPhoto && user.validPhoto === "" ? false : true,
+    photo: !!user.photo,
+    validPhoto: !!user.validPhoto,
     form: isFormComplete,
   });
+
+  useEffect(() => {
+    if (accomplished.photo && accomplished.validPhoto && accomplished.form) {
+      setCompleted(true);
+    }
+  }, []);
 
   const updatedAt = new Date(user.updatedAt);
   const elapsedTimeSinceLastUpdate = computeElapsedTime(updatedAt);

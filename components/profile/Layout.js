@@ -11,30 +11,18 @@ import {
   Step,
   Button,
 } from "@mui/material";
-import Router, { useRouter } from "next/router";
+import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import CompletionForm from "@/components/profile/CompletionForm/CompletionForm";
-import EmailVerification from "@/components/profile/EmailVerification";
-import PhoneNumberVerification from "@/components/profile/PhoneNumberVerification";
 
-function HorizontalLinearStepper({
-  isNext,
-  setCompleted,
-  activeStep,
-  setActiveStep,
-  setFinished
-}) {
+function HorizontalLinearStepper({activeStep, setActiveStep}) {
+  const router = useRouter();
   const steps = [
     "Basic information",
-    "Email verification",
     "Phone number verification",
+    "Email verification",
   ];
 
   const handleNext = () => {
-    if (activeStep === 2) {
-      setFinished(true)
-    }
-    setCompleted(false);
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
 
@@ -64,6 +52,10 @@ function HorizontalLinearStepper({
           <Typography sx={{ mt: 2, mb: 1 }}>
             All steps completed - you&apos;re finished
           </Typography>
+          <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+            <Box sx={{ flex: "1 1 auto" }} />
+            <Button onClick={handleReset}>Reset</Button>
+          </Box>
         </React.Fragment>
       ) : (
         <React.Fragment>
@@ -78,7 +70,7 @@ function HorizontalLinearStepper({
               Back
             </Button>
             <Box sx={{ flex: "1 1 auto" }} />
-            <Button disabled={!isNext} onClick={handleNext}>
+            <Button onClick={handleNext}>
               {activeStep === steps.length - 1 ? "Finish" : "Next"}
             </Button>
           </Box>
@@ -88,12 +80,10 @@ function HorizontalLinearStepper({
   );
 }
 
-export default function Page() {
+export default function Layout({ children }) {
   const router = useRouter();
-  const [user, { loading, mutate }] = useUser();
+  const [user, { loading }] = useUser();
   const [activeStep, setActiveStep] = useState(0);
-  const [isCompleted, setCompleted] = useState(false);
-  const [isFinished, setFinished] = useState(false);
 
   useEffect(() => {
     if (!user && !loading) {
@@ -110,40 +100,10 @@ export default function Page() {
           <Paper variant="outlined" sx={{ p: 3 }}>
             <Typography variant="h6">Complete your profile</Typography>
             <Box sx={{ mt: 2 }}>
-              <HorizontalLinearStepper
-                activeStep={activeStep}
-                setActiveStep={setActiveStep}
-                setCompleted={setCompleted}
-                isNext={isCompleted}
-                setFinished={setFinished}
-              />
+              <HorizontalLinearStepper activeStep={activeStep} setActiveStep={setActiveStep} />
             </Box>
             <Divider sx={{ my: 3 }} />
-            {activeStep === 0 && (
-              <CompletionForm
-                setCompleted={setCompleted}
-                user={user}
-                mutate={mutate}
-              />
-            )}
-            {activeStep === 1 && (
-              <EmailVerification
-                setCompleted={setCompleted}
-                email={user.email}
-              />
-            )}
-            {activeStep === 2 && (
-              <PhoneNumberVerification
-                contactNumber={user.contactNumber}
-                setCompleted={setCompleted}
-                setFinished={setFinished}
-              />
-            )}
-            {isFinished && (
-              <Typography>
-                You are all set, please wait while we verify your account.
-              </Typography>
-            )}
+            {children}
           </Paper>
         ) : (
           <CircularProgress />
