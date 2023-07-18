@@ -13,8 +13,6 @@ handler
   })
   .use((req, res, next) => {
     saveNotification(req, res, next);
-  }).put((req, res) => {
-    verifyMatch(req, res)
   })
 
 export default handler;
