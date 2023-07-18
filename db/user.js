@@ -14,7 +14,9 @@ const userSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  isEmailVerified: { type: Boolean, default: false },
   contactNumber: String,
+  isContactNumberVerified: { type: Boolean, default: false },
   socialMediaAccounts: {
     facebook: String,
     twitter: String,
@@ -31,7 +33,7 @@ const userSchema = mongoose.Schema({
   salt: String,
   hash: String,
   status: { type: String, enum: ["unverified", "verified"] },
-  contactRequests: []
+  contactRequests: [],
 });
 
 const User = mongoose.models.User || mongoose.model("User", userSchema);

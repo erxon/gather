@@ -22,6 +22,7 @@ import DisplayConfirmationModal from "@/components/DisplayConfirmationModal";
 import TextFieldWithValidation from "@/components/forms/TextFieldWithValidation";
 import DisplaySnackbar from "@/components/DisplaySnackbar";
 import ErrorAlert from "@/components/ErrorAlert";
+import { useRouter } from "next/router";
 
 function FormLayout({ heading, children }) {
   return (
@@ -94,6 +95,11 @@ function ContactInformation({ values, handleChange, isSubmitted }) {
           changeHandler={handleChange}
           isSubmitted={isSubmitted}
           isFullWidth={true}
+          inputProps={{
+            startAdornment: (
+              <InputAdornment position="start">+63</InputAdornment>
+            ),
+          }}
         />
       </Stack>
     </FormLayout>
@@ -107,7 +113,7 @@ function SocialMediaAccounts({ values, handleChange, isSubmitted }) {
         values.twitter === "" &&
         values.instagram === "" &&
         isSubmitted && (
-          <Alert sx={{mb: 2}} severity="error">
+          <Alert sx={{ mb: 2 }} severity="error">
             Please add at least <span style={{ fontWeight: "bold" }}>one</span>{" "}
             social media account
           </Alert>
@@ -170,6 +176,7 @@ function SocialMediaAccounts({ values, handleChange, isSubmitted }) {
 }
 
 export default function Fields({ setAccomplished, user, mutate }) {
+  const router = useRouter()
   const [values, setValues] = useState({
     firstName: user.firstName,
     lastName: user.lastName,
@@ -272,13 +279,10 @@ export default function Fields({ setAccomplished, user, mutate }) {
     });
 
     if (updateUser.status === 200) {
-      setOpenSnackbar({
-        open: true,
-        message: "Form successfully saved",
-      });
       setAccomplished((prev) => {
         return { ...prev, form: true };
       });
+      router.reload()
     }
   };
 

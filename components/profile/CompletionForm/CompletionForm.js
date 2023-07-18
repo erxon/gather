@@ -25,7 +25,7 @@ export default function CompletionForm({ setCompleted, user, mutate }) {
     if (accomplished.photo && accomplished.validPhoto && accomplished.form) {
       setCompleted(true);
     }
-  }, []);
+  }, [accomplished.photo, accomplished.validPhoto, accomplished.form]);
 
   const updatedAt = new Date(user.updatedAt);
   const elapsedTimeSinceLastUpdate = computeElapsedTime(updatedAt);

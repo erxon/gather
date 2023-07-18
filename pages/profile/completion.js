@@ -22,7 +22,7 @@ function HorizontalLinearStepper({
   setCompleted,
   activeStep,
   setActiveStep,
-  setFinished
+  setFinished,
 }) {
   const steps = [
     "Basic information",
@@ -32,7 +32,7 @@ function HorizontalLinearStepper({
 
   const handleNext = () => {
     if (activeStep === 2) {
-      setFinished(true)
+      setFinished(true);
     }
     setCompleted(false);
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -100,15 +100,25 @@ export default function Page() {
       router.push("/login");
     } else if (user && user.status === "verified") {
       router.push("/dashboard");
+    } else if (user) {
+      setActiveStep(user.isEmailVerified && user.isContactNumberVerified ? 3 : 0);
     }
   }, [user, loading]);
 
-  if (user) {
-    return (
-      <div>
-        {user && user.status === "unverified" ? (
+  if (loading) return <CircularProgress />;
+
+  return (
+    <div>
+      {user &&
+        user.status === "unverified" ?
+        (!user.isEmailVerified || !user.isContactNumberVerified ? (
           <Paper variant="outlined" sx={{ p: 3 }}>
             <Typography variant="h6">Complete your profile</Typography>
+            {isFinished && (
+              <Typography>
+                You are all set, please wait while we verify your account.
+              </Typography>
+            )}
             <Box sx={{ mt: 2 }}>
               <HorizontalLinearStepper
                 activeStep={activeStep}
@@ -127,28 +137,39 @@ export default function Page() {
               />
             )}
             {activeStep === 1 && (
-              <EmailVerification
+              <PhoneNumberVerification
+                userId={user._id}
+                contactNumber={user.contactNumber}
+                isContactNumberVerified={user.isContactNumberVerified}
                 setCompleted={setCompleted}
-                email={user.email}
               />
             )}
             {activeStep === 2 && (
-              <PhoneNumberVerification
-                contactNumber={user.contactNumber}
+              <EmailVerification
                 setCompleted={setCompleted}
                 setFinished={setFinished}
+                isEmailVerified={user.isEmailVerified}
+                userId={user._id}
+                email={user.email}
               />
-            )}
-            {isFinished && (
-              <Typography>
-                You are all set, please wait while we verify your account.
-              </Typography>
             )}
           </Paper>
         ) : (
-          <CircularProgress />
-        )}
-      </div>
-    );
-  }
+          <div>
+            <Typography>
+              You are all set, please wait while we verify your account.
+            </Typography>
+            <Box sx={{ mt: 2 }}>
+              <HorizontalLinearStepper
+                activeStep={activeStep}
+                setActiveStep={setActiveStep}
+                setCompleted={setCompleted}
+                isNext={isCompleted}
+                setFinished={setFinished}
+              />
+            </Box>
+          </div>
+        )) : <CircularProgress />}{" "}
+    </div>
+  );
 }

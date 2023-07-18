@@ -155,6 +155,7 @@ export default function UnverifiedUsers() {
     return user.status === "unverified" && user.type === "citizen";
   });
 
+  console.log(unverifiedUsers)
   if (data) {
     return unverifiedUsers.length > 0 ? (
       unverifiedUsers.map((user) => {

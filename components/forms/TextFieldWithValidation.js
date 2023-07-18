@@ -11,6 +11,7 @@ export default function TextFieldWithValidation({
   isMultiline,
   rows,
   style,
+  inputProps,
 }) {
   const isError = value === "" && isSubmitted;
   return (
@@ -26,6 +27,7 @@ export default function TextFieldWithValidation({
       onChange={changeHandler}
       multiline={isMultiline}
       sx={style}
+      InputProps={inputProps}
     />
   );
 }

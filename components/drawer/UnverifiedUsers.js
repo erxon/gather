@@ -17,7 +17,7 @@ export default function UnverifedUsers() {
   const unverifiedUsers =
     data &&
     data.users.filter((user) => {
-      return user.status === "unverified";
+      return user.status === "unverified" && user.type === "citizen";
     });
   return (
     <List component="div" disablePadding>
