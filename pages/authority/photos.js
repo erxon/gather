@@ -107,18 +107,24 @@ function Reports() {
       <Box>
         <Head title="Photos" icon={<InsertPhotoIcon />} />
         <Grid container spacing={1}>
-          {reporters.map((reporter) => {
-            return (
-              <Report
-                key={reporter._id}
-                photoUploaded={reporter.photoUploaded}
-                firstName={reporter.firstName}
-                lastName={reporter.lastName}
-                contactNumber={reporter.contactNumber}
-                email={reporter.email}
-              />
-            );
-          })}
+          {reporters.length > 0 ? (
+            reporters.map((reporter) => {
+              return (
+                <Report
+                  key={reporter._id}
+                  photoUploaded={reporter.photoUploaded}
+                  firstName={reporter.firstName}
+                  lastName={reporter.lastName}
+                  contactNumber={reporter.contactNumber}
+                  email={reporter.email}
+                />
+              );
+            })
+          ) : (
+            <Box sx={{p: 2}}>
+              <Typography color="GrayText">No photos uploaded yet</Typography>
+            </Box>
+          )}
         </Grid>
       </Box>
     );

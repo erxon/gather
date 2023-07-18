@@ -75,8 +75,8 @@ export default function User(props) {
                 >
                   {username}
                 </Typography>
-                <Chip label={type} size="small" />
-                <Chip label={status} size="small" />
+                <Chip color="info" label={type} size="small" />
+                <Chip color="success" label={status} size="small" />
               </StackRowLayout>
               <Typography variant="subtitle2">{email}</Typography>
             </CardContent>

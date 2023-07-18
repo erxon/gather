@@ -30,6 +30,10 @@ export default function UserList({currentUser}) {
   if (error) return <Typography>Something went wrong</Typography>;
   if (isLoading) return <CircularProgress />;
 
+  const verifiedUsers = users.filter((user) => {
+    return user.status === "verified"
+  })
+
   const handleAddContact = async (contact) => {
     contactRequests.push(contact)
     setContactRequests(contactRequests);
@@ -86,9 +90,9 @@ export default function UserList({currentUser}) {
           </FormControl>
         </Box>
         <Grid container spacing={3}>
-          {!!users?.length &&
+          {!!verifiedUsers?.length &&
             currentUser &&
-            users
+            verifiedUsers
               .filter((user) => {
                 if (filterByType === "all") {
                   return user;
