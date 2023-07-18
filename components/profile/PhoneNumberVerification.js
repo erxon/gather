@@ -33,7 +33,7 @@ export default function PhoneNumberVerification({
 
   useEffect(() => {
     setCompleted(isContactNumberVerified);
-  }, []);
+  }, [setCompleted, isContactNumberVerified]);
 
   const handleVerificationCode = (event) => {
     setOtp(event.target.value);

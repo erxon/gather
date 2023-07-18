@@ -40,7 +40,7 @@ export default function EmailVerification({
       setCompleted(true)
       setFinished(true)
     }
-  }, [])
+  }, [setFinished, setCompleted, isEmailVerified])
 
   const handleSnackbarClose = () => {
     setOpenSnackbar({
