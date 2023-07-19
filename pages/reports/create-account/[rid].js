@@ -40,6 +40,7 @@ function UploadPhoto({ mpName, reportId, getPhotoId }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(photoData),
     });
+
     return uploadedPhoto;
   };
 
@@ -144,6 +145,19 @@ function UploadPhoto({ mpName, reportId, getPhotoId }) {
     // //Store response message
     const upload = await uploadToDatabase(photosData);
     const newPhotos = await upload.json();
+    //create face ids
+    const response = await fetch(
+      `/api/imagga-face-recognition/${newPhotos.data._id}`
+    );
+    const faceIDs = await response.json();
+    //index face ids
+    await fetch("/api/imagga-face-recognition/save", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        person: { [faceIDs.result.reportId]: faceIDs.result.faceIDs },
+      }),
+    });
 
     snackbarContent = generateAlertContent(upload.status, newPhotos.message);
 

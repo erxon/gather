@@ -143,7 +143,7 @@ function FoundButton({ photoUploadedId, account, reportId, found }) {
   );
 }
 
-function DisplayReportDetails({ photoUploadedId, reportId, distance }) {
+function DisplayReportDetails({ photoUploadedId, reportId, score }) {
   const router = useRouter();
 
   const { data, error, isLoading } = useSWR(
@@ -153,172 +153,141 @@ function DisplayReportDetails({ photoUploadedId, reportId, distance }) {
 
   if (error) return <Typography>Something went wrong</Typography>;
   if (isLoading) return <CircularProgress />;
+
   if (data) {
     return (
       <Box>
-        <Paper
+        <Card
           sx={{
-            p: 3,
+            display: "flex",
+            flexDirection: { xs: "column", md: "row" },
+            width: "100%",
+            alignItems: { xs: "center", md: "left" },
+            mb: 3,
           }}
-          variant="outlined"
+          variant="elevation"
         >
-          <Card
-            sx={{
-              display: "flex",
-              flexDirection: { xs: "column", md: "row" },
-              width: "100%",
-              alignItems: { xs: "center", md: "left" },
-            }}
-            variant="elevation"
-          >
-            <CardMedia sx={{ p: 2 }}>
-              {data.photo ? (
-                <ReportPhoto publicId={data.photo} />
-              ) : (
-                <Image src="/assets/placeholder.png" width={150} height={150} />
-              )}
-            </CardMedia>
-            <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <CardContent>
-                <Typography variant="h6" color="primary">
-                  {Math.round(distance * 100)}% Similarity
-                </Typography>
+          <CardMedia sx={{ p: 2 }}>
+            {data.photo ? (
+              <ReportPhoto publicId={data.photo} />
+            ) : (
+              <Image src="/assets/placeholder.png" width={150} height={150} />
+            )}
+          </CardMedia>
+          <Box sx={{ display: "flex", flexDirection: "column" }}>
+            <CardContent>
+              <Typography variant="h6" color="primary">
+                {Math.round(score)}% Similarity
+              </Typography>
 
-                <Typography
-                  sx={{ mb: 0.25, mt: 0.5, fontWeight: "bold" }}
-                  variant="body1"
+              <Typography
+                sx={{ mb: 0.25, mt: 0.5, fontWeight: "bold" }}
+                variant="body1"
+              >
+                {data.firstName} {data.lastName}
+              </Typography>
+              <IconTypography
+                customStyles={{ mb: 0.5 }}
+                Icon={<PlaceIcon color="disabled" />}
+                content={data.lastSeen}
+              />
+              <IconTypography
+                Icon={<PersonIcon color="disabled" />}
+                content={`${data.gender}, ${data.age}`}
+                customStyles={{ mb: 0.5 }}
+              />
+            </CardContent>
+            <CardActions>
+              <Stack
+                direction={{ xs: "column", md: "row" }}
+                alignItems="center"
+                spacing={1}
+              >
+                <Button
+                  sx={{ width: { xs: "100%", md: "75px" } }}
+                  onClick={() => {
+                    router.push(`/reports/${reportId}`);
+                  }}
+                  size="small"
+                  variant="contained"
                 >
-                  {data.firstName} {data.lastName}
-                </Typography>
-                <IconTypography
-                  customStyles={{ mb: 0.5 }}
-                  Icon={<PlaceIcon color="disabled" />}
-                  content={data.lastSeen}
+                  View
+                </Button>
+                <FoundButton
+                  photoUploadedId={photoUploadedId}
+                  account={data.account}
+                  found={data.found}
+                  reportId={data._id}
                 />
-                <IconTypography
-                  Icon={<PersonIcon color="disabled" />}
-                  content={`${data.gender}, ${data.age}`}
-                  customStyles={{ mb: 0.5 }}
-                />
-              </CardContent>
-              <CardActions>
-                <Stack
-                  direction={{ xs: "column", md: "row" }}
-                  alignItems="center"
-                  spacing={1}
-                >
-                  <Button
-                    sx={{ width: { xs: "100%", md: "75px" } }}
-                    onClick={() => {
-                      router.push(`/reports/${reportId}`);
-                    }}
-                    size="small"
-                    variant="contained"
-                  >
-                    View
-                  </Button>
-                  <FoundButton
-                    photoUploadedId={photoUploadedId}
-                    account={data.account}
-                    found={data.found}
-                    reportId={data._id}
-                  />
-                </Stack>
-              </CardActions>
-            </Box>
-          </Card>
-          <Paper sx={{ mt: 1, p: 3 }}>
+              </Stack>
+            </CardActions>
+          </Box>
+        </Card>
+        {/* <Paper sx={{ mt: 1, p: 3 }}>
             <DisplayReferencePhotos style={{ mb: 2 }} reportId={reportId} />
-          </Paper>
-        </Paper>
+          </Paper> */}
       </Box>
     );
   }
 }
 
-function GetReport({ photoUploadedId, photoId, distance, matchId }) {
-  const { data, error, isLoading } = useSWR(`/api/photos/${photoId}`, fetcher);
-
-  if (error) return <Typography>Something went wrong</Typography>;
-  if (isLoading) return <CircularProgress />;
-  if (data) {
-    return (
-      <DisplayReportDetails
-        photoUploadedId={photoUploadedId}
-        photoId={photoId}
-        matchId={matchId}
-        reportId={data.reportId}
-        distance={distance}
-      />
-    );
-  }
+function GetReport({ photoUploadedId, score, reportId }) {
+  return (
+    <DisplayReportDetails
+      photoUploadedId={photoUploadedId}
+      reportId={reportId}
+      score={score}
+    />
+  );
 }
 
 function FindMatches({ photoUploadedId, queryPhotoId }) {
   const router = useRouter();
   const [isReset, setReset] = useState(false);
   const [isSearchPressed, searchButtonPressed] = useState(false);
-  const [matchResult, setMatchResult] = useState({
-    isSearchedForMatch: false,
-    data: null,
-  });
-
   const { data, error, isLoading, mutate } = useSWRImmutable(
     `/api/face-recognition/past-matches/${queryPhotoId}`,
     fetcher
   );
 
+  if (error) return <Typography>Something went wrong</Typography>;
+  if (isLoading) return <CircularProgress />;
+
   const handleFindMatch = async () => {
     searchButtonPressed(true);
-
-    const getMatches = await fetch(`/api/face-recognition/${queryPhotoId}`);
-    const result = await getMatches.json();
-
-    mutate(result);
-    setMatchResult({
-      isSearchedForMatch: true,
-      data: result,
+    const getMatches = await fetch(`/api/imagga-face-recognition/query`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ queryPhoto: queryPhotoId }),
     });
-    searchButtonPressed(false);
+
+    const result = await getMatches.json();
+    mutate(result);
   };
 
   const handleReset = async (id) => {
-    const reset = await fetch(`/api/face-recognition/reset/${id}`, {
+    await fetch("/api/imagga-face-recognition/reset", {
       method: "DELETE",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({id: id})
     });
-
-    await reset.json();
-
     mutate();
+    searchButtonPressed(false);
   };
 
-  const handleReload = async () => {
+  const handleReload = async (id) => {
     setReset(true);
-    const reload = await fetch("/api/face-recognition/reload", {
-      method: "PUT",
+    const reload = await fetch("/api/imagga-face-recognition/reload", {
+      method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ photoId: queryPhotoId }),
+      body: JSON.stringify({ queryPhoto: queryPhotoId, id: id }),
     });
 
     const result = await reload.json();
-
-    mutate(result.data);
+    console.log(result);
+    mutate(result);
     setReset(false);
   };
-
-  console.log(data);
-
-  if (error)
-    return (
-      <Typography>Something went wrong while fetching matches.</Typography>
-    );
-  if (isLoading)
-    return (
-      <div>
-        <CircularProgress />
-        <Typography>Please wait...</Typography>
-      </div>
-    );
 
   return (
     <Box>
@@ -332,22 +301,27 @@ function FindMatches({ photoUploadedId, queryPhotoId }) {
           >
             Clear
           </Button>
-          <IconButton sx={{ ml: 1 }} disabled={isReset} onClick={handleReload}>
+          <IconButton
+            sx={{ ml: 1 }}
+            disabled={isReset}
+            onClick={() => {
+              handleReload(data._id);
+            }}
+          >
             <RefreshIcon color="primary" />
           </IconButton>
         </Box>
       )}
       {isReset && <LinearProgress sx={{ mb: 1 }} />}
-      {data && data.matches.length > 0 ? (
+      {data && data.result.length > 0 ? (
         <div>
-          {data.matches.map((match) => {
+          {data.result.map((result) => {
             return (
               <GetReport
                 photoUploadedId={photoUploadedId}
-                key={match._label}
-                photoId={match._label}
-                distance={match._distance}
-                matchId={data._id}
+                key={result.id}
+                score={result.score}
+                reportId={result.id}
               />
             );
           })}
@@ -355,7 +329,7 @@ function FindMatches({ photoUploadedId, queryPhotoId }) {
       ) : (
         <div>
           <Typography sx={{ mb: 1 }}>No matches found.</Typography>
-          {matchResult.isSearchedForMatch && !matchResult.data && (
+          {/* {matchResult.isSearchedForMatch && !matchResult.data && (
             <Button
               onClick={() => {
                 router.push(`/reports/create-report/${photoUploadedId}`);
@@ -365,7 +339,7 @@ function FindMatches({ photoUploadedId, queryPhotoId }) {
             >
               Create report
             </Button>
-          )}
+          )} */}
           {!isSearchPressed ? (
             <Button
               startIcon={<SearchIcon />}

@@ -1,13 +1,13 @@
 import mongoose from "mongoose";
 
-const foundMatchSchema = new mongoose.Schema({
+const searcResultsSchema = new mongoose.Schema({
   photoId: String,
-  matches: [],
-  status: String,
+  result: [],
   createdAt: Date,
   updatedAt: Date,
 });
 
-const Match = mongoose.models.Match || mongoose.model('Match', foundMatchSchema)
+const Match =
+  mongoose.models.Match || mongoose.model("Match", searcResultsSchema);
 
-export default Match
+export default Match;
