@@ -7,7 +7,6 @@ export default function Notifications({ handleNotificationsOpen, userId, style }
   const { data } = useSWR(
     `/api/notification/count/contact-${userId}`,
     fetcher,
-    {refreshInterval: 1000}
   );
   
   if (data) {console.log(data)}
