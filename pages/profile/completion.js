@@ -26,8 +26,8 @@ function HorizontalLinearStepper({
 }) {
   const steps = [
     "Basic information",
-    "Email verification",
     "Phone number verification",
+    "Email verification",
   ];
 
   const handleNext = () => {
@@ -101,7 +101,9 @@ export default function Page() {
     } else if (user && user.status === "verified") {
       router.push("/dashboard");
     } else if (user) {
-      setActiveStep(user.isEmailVerified && user.isContactNumberVerified ? 3 : 0);
+      setActiveStep(
+        user.isEmailVerified && user.isContactNumberVerified ? 3 : 0
+      );
     }
   }, [user, loading]);
 
@@ -109,9 +111,8 @@ export default function Page() {
 
   return (
     <div>
-      {user &&
-        user.status === "unverified" ?
-        (!user.isEmailVerified || !user.isContactNumberVerified ? (
+      {user && user.status === "unverified" ? (
+        !user.isEmailVerified || !user.isContactNumberVerified ? (
           <Paper variant="outlined" sx={{ p: 3 }}>
             <Typography variant="h6">Complete your profile</Typography>
             {isFinished && (
@@ -169,7 +170,10 @@ export default function Page() {
               />
             </Box>
           </div>
-        )) : <CircularProgress />}{" "}
+        )
+      ) : (
+        <CircularProgress />
+      )}{" "}
     </div>
   );
 }
