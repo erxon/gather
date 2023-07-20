@@ -23,6 +23,10 @@ const reporterSchema = mongoose.Schema({
     required: true,
   },
   socialMediaAccount: [String],
+  position: {
+    type: Map,
+    of: Number
+  },
   createdAt: Date,
   updatedAt: Date,
 });

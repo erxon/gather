@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import { fill } from "@cloudinary/url-gen/actions/resize";
 import { CloudinaryImage } from "@cloudinary/url-gen";
 import { AdvancedImage } from "@cloudinary/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useSWR from "swr";
 import {
   Button,
@@ -17,6 +17,7 @@ import {
 
 import PlaceIcon from "@mui/icons-material/Place";
 import { fetcher } from "@/lib/hooks";
+import SmallMap from "@/components/map/SmallMap";
 
 export default function Upload() {
   const router = useRouter();
@@ -28,7 +29,21 @@ export default function Upload() {
 }
 
 function Form({ publicId, photoId }) {
+  const [currentPosition, setCurrentPosition] = useState(null);
   const [submitted, isSubmitted] = useState(false);
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        console.log(position);
+        setCurrentPosition(position.coords);
+      },
+      () => {},
+      {
+        enableHighAccuracy: true,
+      }
+    );
+  }, []);
 
   const myImage = new CloudinaryImage(`query-photos/${publicId}`, {
     cloudName: "dg0cwy8vx",
@@ -47,8 +62,11 @@ function Form({ publicId, photoId }) {
       firstName: e.target.firstName.value,
       lastName: e.target.lastName.value,
       contactNumber: e.target.contactNumber.value,
+      longitude: currentPosition.longitude,
+      latitude: currentPosition.latitude,
       email: e.target.email.value,
     };
+    console.log(JSON.stringify(body));
     await fetch("/api/reports/upload", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -136,7 +154,7 @@ function Form({ publicId, photoId }) {
                       required
                     />
                   </Stack>
-                  <TextField 
+                  <TextField
                     fullWidth
                     variant="outlined"
                     label="Location"
@@ -146,6 +164,12 @@ function Form({ publicId, photoId }) {
                   />
                 </Paper>
               </form>
+              {currentPosition && (
+                <SmallMap
+                  lng={currentPosition.longitude}
+                  lat={currentPosition.latitude}
+                />
+              )}
             </Grid>
           </Grid>
         </Box>
