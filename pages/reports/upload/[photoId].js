@@ -155,12 +155,12 @@ function Form({ publicId, photoId }) {
               </form>
             </Grid>
             <Grid item xs={12} md={8}>
-              {currentPosition && (
+              {/* {currentPosition && (
                 <SmallMap
                   lng={currentPosition.longitude}
                   lat={currentPosition.latitude}
                 />
-              )}
+              )} */}
             </Grid>
           </Grid>
         </Box>
