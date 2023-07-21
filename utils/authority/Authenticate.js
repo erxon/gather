@@ -14,7 +14,7 @@ export default function Authenticate({ children }) {
   }, [user, loading]);
 
   if (loading) return <CircularProgress />;
-  if (user.type !== "authority" || user.status === "unverified")
+  if (user && (user.type !== "authority" || user.status === "unverified"))
     return <Typography>Forbidden</Typography>;
   if (user) return children;
 }
