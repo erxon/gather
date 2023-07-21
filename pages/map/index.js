@@ -26,7 +26,7 @@ export default function DisplayMap({ data }) {
       <Grid item xs={12} md={4}>
         {data.data.map((reporter) => {
           return (
-            <Reporter reporter={reporter} setDestination={setDestination} />
+            <Reporter key={reporter._id} reporter={reporter} setDestination={setDestination} />
           );
         })}
       </Grid>
@@ -169,7 +169,7 @@ function Map({ data, destination }) {
         ) // add popup
         .addTo(map.current);
     });
-  }, [destination]);
+  }, [destination, data.data, lat, lng, zoom]);
 
   // useEffect(() => {
   //   if (!map.current) return; // wait for map to initialize
