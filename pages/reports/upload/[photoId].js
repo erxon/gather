@@ -58,7 +58,6 @@ function Form({ publicId, photoId }) {
     e.preventDefault();
     const body = {
       photoUploaded: photoId,
-      location: e.target.location.value,
       firstName: e.target.firstName.value,
       lastName: e.target.lastName.value,
       contactNumber: e.target.contactNumber.value,
@@ -92,15 +91,13 @@ function Form({ publicId, photoId }) {
               <Paper sx={{ p: 3 }}>
                 <AdvancedImage cldImg={myImage} width="100%" height="auto" />
               </Paper>
-            </Grid>
-            <Grid item xs={12} md={8}>
               <form onSubmit={handleSubmit}>
                 <Button
                   size="small"
                   disableElevation
                   variant="contained"
                   type="submit"
-                  sx={{ mb: 2 }}
+                  sx={{ my: 2 }}
                 >
                   Submit
                 </Button>
@@ -154,16 +151,10 @@ function Form({ publicId, photoId }) {
                       required
                     />
                   </Stack>
-                  <TextField
-                    fullWidth
-                    variant="outlined"
-                    label="Location"
-                    type="text"
-                    name="location"
-                    required
-                  />
                 </Paper>
               </form>
+            </Grid>
+            <Grid item xs={12} md={8}>
               {currentPosition && (
                 <SmallMap
                   lng={currentPosition.longitude}

@@ -1,30 +1,41 @@
 import React, { useRef, useEffect, useState } from "react";
 import mapboxgl from "!mapbox-gl"; // eslint-disable-line import/no-webpack-loader-syntax
-import style from "@/public/style/map.module.css";
+import "mapbox-gl/dist/mapbox-gl.css";
+import { Box } from "@mui/material";
 
-mapboxgl.accessToken =
-  "pk.eyJ1IjoiZXJpY3NvbjIwMjMiLCJhIjoiY2xpMW1sOXpuMHh6MTNqbXZ3Z2g3aTN2YyJ9.TN5fPsJaGbfWEUbbvbSp5A";
+mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
 export default function SmallMap(props) {
   const mapContainer = useRef(null);
   const map = useRef(null);
   const [lng, setLng] = useState(props.lng);
   const [lat, setLat] = useState(props.lat);
-  const [zoom, setZoom] = useState(18);
+  const [zoom, setZoom] = useState(16);
 
   useEffect(() => {
     if (map.current) return; // initialize map only once
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: "mapbox://styles/mapbox/streets-v11",
+      style: "mapbox://styles/mapbox/streets-v12",
       center: [lng, lat],
       zoom: zoom,
+    });
+
+    // Create a new marker.
+    new mapboxgl.Marker().setLngLat([props.lng, props.lat]).addTo(map.current);
+  });
+  useEffect(() => {
+    if (!map.current) return; // wait for map to initialize
+    map.current.on("move", () => {
+      setLng(map.current.getCenter().lng.toFixed(4));
+      setLat(map.current.getCenter().lat.toFixed(4));
+      setZoom(map.current.getZoom().toFixed(2));
     });
   });
 
   return (
     <div>
-      <div ref={mapContainer} className={style.mapContainer} />
+      <Box ref={mapContainer} sx={{ height: "500px" }}></Box>
     </div>
   );
 }
