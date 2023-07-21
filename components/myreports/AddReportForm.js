@@ -22,6 +22,7 @@ export default function AddReportForm({ handleClose, username }) {
     firstName: "",
     lastName: "",
     lastSeen: "",
+    details: "",
   });
   const [gender, setGender] = useState("");
   const [isSubmitted, setSubmittedState] = useState(false);
@@ -50,7 +51,8 @@ export default function AddReportForm({ handleClose, username }) {
       values.lastName === "" ||
       values.age === "" ||
       values.lastSeen === "" ||
-      gender === ""
+      gender === "" ||
+      values.details === ""
     ) {
       setAlert({
         open: true,
@@ -84,8 +86,14 @@ export default function AddReportForm({ handleClose, username }) {
           reporter: username,
         }),
       });
-      setValues({ age: "", firstName: "", lastName: "", lastSeen: "" });
-      setSubmittedState(false)
+      setValues({
+        age: "",
+        firstName: "",
+        lastName: "",
+        lastSeen: "",
+        details: "",
+      });
+      setSubmittedState(false);
     } else if (addReport.status === 400) {
       setAlert({
         open: true,
@@ -160,6 +168,17 @@ export default function AddReportForm({ handleClose, username }) {
           name="lastSeen"
           label="Last Seen"
           value={values.lastSeen}
+          changeHandler={handleChange}
+          isSubmitted={isSubmitted}
+        />
+        <TextFieldWithValidation
+          style={{ mt: 1 }}
+          isFullWidth={true}
+          isMultiline={true}
+          rows={4}
+          name="details"
+          label="Details"
+          value={values.details}
           changeHandler={handleChange}
           isSubmitted={isSubmitted}
         />

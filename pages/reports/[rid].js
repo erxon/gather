@@ -214,7 +214,9 @@ export default function ReportPage({ data }) {
               >
                 <PlaceIcon />
                 {data.reporter ? (
-                  <Typography variant="body1">{data.reporter.location}</Typography>
+                  <Typography variant="body1">
+                    {data.reporter.location}
+                  </Typography>
                 ) : (
                   <Typography variant="body1">{data.lastSeen}</Typography>
                 )}
@@ -242,6 +244,13 @@ export default function ReportPage({ data }) {
           <Grid item xs={12} md={8}>
             <Box>
               {/*Features, Email, Social Media Accounts */}
+
+              <Paper sx={{ p: 3, mb: 1 }}>
+                <Typography variant="h6">Details</Typography>
+                <Typography variant="body1" sx={{ mt: 2 }}>
+                  {data.details}
+                </Typography>
+              </Paper>
               <Paper sx={{ p: 3, mb: 1 }}>
                 <Typography variant="h6">Features</Typography>
                 {data.features && data.features.length > 0 ? (
@@ -256,7 +265,6 @@ export default function ReportPage({ data }) {
                   </Typography>
                 )}
               </Paper>
-
               <Paper sx={{ p: 3 }}>
                 <Typography sx={{ mb: 2 }} variant="h6">
                   Social Media Accounts

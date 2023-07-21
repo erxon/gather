@@ -56,6 +56,7 @@ export default function EditReport({ data }) {
     email: data.email,
     contactNumber: data.contactNumber,
     photo: data.photo,
+    details: data.details,
   });
   const [features, setFeatures] = useState([...data.features]);
   const [value, setValue] = useState({
@@ -359,6 +360,18 @@ export default function EditReport({ data }) {
                   value={body.lastSeen}
                   id="lastSeen"
                   name="lastSeen"
+                  type="text"
+                  variant="outlined"
+                />
+                <TextField
+                  sx={{ mt: 2 }}
+                  fullWidth
+                  multiline
+                  label="Details"
+                  onChange={handleFormChange}
+                  value={body.details}
+                  id="details"
+                  name="details"
                   type="text"
                   variant="outlined"
                 />

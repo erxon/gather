@@ -48,6 +48,7 @@ const ReportToManage = () => {
     firstName: "",
     lastName: "",
     lastSeen: "",
+    details: "",
     age: "",
   });
 
@@ -62,7 +63,8 @@ const ReportToManage = () => {
       values.firstName === "" ||
       values.lastName === "" ||
       values.age === "" ||
-      values.lastSeen === ""
+      values.lastSeen === "" ||
+      values.details === ""
     ) {
       setAlert({ open: true, message: "Please fill all the required fields." });
       return;
@@ -72,6 +74,7 @@ const ReportToManage = () => {
       lastName: values.lastName,
       lastSeen: values.lastSeen,
       age: values.age,
+      details: values.details,
       gender: gender,
       status: "pending",
     };
@@ -157,6 +160,24 @@ const ReportToManage = () => {
           isSubmitted={isSubmitted}
           value={values.lastSeen}
           isFullWidth={true}
+          changeHandler={handleChange}
+        />
+        <Typography sx={{ my: 1 }} color="GrayText">
+          Please state as much details as needed for your report. Adequate
+          information will help investigators or authorities find the person.
+        </Typography>
+        <TextFieldWithValidation
+          id="details"
+          label="Details"
+          variant="outlined"
+          name="details"
+          type="text"
+          style={{ mb: 1 }}
+          isSubmitted={isSubmitted}
+          value={values.details}
+          isFullWidth={true}
+          isMultiline={true}
+          rows={4}
           changeHandler={handleChange}
         />
         <ErrorAlert
@@ -408,19 +429,23 @@ function Reports() {
       <Typography variant="h6" sx={{ mb: 2 }}>
         Recent reports
       </Typography>
-      {data.activeReports.length > 0 ? data.activeReports.map((report) => {
-        return (
-          <Report
-            key={report._id}
-            reportId={report._id}
-            name={`${report.firstName} ${report.lastName}`}
-            photo={report.photo}
-            lastSeen={report.lastSeen}
-            gender={report.gender}
-            age={report.age}
-          />
-        );
-      }) : <Typography color="GrayText">No active reports yet.</Typography>}
+      {data.activeReports.length > 0 ? (
+        data.activeReports.map((report) => {
+          return (
+            <Report
+              key={report._id}
+              reportId={report._id}
+              name={`${report.firstName} ${report.lastName}`}
+              photo={report.photo}
+              lastSeen={report.lastSeen}
+              gender={report.gender}
+              age={report.age}
+            />
+          );
+        })
+      ) : (
+        <Typography color="GrayText">No active reports yet.</Typography>
+      )}
     </Paper>
   );
 }

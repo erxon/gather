@@ -4,31 +4,17 @@ import useSWR from "swr";
 import Router, { useRouter } from "next/router";
 import AddReportForm from "@/components/myreports/AddReportForm";
 import {
-  Card,
-  CardContent,
   Button,
   Typography,
-  CardActions,
-  CardMedia,
-  Box,
   CircularProgress,
-  Chip,
   Collapse,
   Grid,
+  Box
 } from "@mui/material";
-import ReportPhoto from "@/components/photo/ReportPhoto";
-import StackRow from "@/utils/StackRow";
 
-import PlaceIcon from "@mui/icons-material/Place";
-import PersonIcon from "@mui/icons-material/Person";
 import ArticleIcon from "@mui/icons-material/Article";
 import Head from "@/components/Head";
 import AddIcon from "@mui/icons-material/Add";
-import TextFieldWithValidation from "@/components/forms/TextFieldWithValidation";
-import StackRowLayout from "@/utils/StackRowLayout";
-import CloseIcon from "@mui/icons-material/Close";
-import DisplaySnackbar from "@/components/DisplaySnackbar";
-import ErrorAlert from "@/components/ErrorAlert";
 import ReportCard from "@/components/reports/ReportCard";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
