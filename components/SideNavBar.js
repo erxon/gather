@@ -19,6 +19,7 @@ import { Collapse, Divider, Typography } from "@mui/material";
 
 import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
 import UnverifedUsers from "./drawer/UnverifiedUsers";
+import MapIcon from '@mui/icons-material/Map';
 
 function ItemButtonReports() {
   const router = useRouter();
@@ -163,6 +164,18 @@ function ListItems(props) {
                   <ListItemText primary="Photos" />
                 </ListItemButton>
               </div>
+            )}
+            {user.type === "authority" && user.status === "verified" && (
+              <ListItemButton
+              onClick={() => {
+                router.push("/map");
+              }}
+            >
+              <ListItemIcon>
+                <MapIcon />
+              </ListItemIcon>
+              <ListItemText primary="Map" />
+            </ListItemButton>
             )}
           </List>
         )}
