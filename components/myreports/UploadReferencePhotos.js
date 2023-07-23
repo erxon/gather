@@ -95,7 +95,7 @@ export default function UploadReferencePhotos({
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    handleClose()
+    handleClose();
     let snackbarContent = {};
     let uploadedPhotos = [];
 
@@ -126,15 +126,27 @@ export default function UploadReferencePhotos({
     // //Store response message
     const upload = await uploadToDatabase(photosData);
     const newPhotos = await upload.json();
+    const response = await fetch(
+      `/api/imagga-face-recognition/${newPhotos.data._id}`
+    );
+    const faceIDs = await response.json();
+    //index face ids
+    await fetch("/api/imagga-face-recognition/save", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        person: { [faceIDs.result.reportId]: faceIDs.result.faceIDs },
+      }),
+    });
 
     snackbarContent = generateAlertContent(upload.status, newPhotos.message);
 
     setSnackbar(snackbarContent);
     isUploaded(true);
-    
+
     // Link the photo to report
     setSnackbar(snackbarContent);
-    mutate(`/api/photos/report/${reportId}`)
+    mutate(`/api/photos/report/${reportId}`);
   };
 
   return (

@@ -12,21 +12,34 @@ import mapboxgl from "!mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import computeElapsedTime from "@/utils/helpers/computeElapsedTime";
 import useSWRImmutable from "swr/immutable";
-import { fetcher } from "@/lib/hooks";
+import { fetcher, useUser } from "@/lib/hooks";
+import { useRouter } from "next/router";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import StackRowLayout from "@/utils/StackRowLayout";
 import Photo from "@/components/reporter/Photo";
+import Authenticate from "@/utils/authority/Authenticate";
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
+export default function Page({data}) {
+  return (
+    <Authenticate>
+      <DisplayMap data={data} />
+    </Authenticate>
+  );
+}
 
-export default function DisplayMap({ data }) {
+function DisplayMap({ data }) {
   const [destination, setDestination] = useState(null);
   return (
     <Grid container spacing={1}>
       <Grid item xs={12} md={4}>
         {data.data.map((reporter) => {
           return (
-            <Reporter key={reporter._id} reporter={reporter} setDestination={setDestination} />
+            <Reporter
+              key={reporter._id}
+              reporter={reporter}
+              setDestination={setDestination}
+            />
           );
         })}
       </Grid>
