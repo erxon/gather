@@ -18,6 +18,8 @@ import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import StackRowLayout from "@/utils/StackRowLayout";
 import Photo from "@/components/reporter/Photo";
 import Authenticate from "@/utils/authority/Authenticate";
+import Head from "@/components/Head";
+import PersonPinCircleOutlinedIcon from '@mui/icons-material/PersonPinCircleOutlined';
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 export default function Page({data}) {
@@ -33,6 +35,7 @@ function DisplayMap({ data }) {
   return (
     <Grid container spacing={1}>
       <Grid item xs={12} md={4}>
+        <Head title="Reports" icon={<PersonPinCircleOutlinedIcon />} />
         {data.data.map((reporter) => {
           return (
             <Reporter

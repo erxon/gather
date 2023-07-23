@@ -7,5 +7,5 @@ export default function SearchBarReports() {
   const { data, error, isLoading } = useSWR("/api/reports", fetcher);
 
   if (isLoading) return <CircularProgress />;
-  return <SearchBar label="Search report" data={data} />;
+  return <SearchBar label="Search report" data={data} link="/reports"/>;
 }

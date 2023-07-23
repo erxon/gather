@@ -72,7 +72,6 @@ export default function UserList({currentUser}) {
 
   return (
     <>
-      <div>
         <Box sx={{ mb: 2, maxWidth: 300 }}>
           <FormControl fullWidth>
             <InputLabel id="demo-simple-select-label">Type</InputLabel>
@@ -123,7 +122,6 @@ export default function UserList({currentUser}) {
                 }
               })}
         </Grid>
-      </div>
     </>
   );
 }

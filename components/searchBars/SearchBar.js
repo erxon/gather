@@ -9,6 +9,7 @@ import {
   Avatar,
   Card,
   CardContent,
+  Box,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { useState } from "react";
@@ -43,12 +44,12 @@ function characterAvatar(name) {
   };
 }
 
-function ResultCard({ id, name, age, gender, photo }) {
+function ResultCard({ id, name, photo, link }) {
   const router = useRouter();
   return (
     <Card
       onClick={() => {
-        router.push(`/reports/${id}`);
+        router.push(`${link}/${id}`);
       }}
       variant="outlined"
       sx={{
@@ -57,7 +58,6 @@ function ResultCard({ id, name, age, gender, photo }) {
         cursor: "pointer",
         p: 2,
         mb: 2,
-        height: 60,
       }}
     >
       {photo ? (
@@ -68,9 +68,6 @@ function ResultCard({ id, name, age, gender, photo }) {
       <CardContent>
         <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
           {name}
-        </Typography>
-        <Typography variant="subtitle2" color="GrayText">
-          {age}, {gender}
         </Typography>
       </CardContent>
     </Card>
@@ -100,7 +97,7 @@ export default function SearchBar(props) {
   };
 
   return (
-    <div>
+    <Box>
       <TextField
         sx={{ maxWidth: 500 }}
         variant="outlined"
@@ -117,16 +114,15 @@ export default function SearchBar(props) {
           ),
         }}
       />
-      <Collapse sx={{ position: "absolute" }} in={open}>
+      <Collapse sx={{ position: "absolute", zIndex: 1 }} in={open}>
         <Paper sx={{ maxWidth: 500, p: 1 }}>
           {result && result.map((data) => {
             return (
               <ResultCard
                 key={data._id}
+                link={props.link}
                 id={data._id}
                 name={`${data.firstName} ${data.lastName}`}
-                age={data.age}
-                gender={data.gender}
               />
             );
           })}
@@ -140,6 +136,6 @@ export default function SearchBar(props) {
           </Button>
         </Paper>
       </Collapse>
-    </div>
+    </Box>
   );
 }
