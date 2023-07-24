@@ -23,15 +23,16 @@ export default function ReportCard(props) {
       cloudName: "dg0cwy8vx",
       apiKey: process.env.CLOUDINARY_KEY,
       apiSecret: process.env.CLOUDINARY_SECRET,
-    }).resize(fill().width(300).height(300));
+    }).resize(fill().height(300));
   }
   return (
-    <Card sx={{ width: 300 }}>
+    <Card>
       {image ? (
         <CardMedia
           sx={{
             textAlign: "center",
             backgroundColor: "#F2F4F4",
+            height: 300
           }}
         >
           <AdvancedImage cldImg={image} />

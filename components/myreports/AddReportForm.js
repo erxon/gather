@@ -15,7 +15,7 @@ import TextFieldWithValidation from "../forms/TextFieldWithValidation";
 import ErrorAlert from "../ErrorAlert";
 import { useSWRConfig } from "swr";
 
-export default function AddReportForm({ handleClose, username }) {
+export default function AddReportForm({ userId, handleClose, username }) {
   const { mutate } = useSWRConfig();
   const [values, setValues] = useState({
     age: "",
@@ -23,6 +23,7 @@ export default function AddReportForm({ handleClose, username }) {
     lastName: "",
     lastSeen: "",
     details: "",
+
   });
   const [gender, setGender] = useState("");
   const [isSubmitted, setSubmittedState] = useState(false);
@@ -67,6 +68,7 @@ export default function AddReportForm({ handleClose, username }) {
         ...values,
         gender: gender,
         username: username,
+        account: userId,
         status: "pending",
       }),
     });

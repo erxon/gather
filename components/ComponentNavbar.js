@@ -1,13 +1,11 @@
 import Link from "next/link";
 import { useUser } from "@/lib/hooks";
 import * as React from "react";
-import { styled, alpha } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
-import Badge from "@mui/material/Badge";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import MenuList from "@mui/material/MenuList";
@@ -16,12 +14,10 @@ import Button from "@mui/material/Button";
 import { Avatar, Divider, Popover, Paper } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { logout } from "@/lib/api-lib/api-auth";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ProfilePhoto from "./photo/ProfilePhoto";
 import Notifications from "./appbar/Notifications";
 import Contacts from "./notifications/Contacts";
-import Image from "next/image";
+import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 
 export default function ComponentNavbar(props) {
   const [user, { mutate }] = useUser();
@@ -205,6 +201,7 @@ export default function ComponentNavbar(props) {
             >
               <Stack spacing={2} direction="row" alignItems="center">
                 <Button
+                  startIcon={<PersonOutlinedIcon />}
                   color="primary"
                   href="/login"
                   variant="contained"
@@ -248,6 +245,7 @@ export default function ComponentNavbar(props) {
           ) : (
             <Box sx={{ display: { xs: "flex", md: "none" } }}>
               <Button
+                startIcon={<PersonOutlinedIcon />}
                 color="primary"
                 href="/login"
                 variant="contained"

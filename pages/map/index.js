@@ -18,9 +18,11 @@ import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import StackRowLayout from "@/utils/StackRowLayout";
 import Photo from "@/components/reporter/Photo";
 import Authenticate from "@/utils/authority/Authenticate";
+import Head from "@/components/Head";
+import PersonPinCircleOutlinedIcon from "@mui/icons-material/PersonPinCircleOutlined";
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
-export default function Page({data}) {
+export default function Page({ data }) {
   return (
     <Authenticate>
       <DisplayMap data={data} />
@@ -30,10 +32,13 @@ export default function Page({data}) {
 
 function DisplayMap({ data }) {
   const [destination, setDestination] = useState(null);
+  const reporters = [...data.data]
+
   return (
     <Grid container spacing={1}>
       <Grid item xs={12} md={4}>
-        {data.data.map((reporter) => {
+        <Head icon={<PersonPinCircleOutlinedIcon />} title="Reports" />
+        {reporters.reverse().map((reporter) => {
           return (
             <Reporter
               key={reporter._id}
@@ -45,24 +50,24 @@ function DisplayMap({ data }) {
       </Grid>
 
       <Grid item xs={12} md={8}>
-        <Map data={data} destination={destination} />
+        {/* <Map data={data} destination={destination} /> */}
       </Grid>
     </Grid>
   );
 }
 
 function Reporter({ reporter, setDestination }) {
-  const { data, error, isLoading } = useSWRImmutable(
-    `https://api.mapbox.com/directions/v5/mapbox/driving/120.911,14.292;${reporter.position.longitude},${reporter.position.latitude}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
-    fetcher
-  );
+  // const { data, error, isLoading } = useSWRImmutable(
+  //   `https://api.mapbox.com/directions/v5/mapbox/driving/120.911,14.292;${reporter.position.longitude},${reporter.position.latitude}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
+  //   fetcher
+  // );
 
-  if (error) return <Typography>Something went wrong.</Typography>;
-  if (isLoading) return <CircularProgress />;
+  // if (error) return <Typography>Something went wrong.</Typography>;
+  // if (isLoading) return <CircularProgress />;
 
-  const handleViewRoute = async () => {
-    setDestination([reporter.position.longitude, reporter.position.latitude]);
-  };
+  // const handleViewRoute = async () => {
+  //   setDestination([reporter.position.longitude, reporter.position.latitude]);
+  // };
   return (
     <Paper sx={{ p: 2, mb: 2 }}>
       <Stack direction="row" spacing={2}>
@@ -80,13 +85,13 @@ function Reporter({ reporter, setDestination }) {
             <DirectionsCarIcon color="primary" />
             <Typography variant="body2">Driving |</Typography>
             <Typography variant="body2">
-              {Math.round(data.routes[0].duration / 60)} mins
-              {/* 30 mins */}
+              {/* {Math.round(data.routes[0].duration / 60)} mins */}
+              30 mins
             </Typography>
           </StackRowLayout>
-          <Button sx={{ mt: 1 }} onClick={handleViewRoute} size="small">
+          {/* <Button sx={{ mt: 1 }} onClick={handleViewRoute} size="small">
             View route
-          </Button>
+          </Button> */}
         </Box>
       </Stack>
     </Paper>

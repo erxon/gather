@@ -67,7 +67,7 @@ function Report(props) {
   const router = useRouter();
   return (
     <Grid item xs={12} md={3} sm={6}>
-      <Card sx={{ maxWidth: 350 }}>
+      <Card>
         <CardMedia>
           <UploadedPhoto photoId={props.photoUploaded} />
         </CardMedia>
