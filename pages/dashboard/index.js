@@ -19,7 +19,6 @@ import { useUser } from "@/lib/hooks";
 import StackRowLayout from "@/utils/StackRowLayout";
 
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import SearchBar from "@/components/searchBars/SearchBar";
 import SearchBarReports from "@/components/searchBars/SearchBarReports";
 
 import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";

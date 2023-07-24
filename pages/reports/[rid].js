@@ -12,7 +12,6 @@ import {
   Box,
   Typography,
   Button,
-  TextField,
   Grid,
   Stack,
   Paper,
@@ -21,14 +20,13 @@ import {
   Card,
   CardContent,
   CardMedia,
+  IconButton,
 } from "@mui/material";
-import Link from "next/link";
 import { getSingleReport, deleteReport } from "@/lib/api-lib/api-reports";
 import useSWR from "swr";
 
 //Share Buttons
 import FacebookButton from "@/components/socialMediaButtons/FacebookButton";
-import TwitterButton from "@/components/socialMediaButtons/TwitterButton";
 
 import EditIcon from "@mui/icons-material/Edit";
 import PersonIcon from "@mui/icons-material/Person";
@@ -39,8 +37,11 @@ import TwitterIcon from "@mui/icons-material/Twitter";
 import Image from "next/image";
 import calculateTimeElapsed from "@/utils/calculateTimeElapsed";
 import ReportPhotoLarge from "@/components/photo/ReportPhotoLarge";
+import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
+import { useRouter } from "next/router";
 
 function ReferencePhotos({ reportId }) {
+  
   const { data, error, isLoading } = useSWR(
     `/api/photos/report/${reportId}`,
     fetcher
@@ -71,6 +72,7 @@ function ReferencePhotos({ reportId }) {
 }
 
 export default function ReportPage({ data }) {
+  const router = useRouter();
   const [user, { mutate, loading }] = useUser();
   const [authorized, isAuthorized] = useState(false);
   //Checks if the user is authorized
@@ -102,7 +104,7 @@ export default function ReportPage({ data }) {
     <>
       <Box>
         <Box sx={{ mb: 3 }}>
-          <Typography variant="body1"> Reported by </Typography>{" "}
+          <Typography variant="subtitle2"> Reported by </Typography>{" "}
           {data.reporter && (
             <Box>
               <Typography variant="body2">
@@ -116,9 +118,16 @@ export default function ReportPage({ data }) {
           )}
           {Object.hasOwn(data, "username") && (
             <Box sx={{ mt: 0.5 }}>
-              <Typography variant="body2">
-                <Link href={`/profile/${data.account}`}>{data.username}</Link>
-              </Typography>
+              <Stack direction="row" spacing={0.5} alignItems="center">
+                <IconButton color="primary" onClick={() => {
+                  router.push(`/profile/${data.account}`)
+                }}>
+                  <AccountCircleOutlinedIcon />
+                </IconButton>
+                <Typography color="primary" sx={{ fontWeight: "bold" }} variant="body1">
+                  {data.username}
+                </Typography>
+              </Stack>
             </Box>
           )}
         </Box>

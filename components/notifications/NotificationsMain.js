@@ -23,7 +23,6 @@ import { useRouter } from "next/router";
 import computeElapsedTime from "@/utils/helpers/computeElapsedTime";
 import QueryPhoto from "../photo/QueryPhoto";
 import _ from "lodash";
-import { NotificationsNoneOutlined } from "@mui/icons-material";
 
 export default function NotificationsMain({ user }) {
   const api =

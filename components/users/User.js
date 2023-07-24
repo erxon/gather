@@ -82,7 +82,7 @@ export default function User(props) {
             </CardContent>
             <CardActions sx={{ width: "100%" }}>
               {button.inRequests ? (
-                <Button fullWidth variant="contained" size="small" disabled>
+                <Button variant="contained" size="small" disabled>
                   Requested
                 </Button>
               ) : button.inContacts ? (
@@ -92,7 +92,6 @@ export default function User(props) {
               ) : (
                 <Tooltip title="Add to contacts">
                   <IconButton
-                    fullWidth
                     variant="contained"
                     size="small"
                     onClick={handleRequest}
