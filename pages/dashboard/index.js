@@ -23,6 +23,8 @@ import SearchBarReports from "@/components/searchBars/SearchBarReports";
 
 import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
 import DynamicFeedOutlinedIcon from "@mui/icons-material/DynamicFeedOutlined";
+import AssignmentIndOutlinedIcon from "@mui/icons-material/AssignmentIndOutlined";
+import ReportOverview from "@/components/reports/ReportManagement/ReportOverview";
 
 function DashboardMain({ user, mutate }) {
   const router = useRouter();
@@ -61,6 +63,24 @@ function DashboardMain({ user, mutate }) {
       )}
       <Grid container spacing={2} sx={{ mt: 3 }}>
         <Grid item xs={12} sm={12} md={6}>
+          <Box
+            sx={{
+              padding: "3% 5%",
+            }}
+          >
+            <Stack
+              direction="row"
+              sx={{ mt: 2 }}
+              spacing={2}
+              alignItems="center"
+            >
+              <AssignmentIndOutlinedIcon />
+              <Typography variant="h6">Report overview</Typography>
+            </Stack>
+            <Box sx={{ my: 4 }}>
+              <ReportOverview username={user.username} />
+            </Box>
+          </Box>
           <Box
             sx={{
               padding: "3% 5%",
