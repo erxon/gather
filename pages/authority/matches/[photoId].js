@@ -171,7 +171,7 @@ function DisplayReportDetails({ photoUploadedId, reportId, score }) {
             {data.photo ? (
               <ReportPhoto publicId={data.photo} />
             ) : (
-              <Image src="/assets/placeholder.png" width={150} height={150} />
+              <Image alt="placeholder" src="/assets/placeholder.png" width={150} height={150} />
             )}
           </CardMedia>
           <Box sx={{ display: "flex", flexDirection: "column" }}>

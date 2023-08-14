@@ -11,7 +11,7 @@ function RenderMatches() {
         <Grid item xs={12} md={4}>
           <Paper sx={{ p: 3 }} variant="outlined">
             <Typography sx={{ mb: 1.5 }}>Photo</Typography>
-            <Image width="150" height="150" src="/assets/placeholder.png" />
+            <Image alt="placeholder" width="150" height="150" src="/assets/placeholder.png" />
           </Paper>
         </Grid>
         <Grid item xs={12} md={8}>

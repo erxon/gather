@@ -111,7 +111,7 @@ export default function ReportDashboard() {
     if (!user && !loading) {
       router.push("/login");
     }
-  }, [user, loading]);
+  }, [user, loading, router]);
 
   if (loading) return <CircularProgress />;
   if (user)

@@ -105,7 +105,7 @@ export default function Page() {
         user.isEmailVerified && user.isContactNumberVerified ? 3 : 0
       );
     }
-  }, [user, loading]);
+  }, [user, loading, router]);
 
   if (loading) return <CircularProgress />;
 

@@ -47,7 +47,7 @@ function Report(props) {
         {photo ? (
           <AdvancedImage cldImg={image} />
         ) : (
-          <Image width={150} height={150} src="/assets/placeholder.png" />
+          <Image alt="placeholder" width={150} height={150} src="/assets/placeholder.png" />
         )}
       </CardMedia>
       <Box sx={{ display: "flex", flexDirection: "column", pl: 1 }}>

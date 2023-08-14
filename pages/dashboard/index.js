@@ -145,7 +145,7 @@ export default function Dashboard() {
     if (!user && !loading) {
       router.push("/login");
     }
-  }, [user, loading]);
+  }, [user, loading, router]);
 
   if (loading) return <CircularProgress />;
   if (user) return <DashboardMain mutate={mutate} user={user} />;

@@ -11,7 +11,7 @@ export default function CheckUser({ children }) {
     if(!user && !loading){
         router.push('/login')
     }
-  }, [user, loading])
+  }, [user, loading, router])
 
   if (loading) return <CircularProgress />;
 

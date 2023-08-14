@@ -11,7 +11,7 @@ export default function UserStatus({ children }) {
     if (!loading && !user) {
       router.push("/login");
     }
-  }, [user, loading]);
+  }, [user, loading, router]);
 
   if (loading) return <CircularProgress />;
   //if user is unverified return a text: You should be a verified user to access this section.

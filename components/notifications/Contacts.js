@@ -23,7 +23,7 @@ function Notification({
   userId,
 }) {
   const [isAccepted, setAccepted] = useState(false);
-  const router = useRouter()
+  const router = useRouter();
 
   const handleAccept = async () => {
     removeNotification(notificationID);
@@ -37,7 +37,6 @@ function Notification({
         message: "Your contact request has been accepted.",
         sendTo: notification.body.from,
       }),
-      
     });
     // Add the user to contact
     await fetch("/api/contacts", {
@@ -55,7 +54,7 @@ function Notification({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: notificationID }),
       });
-      router.reload()
+      router.reload();
     }
   };
 
@@ -140,7 +139,7 @@ function GetNotifications({ userId, notificationsFromDB }) {
       channelSubscribe.unbind;
       pusherJS.unsubscribe(`contact-${userId}`);
     };
-  }, []);
+  }, [notifications, userId]);
 
   console.log(notifications);
   return (

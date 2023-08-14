@@ -205,36 +205,28 @@ function Content({ user }) {
           {user.username !== "" ? (
             <Typography>{user.username}</Typography>
           ) : (
-            <Typography color="GrayText">
-              No username
-            </Typography>
+            <Typography color="GrayText">No username</Typography>
           )}
         </ContentLayout>
         <ContentLayout title="First name">
           {user.firstName !== "" ? (
             <Typography>{user.firstName}</Typography>
           ) : (
-            <Typography color="GrayText">
-              No first name
-            </Typography>
+            <Typography color="GrayText">No first name</Typography>
           )}
         </ContentLayout>
         <ContentLayout title="Last name">
           {user.lastName !== "" ? (
             <Typography>{user.lastName}</Typography>
           ) : (
-            <Typography color="GrayText">
-              No last name
-            </Typography>
+            <Typography color="GrayText">No last name</Typography>
           )}
         </ContentLayout>
         <ContentLayout title="Email">
           {user.mail !== "" ? (
             <Typography>{user.email}</Typography>
           ) : (
-            <Typography color="GrayText">
-              No Email
-            </Typography>
+            <Typography color="GrayText">No Email</Typography>
           )}
         </ContentLayout>
         <ContentLayout title="Contact number">
@@ -379,7 +371,7 @@ export default function Page({ data }) {
     if (data.status === "verified") {
       router.push(`/profile/${data._id}`);
     }
-  }, []);
+  }, [router, data._id, data.status]);
 
   if (data.status === "unverified") {
     return <Main data={data} />;

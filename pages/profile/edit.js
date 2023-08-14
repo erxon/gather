@@ -85,7 +85,7 @@ export default function ProfileEdit() {
     if (user) {
       setUserObj({ ...user });
     }
-  }, [user, loading]);
+  }, [user, loading, router]);
 
   if (loading) return <CircularProgress />;
 

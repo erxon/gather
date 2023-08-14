@@ -14,7 +14,7 @@ import {
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 
-function HorizontalLinearStepper({activeStep, setActiveStep}) {
+function HorizontalLinearStepper({ activeStep, setActiveStep }) {
   const router = useRouter();
   const steps = [
     "Basic information",
@@ -91,7 +91,7 @@ export default function Layout({ children }) {
     } else if (user && user.status === "verified") {
       router.push("/dashboard");
     }
-  }, [user, loading]);
+  }, [user, loading, router]);
 
   if (user) {
     return (
@@ -100,7 +100,10 @@ export default function Layout({ children }) {
           <Paper variant="outlined" sx={{ p: 3 }}>
             <Typography variant="h6">Complete your profile</Typography>
             <Box sx={{ mt: 2 }}>
-              <HorizontalLinearStepper activeStep={activeStep} setActiveStep={setActiveStep} />
+              <HorizontalLinearStepper
+                activeStep={activeStep}
+                setActiveStep={setActiveStep}
+              />
             </Box>
             <Divider sx={{ my: 3 }} />
             {children}

@@ -22,7 +22,13 @@ export default function DisplayReferencePhotos({ images }) {
     <Box>
       <Stack direction="row" spacing={1}>
         {images.map((image) => {
-          return <Image key={image._id} image={image} />;
+          return (
+            <Image
+              alt="Reference images of the missing person"
+              key={image._id}
+              image={image}
+            />
+          );
         })}
       </Stack>
     </Box>

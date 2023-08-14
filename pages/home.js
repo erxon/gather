@@ -387,7 +387,7 @@ function Report({ reportId, photo, name, lastSeen, gender, age }) {
       {photo ? (
         <ReportPhoto publicId={photo} />
       ) : (
-        <Image width={100} height={100} src="/assets/placeholder.png" />
+        <Image alt="placeholder" width={100} height={100} src="/assets/placeholder.png" />
       )}
       <Box>
         <CardContent sx={{ textAlign: "center" }}>

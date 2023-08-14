@@ -80,7 +80,7 @@ function Notifications(props) {
       pusherJS.unsubscribe(props.channel1);
       pusherJS.unsubscribe(props.channel2);
     };
-  }, [notifications]);
+  }, [notifications, props.channel1, props.channel2]);
 
   const handleDelete = async (id) => {
     setNotifications(
@@ -153,15 +153,9 @@ function Notification(props) {
       <Box sx={{ my: 2 }}>
         <Card>
           <CardHeader
-            avatar={
-              <Avatar>
-                {props.name.charAt(0)}
-              </Avatar>
-            }
+            avatar={<Avatar>{props.name.charAt(0)}</Avatar>}
             title={props.title}
-            subheader={`${
-              props.name
-            } ${elapsedTime}`}
+            subheader={`${props.name} ${elapsedTime}`}
           />
 
           {props.photo ? (

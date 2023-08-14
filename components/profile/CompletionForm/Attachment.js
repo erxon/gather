@@ -99,7 +99,13 @@ export default function Attachment({ validPhoto, setAccomplished }) {
             <ValidPhoto publicId={validPhoto} />
           )
         ) : (
-          <Image src={image.fileName} width={300} height={150} style={{objectFit: "cover"}} />
+          <Image
+            src={image.fileName}
+            alt="Placeholder"
+            width={300}
+            height={150}
+            style={{ objectFit: "cover" }}
+          />
         )}
         <Box sx={{ mt: 1 }}>
           <form onSubmit={handleSubmit}>

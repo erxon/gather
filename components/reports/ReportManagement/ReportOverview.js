@@ -40,7 +40,12 @@ function Report({ report }) {
             {report.photo ? (
               <ReportPhotoSmall publicId={report.photo} />
             ) : (
-              <Image src="/assets/placeholder.png" width={150} height={150} />
+              <Image
+                alt="placeholder"
+                src="/assets/placeholder.png"
+                width={150}
+                height={150}
+              />
             )}
           </CardMedia>
           <CardContent
@@ -126,7 +131,7 @@ export default function ReportOverview({ username }) {
   return (
     <Box>
       {data.data.map((report) => {
-        return <Report report={report} />;
+        return <Report report={report} key={report._id} />;
       })}
     </Box>
   );
