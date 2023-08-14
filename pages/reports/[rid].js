@@ -19,15 +19,20 @@ import {
   CircularProgress,
   Card,
   CardContent,
-  CardMedia,
   IconButton,
+  CardActions,
 } from "@mui/material";
 import { getSingleReport, deleteReport } from "@/lib/api-lib/api-reports";
+import SectionHeader from "@/utils/SectionHeader";
 import useSWR from "swr";
 
 //Share Buttons
 import FacebookButton from "@/components/socialMediaButtons/FacebookButton";
 
+import GroupOutlinedIcon from "@mui/icons-material/GroupOutlined";
+import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
+import NotesOutlinedIcon from "@mui/icons-material/NotesOutlined";
+import PublicOutlinedIcon from "@mui/icons-material/PublicOutlined";
 import EditIcon from "@mui/icons-material/Edit";
 import PersonIcon from "@mui/icons-material/Person";
 import PlaceIcon from "@mui/icons-material/Place";
@@ -36,12 +41,13 @@ import FacebookIcon from "@mui/icons-material/Facebook";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import Image from "next/image";
 import calculateTimeElapsed from "@/utils/calculateTimeElapsed";
-import ReportPhotoLarge from "@/components/photo/ReportPhotoLarge";
-import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import { useRouter } from "next/router";
 
+import ProfilePhotoAvatar from "@/components/photo/ProfilePhotoAvatar";
+import ReportPhotoSmall from "@/components/photo/ReportPhotoSmall";
+import TabLayout from "@/components/reports/TabLayout";
+
 function ReferencePhotos({ reportId }) {
-  
   const { data, error, isLoading } = useSWR(
     `/api/photos/report/${reportId}`,
     fetcher
@@ -55,7 +61,7 @@ function ReferencePhotos({ reportId }) {
       {data ? (
         data.images.map((image) => {
           return (
-            <ReportPhoto
+            <ReportPhotoSmall
               key={image._id}
               publicId={`report-photos/${image.publicId}`}
             />
@@ -68,6 +74,134 @@ function ReferencePhotos({ reportId }) {
         </Typography>
       )}
     </Box>
+  );
+}
+
+function Reporter({ account }) {
+  const router = useRouter();
+  const { data, error, isLoading } = useSWR(`/api/user/${account}`, fetcher);
+
+  if (error)
+    return <Typography>Something went wrong fetching the user.</Typography>;
+  if (isLoading) return <CircularProgress />;
+
+  return (
+    <div>
+      <Card sx={{ display: "flex", alignItems: "flex-start", p: 1 }}>
+        <CardActions>
+          <IconButton
+            onClick={() => {
+              router.push(`/profile/${account}`);
+            }}
+          >
+            <ProfilePhotoAvatar publicId={data.user.photo} />
+          </IconButton>
+        </CardActions>
+        <CardContent>
+          <Typography sx={{ fontWeight: "bold" }}>
+            {data.user.firstName} {data.user.lastName}
+          </Typography>
+          <Chip size="small" label={data.user.type} />
+          <Typography sx={{ mt: 1 }} variant="body2">
+            {data.user.username}
+          </Typography>
+          <Typography variant="body2">{data.user.email}</Typography>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function SocialMediaShareButtons({ firstName, id }) {
+  return (
+    <Paper sx={{ p: 3, mb: 1 }}>
+      <SectionHeader icon={<PublicOutlinedIcon />} title="Share" />
+      <Box sx={{ mt: 2 }}>
+        <FacebookButton
+          name={firstName}
+          url={`https://gather-plum.vercel.app/reports/${id}`}
+        />
+      </Box>
+    </Paper>
+  );
+}
+
+function ReportDetails({ details }) {
+  return (
+    <Paper sx={{ p: 3, mb: 1 }}>
+      <SectionHeader icon={<NotesOutlinedIcon />} title="Details" />
+      <Typography variant="body1" sx={{ my: 2 }}>
+        {details}
+      </Typography>
+      <Button size="small">View all</Button>
+    </Paper>
+  );
+}
+
+function Features({ features, username, user }) {
+  return (
+    <Paper sx={{ p: 3, mb: 1 }}>
+      <SectionHeader
+        icon={<FormatListBulletedOutlinedIcon />}
+        title="Features"
+      />
+      {features && features.length > 0 ? (
+        features.map((feature) => {
+          return <Typography key={feature}>{feature}</Typography>;
+        })
+      ) : (
+        <Typography sx={{ my: 2 }} color="GrayText">
+          {user && user.username === username
+            ? "Edit this report to add features"
+            : "No features added yet"}
+        </Typography>
+      )}
+    </Paper>
+  );
+}
+
+function SocialMediaAccounts({ socialMediaAccounts, username, user }) {
+  return (
+    <Paper sx={{ p: 3 }}>
+      <SectionHeader
+        icon={<GroupOutlinedIcon />}
+        title="Social Media Accounts"
+      />
+      {socialMediaAccounts ? (
+        <Box sx={{ my: 2 }}>
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <FacebookIcon />
+            {socialMediaAccounts.facebook != "" ? (
+              <Typography>{socialMediaAccounts.facebook}</Typography>
+            ) : (
+              <Typography color="GrayText">
+                {user && user.username === username
+                  ? "Link a Facebook account"
+                  : "No Facebook account linked"}
+              </Typography>
+            )}
+          </Stack>
+          <Stack sx={{ mt: 1 }} direction="row" alignItems="center" spacing={1}>
+            <TwitterIcon />
+            {socialMediaAccounts.twitter != "" ? (
+              <Typography>{socialMediaAccounts.twitter}</Typography>
+            ) : (
+              <Typography color="GrayText">
+                {user && user.username === username
+                  ? "Link a twitter account"
+                  : "No twitter account linked"}
+              </Typography>
+            )}
+          </Stack>
+        </Box>
+      ) : (
+        <Typography color="GrayText">
+          {user && user.username === username
+            ? "Edit this report to add social media accounts"
+            : "No social media accounts to show"}
+        </Typography>
+      )}
+    </Paper>
   );
 }
 
@@ -87,6 +221,7 @@ export default function ReportPage({ data }) {
       }
     }
   }, [user, data.username, loading]);
+
   if (loading) return <CircularProgress />;
 
   //Delete report
@@ -102,245 +237,171 @@ export default function ReportPage({ data }) {
 
   return (
     <>
-      <Box>
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="subtitle2"> Reported by </Typography>{" "}
-          {data.reporter && (
-            <Box>
-              <Typography variant="body2">
-                {data.reporter.firstName} {data.reporter.lastName}
-              </Typography>
-              <Typography variant="body2">
-                {data.reporter.contactNumber}
-              </Typography>
-              <Typography variant="body2">{data.reporter.email}</Typography>
-            </Box>
+      <TabLayout>
+        <Box>
+          {authorized && (
+            <Button
+              variant="outlined"
+              startIcon={<EditIcon />}
+              onClick={() => {
+                router.push(`/reports/edit/${data._id}`);
+              }}
+              size="small"
+            >
+              Edit
+            </Button>
           )}
-          {Object.hasOwn(data, "username") && (
-            <Box sx={{ mt: 0.5 }}>
-              <Stack direction="row" spacing={0.5} alignItems="center">
-                <IconButton color="primary" onClick={() => {
-                  router.push(`/profile/${data.account}`)
-                }}>
-                  <AccountCircleOutlinedIcon />
-                </IconButton>
-                <Typography color="primary" sx={{ fontWeight: "bold" }} variant="body1">
-                  {data.username}
-                </Typography>
-              </Stack>
-            </Box>
-          )}
-        </Box>
-        {authorized && (
-          <Button
-            sx={{ mb: 2 }}
-            variant="outlined"
-            startIcon={<EditIcon />}
-            href={`/reports/edit/${data._id}`}
-            size="small"
-          >
-            Edit
-          </Button>
-        )}
-        <Card
-          sx={{
-            display: "flex",
-            flexDirection: { xs: "column", md: "row" },
-            width: { xs: 400, md: "auto" },
-            height: { xs: "auto", md: 500 },
-          }}
-        >
-          <CardMedia sx={{ textAlign: "center" }}>
-            {data.photo ? (
-              <ReportPhotoLarge publicId={data.photo} />
-            ) : (
-              <Image
-                width={400}
-                height={500}
-                style={{ objectFit: "cover" }}
-                alt="placeholder"
-                src="/assets/placeholder.png"
-              />
-            )}
-          </CardMedia>
-          <CardContent sx={{ p: 5 }}>
-            <Box sx={{ mb: 2 }}>
-              <Stack direction="row" spacing={0.75} alignItems="center">
-                <Typography variant="h4" sx={{ mb: 0.5 }}>
-                  {data.firstName && data.lastName.length
-                    ? `${data.firstName} ${data.lastName}`
-                    : "Unknown"}
-                </Typography>
-                <Chip label={data.status} size="small" color="primary" />
-              </Stack>
-              {data.status === "active" && (
-                <Typography variant="subtitle2" component="label">
-                  This is an active report, and already verified by authorities
-                </Typography>
-              )}
-            </Box>
-            {data.status === "pending" && (
-              <Typography color="GrayText">
-                This case is not yet verified
-              </Typography>
-            )}
-            <Typography variant="body1" sx={{ mt: 2 }}>
-              Its been <span style={{ fontWeight: "bold" }}>{timeElapsed}</span>{" "}
-              since{" "}
-              <span style={{ fontWeight: "bold" }}>{data.firstName} </span>
-              reportedly missing{" "}
-            </Typography>
-            <Typography variant="body1" sx={{ mt: 2 }}>
-              Reportedly missing on:{" "}
-              <span style={{ fontWeight: "bold" }}>
-                {" "}
-                {reportedAt.toDateString()} {reportedAt.toLocaleTimeString()}
-              </span>
-            </Typography>
-            <Box sx={{ mt: 2 }}>
-              <Stack
-                sx={{ mb: 0.75 }}
-                direction="row"
-                alignItems="center"
-                spacing={1}
-              >
-                <PersonIcon />
-                {data.age && data.gender ? (
-                  <Typography variant="body1">
-                    {data.age} years old, {data.gender}
-                  </Typography>
-                ) : (
-                  <Typography variant="body1" color="GrayText">
-                    Unknown age and gender.
-                  </Typography>
-                )}
-              </Stack>
-              <Stack
-                sx={{ mb: 0.75 }}
-                direction="row"
-                alignItems="center"
-                spacing={1}
-              >
-                <PlaceIcon />
-                {data.reporter ? (
-                  <Typography variant="body1">
-                    {data.reporter.location}
-                  </Typography>
-                ) : (
-                  <Typography variant="body1">{data.lastSeen}</Typography>
-                )}
-              </Stack>
-              <Stack direction="row" alignItems="center" spacing={1}>
-                <EmailIcon />
-                {data.email ? (
-                  <Typography variant="body1">{data.email} </Typography>
-                ) : (
-                  <Typography color="GrayText" variant="body1">
-                    {user && user.username === data.username
-                      ? "Edit this report to add an email"
-                      : "No email to show"}
-                  </Typography>
-                )}
-              </Stack>
-            </Box>
-            <Box sx={{ mt: 2 }}>
-              <ReferencePhotos reportId={data._id} />
-            </Box>
-          </CardContent>
-        </Card>
-        <Grid container sx={{ mt: 1 }} spacing={2}>
-          {/*Basic Information */}
-          <Grid item xs={12} md={8}>
-            <Box>
-              {/*Features, Email, Social Media Accounts */}
 
-              <Paper sx={{ p: 3, mb: 1 }}>
-                <Typography variant="h6">Details</Typography>
-                <Typography variant="body1" sx={{ mt: 2 }}>
-                  {data.details}
-                </Typography>
-              </Paper>
-              <Paper sx={{ p: 3, mb: 1 }}>
-                <Typography variant="h6">Features</Typography>
-                {data.features && data.features.length > 0 ? (
-                  data.features.map((feature) => {
-                    return <Typography key={feature}>{feature}</Typography>;
-                  })
-                ) : (
-                  <Typography color="GrayText">
-                    {user && user.username === data.username
-                      ? "Edit this report to add features"
-                      : "No features added yet"}
-                  </Typography>
-                )}
-              </Paper>
-              <Paper sx={{ p: 3 }}>
-                <Typography sx={{ mb: 2 }} variant="h6">
-                  Social Media Accounts
-                </Typography>
-                {data.socialMediaAccounts ? (
-                  <Box>
-                    <Stack direction="row" alignItems="center" spacing={1}>
-                      <FacebookIcon />
-                      {data.socialMediaAccounts.facebook != "" ? (
-                        <Typography>
-                          {data.socialMediaAccounts.facebook}
-                        </Typography>
+          <Grid container sx={{ mt: 1 }} spacing={2}>
+            {/*Basic Information */}
+            <Grid item xs={12} md={8}>
+              <Paper sx={{ p: 2 }}>
+                <Box sx={{ p: 3 }}>
+                  <Stack direction="row" spacing={3}>
+                    <Box>
+                      {data.photo ? (
+                        <ReportPhoto publicId={data.photo} />
                       ) : (
-                        <Typography color="GrayText">
-                          {user && user.username === data.username
-                            ? "Link a Facebook account"
-                            : "No Facebook account linked"}
+                        <Image
+                          width={150}
+                          height={150}
+                          style={{ objectFit: "cover" }}
+                          alt="placeholder"
+                          src="/assets/placeholder.png"
+                        />
+                      )}
+                    </Box>
+                    <Box sx={{ mb: 2 }}>
+                      <Stack direction="row" spacing={0.75} alignItems="center">
+                        <Typography variant="h4" sx={{ mb: 0.5 }}>
+                          {data.firstName && data.lastName.length
+                            ? `${data.firstName} ${data.lastName}`
+                            : "Unknown"}
+                        </Typography>
+                        <Chip
+                          label={data.status}
+                          size="small"
+                          color="primary"
+                        />
+                      </Stack>
+                      {data.status === "active" && (
+                        <Typography variant="subtitle2" component="label">
+                          This is an active report, and already verified by
+                          authorities
                         </Typography>
                       )}
-                    </Stack>
-                    <Stack
-                      sx={{ mt: 1 }}
-                      direction="row"
-                      alignItems="center"
-                      spacing={1}
-                    >
-                      <TwitterIcon />
-                      {data.socialMediaAccounts.twitter != "" ? (
-                        <Typography>
-                          {data.socialMediaAccounts.twitter}
-                        </Typography>
-                      ) : (
+                      {data.status === "pending" && (
                         <Typography color="GrayText">
-                          {user && user.username === data.username
-                            ? "Link a twitter account"
-                            : "No twitter account linked"}
+                          This case is not yet verified
                         </Typography>
                       )}
-                    </Stack>
+                      <Typography variant="body1" sx={{ mt: 2 }}>
+                        Its been{" "}
+                        <span style={{ fontWeight: "bold" }}>
+                          {timeElapsed}
+                        </span>{" "}
+                        since{" "}
+                        <span style={{ fontWeight: "bold" }}>
+                          {data.firstName}{" "}
+                        </span>
+                        reportedly missing{" "}
+                      </Typography>
+                      <Typography variant="body1" sx={{ mt: 2 }}>
+                        Reportedly missing on:{" "}
+                        <span style={{ fontWeight: "bold" }}>
+                          {" "}
+                          {reportedAt.toDateString()}{" "}
+                          {reportedAt.toLocaleTimeString()}
+                        </span>
+                      </Typography>
+                      <Box sx={{ mt: 2 }}>
+                        <Stack
+                          sx={{ mb: 0.75 }}
+                          direction="row"
+                          alignItems="center"
+                          spacing={1}
+                        >
+                          <PersonIcon />
+                          {data.age && data.gender ? (
+                            <Typography variant="body1">
+                              {data.age} years old, {data.gender}
+                            </Typography>
+                          ) : (
+                            <Typography variant="body1" color="GrayText">
+                              Unknown age and gender.
+                            </Typography>
+                          )}
+                        </Stack>
+                        <Stack
+                          sx={{ mb: 0.75 }}
+                          direction="row"
+                          alignItems="center"
+                          spacing={1}
+                        >
+                          <PlaceIcon />
+                          {data.reporter ? (
+                            <Typography variant="body1">
+                              {data.reporter.location}
+                            </Typography>
+                          ) : (
+                            <Typography variant="body1">
+                              {data.lastSeen}
+                            </Typography>
+                          )}
+                        </Stack>
+                        <Stack direction="row" alignItems="center" spacing={1}>
+                          <EmailIcon />
+                          {data.email ? (
+                            <Typography variant="body1">
+                              {data.email}{" "}
+                            </Typography>
+                          ) : (
+                            <Typography color="GrayText" variant="body1">
+                              {user && user.username === data.username
+                                ? "Edit this report to add an email"
+                                : "No email to show"}
+                            </Typography>
+                          )}
+                        </Stack>
+                      </Box>
+                    </Box>
+                  </Stack>
+                  <Box sx={{ mt: 2 }}>
+                    <ReferencePhotos reportId={data._id} />
                   </Box>
-                ) : (
-                  <Typography color="GrayText">
-                    {user && user.username === data.username
-                      ? "Edit this report to add social media accounts"
-                      : "No social media accounts to show"}
-                  </Typography>
-                )}
+                </Box>
               </Paper>
-            </Box>
-          </Grid>
-          <Grid item xs={12} md={4}>
-            {data.status === "active" && authorized && (
-              <Paper sx={{ p: 3 }}>
-                <Typography sx={{ mb: 2 }} variant="h6">
-                  Share
-                </Typography>
-                <Stack spacing={2}>
-                  <FacebookButton
-                    name={data.firstName}
-                    url={`https://gather-plum.vercel.app/reports/${data._id}`}
+            </Grid>
+            <Grid item xs={12} md={4}>
+              {/*Reporter information */}
+              <Reporter account={data.account} />
+              <Box sx={{ mt: 4 }}>
+                {/***********Social Media Share Buttons***********/}
+                {data.status === "active" && authorized && (
+                  <SocialMediaShareButtons
+                    firstName={data.firstName}
+                    id={data.id}
                   />
-                </Stack>
-              </Paper>
-            )}
+                )}
+                {/***********Report Details***********/}
+                <ReportDetails details={data.details} />
+                {/***********Features***********/}
+                <Features
+                  features={data.features}
+                  username={data.username}
+                  user={user}
+                />
+                {/***********Social Media Accounts***********/}
+                <SocialMediaAccounts
+                  socialMediaAccounts={data.socialMediaAccounts}
+                  username={data.username}
+                  user={user}
+                />
+              </Box>
+            </Grid>
           </Grid>
-        </Grid>
-      </Box>
+        </Box>
+      </TabLayout>
     </>
   );
 }

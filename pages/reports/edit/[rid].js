@@ -14,6 +14,8 @@ import {
   Snackbar,
   CircularProgress,
   Grid,
+  Breadcrumbs,
+  Link,
 } from "@mui/material";
 
 import FacebookIcon from "@mui/icons-material/Facebook";
@@ -35,6 +37,7 @@ import Image from "next/image";
 import UploadReferencePhotos from "@/components/myreports/UploadReferencePhotos";
 import ReferencePhotos from "@/components/myreports/ReferencePhotos";
 import { useRouter } from "next/router";
+import StackRowLayout from "@/utils/StackRowLayout";
 
 export default function EditReport({ data }) {
   const [user, { loading }] = useUser();
@@ -101,7 +104,7 @@ export default function EditReport({ data }) {
       body: JSON.stringify({ id: data._id, status: status }),
     });
     if (result.status === 200) {
-      data.status = status
+      data.status = status;
       setSnackbarValues({ open: true, message: "Status updated" });
     }
   };
@@ -216,7 +219,15 @@ export default function EditReport({ data }) {
           action={actions}
         />
         <form onSubmit={handleFormSubmit}>
-          <Typography variant="h5">Report</Typography>
+          <Breadcrumbs>
+            <Link underline="hover" color="inherit" href={`/reports/${data._id}`}>
+              My report
+            </Link>
+            <Typography color="text.primary">
+              Edit Report
+            </Typography>
+          </Breadcrumbs>
+
           <Box sx={{ my: 2 }}>
             <Typography variant="body2">
               Reported missing on <strong>{reportedDateAndTime}</strong>
