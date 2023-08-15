@@ -237,7 +237,7 @@ export default function ReportPage({ data }) {
 
   return (
     <>
-      <TabLayout>
+      <TabLayout reportId={data._id} index={0}>
         <Box>
           {authorized && (
             <Button
