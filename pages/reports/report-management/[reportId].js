@@ -26,7 +26,7 @@ export default function Page() {
         <Grid item xs={12} md={4}>
           <DateAndTimeReported reportedAt={data.reportedAt} />
           <Calendar />
-          <Tasks />
+          <Tasks reportId={reportId}/>
         </Grid>
         <Grid item xs={12} md={8}>
           <Updates />

@@ -1,5 +1,18 @@
 import mongoose from "mongoose";
 
+const taskSchema = mongoose.Schema({
+  name: String,
+  done: Boolean,
+  createdAt: Date,
+});
+
+const updateSchema = mongoose.Schema({
+  createdAt: Date,
+  text: String,
+  image: String,
+  video: String,
+});
+
 const reportSchema = mongoose.Schema({
   reporter: { type: mongoose.Schema.Types.ObjectId, ref: "Reporter" },
   status: String,
@@ -38,6 +51,8 @@ const reportSchema = mongoose.Schema({
     facebook: String,
     twitter: String,
   },
+  tasks: [taskSchema],
+  updates: [updateSchema],
 });
 
 const Report = mongoose.models.Report || mongoose.model("Report", reportSchema);

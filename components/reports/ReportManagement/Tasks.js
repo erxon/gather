@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   Checkbox,
+  CircularProgress,
   IconButton,
   Paper,
   Stack,
@@ -11,9 +12,11 @@ import {
 } from "@mui/material";
 import ChecklistIcon from "@mui/icons-material/Checklist";
 import { useState } from "react";
+import useSWR from "swr";
 
 import AddIcon from "@mui/icons-material/Add";
 import { ampmTimeFormat } from "@/utils/helpers/ampmTimeFormat";
+import { fetcher } from "@/lib/hooks";
 
 function Task({ name, done }) {
   const [checked, isChecked] = useState(done);
@@ -71,7 +74,7 @@ function CreateTask({ setTasks }) {
   );
 }
 
-export default function Tasks() {
+export default function Tasks({ reportId }) {
   const [date, setDate] = useState(new Date());
   const time = ampmTimeFormat(date);
   const [task, setTask] = useState({
@@ -93,7 +96,15 @@ export default function Tasks() {
       },
     ],
   });
+  const { data, error, isLoading } = useSWR(
+    `/api/reports/management/tasks/${reportId}`,
+    fetcher
+  );
 
+  if (error)
+    return <Typography>Something went wrong fetching tasks</Typography>;
+  if (isLoading) return <CircularProgress />;
+  console.log(data);
   return (
     <Paper sx={{ mt: 1, p: 3 }}>
       <SectionHeader icon={<ChecklistIcon />} title="Tasks" />

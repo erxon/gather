@@ -44,7 +44,7 @@ function Update({ content, currentUserId }) {
   if (isLoading) return <CircularProgress />;
 
   return (
-    <Box sx={{mb: 1}}>
+    <Box sx={{ mb: 1 }}>
       <Card variant="outlined">
         <CardHeader
           avatar={
@@ -53,7 +53,7 @@ function Update({ content, currentUserId }) {
             </Avatar>
           }
           title={`${data.user.firstName} ${data.user.lastName}`}
-          subheader="September 14, 2016"
+          subheader={`${data.user.username}`}
         />
         <CardContent>
           <Typography variant="body2" color="text.secondary">
@@ -75,7 +75,7 @@ function Update({ content, currentUserId }) {
 function DisplayUpdates({ updates, currentUserId }) {
   return (
     <Box>
-      {updates.map((update) => {
+      {updates.reverse().map((update) => {
         return <Update content={update} currentUserId={currentUserId} />;
       })}
     </Box>
@@ -95,7 +95,7 @@ function AddUpdateForm({ user, show, isToShow, updates, setUpdates }) {
   };
 
   const handleUpdatePost = () => {
-    setUpdates([...updates, update]);
+    setUpdates([update, ...updates]);
   };
 
   return (
@@ -192,15 +192,6 @@ export default function Updates() {
       <Typography sx={{ mt: 1 }}>
         {date.toDateString()} {time}
       </Typography>
-      <Box sx={{ mt: 2, mb: 4 }}>
-        {updates.length > 0 ? (
-          <DisplayUpdates updates={updates} currentUserId={user._id} />
-        ) : (
-          <Typography color="GrayText" variant="body2">
-            There were no updates yet
-          </Typography>
-        )}
-      </Box>
       <AddUpdateForm
         user={user}
         updates={updates}
@@ -210,6 +201,15 @@ export default function Updates() {
       />
       <Box sx={{ mt: 2 }}>
         <AddUpdateButton setShowUpdateForm={setShowUpdateForm} />
+      </Box>
+      <Box sx={{ mt: 2, mb: 4 }}>
+        {updates.length > 0 ? (
+          <DisplayUpdates updates={updates} currentUserId={user._id} />
+        ) : (
+          <Typography color="GrayText" variant="body2">
+            There were no updates yet
+          </Typography>
+        )}
       </Box>
     </Paper>
   );
