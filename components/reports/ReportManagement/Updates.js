@@ -33,15 +33,33 @@ import ProfilePhoto from "@/components/photo/ProfilePhoto";
 import StackRowLayout from "@/utils/StackRowLayout";
 import { fetcher, useUser } from "@/lib/hooks";
 
-function Update({ content, currentUserId }) {
+function Update({ content, currentUserId, setUpdates }) {
   const { data, error, isLoading } = useSWR(
-    `/api/user/${content.userId}`,
+    `/api/user/${content.user}`,
     fetcher
   );
+  const [buttonState, setButtonState] = useState("");
 
   if (error)
     return <Typography>Something went wrong fetching the user.</Typography>;
   if (isLoading) return <CircularProgress />;
+
+  // const chosenDate = new Date('2023-08-23')
+  // const updateCreated = new Date(content.createdAt)
+  // const isEqual = chosenDate.toDateString() === updateCreated.toDateString()
+  // console.log(isEqual)
+
+  const handleDelete = async (id) => {
+    setButtonState("loading");
+    const response = await fetch(`/api/reports/management/updates/${id}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+    });
+    console.log(response);
+
+    setUpdates();
+    setButtonState("");
+  };
 
   return (
     <Box sx={{ mb: 1 }}>
@@ -61,43 +79,76 @@ function Update({ content, currentUserId }) {
           </Typography>
         </CardContent>
         <CardActions>
-          {data.user._id === currentUserId && (
-            <IconButton>
-              <DeleteIcon />
-            </IconButton>
-          )}
+          {data.user._id === currentUserId &&
+            (buttonState === "loading" ? (
+              <CircularProgress />
+            ) : (
+              <IconButton
+                onClick={() => {
+                  handleDelete(content._id);
+                }}
+              >
+                <DeleteIcon />
+              </IconButton>
+            ))}
         </CardActions>
       </Card>
     </Box>
   );
 }
 
-function DisplayUpdates({ updates, currentUserId }) {
+function DisplayUpdates({ updates, currentUserId, setUpdates }) {
   return (
     <Box>
       {updates.reverse().map((update) => {
-        return <Update content={update} currentUserId={currentUserId} />;
+        return (
+          <Update
+            content={update}
+            currentUserId={currentUserId}
+            setUpdates={setUpdates}
+          />
+        );
       })}
     </Box>
   );
 }
 
-function AddUpdateForm({ user, show, isToShow, updates, setUpdates }) {
+function AddUpdateForm({
+  reportId,
+  user,
+  show,
+  isToShow,
+  updates,
+  setUpdates,
+}) {
   const [update, setUpdate] = useState({
-    userId: user._id,
+    user: user._id,
     username: user.username,
+    reportId: reportId,
     text: "",
-    image: {},
-    video: {},
+    image: "",
+    video: "",
   });
+
   const handleChange = (event) => {
     setUpdate({ ...update, text: event.target.value });
   };
 
-  const handleUpdatePost = () => {
-    setUpdates([update, ...updates]);
-  };
+  const handleUpdatePost = async () => {
+    const response = await fetch("/api/reports/management/updates", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        reportId: update.reportId,
+        text: update.text,
+        image: update.image,
+        video: update.video,
+      }),
+    });
+    console.log(response);
 
+    setUpdates();
+  };
   return (
     <Collapse in={show}>
       <Paper sx={{ p: 3 }} variant="outlined">
@@ -177,14 +228,17 @@ function AddUpdateButton({ setShowUpdateForm }) {
   );
 }
 
-export default function Updates() {
-  const [user, { loading }] = useUser();
+function Main({ user, reportId }) {
+  const { data, isLoading, error, mutate } = useSWR(
+    `/api/reports/management/updates/updates-by-report/${reportId}`,
+    fetcher
+  );
   const [showUpdateForm, setShowUpdateForm] = useState(false);
-  const [updates, setUpdates] = useState([]);
   const [date, setDate] = useState(new Date());
   const time = ampmTimeFormat(date);
 
-  if (loading) return <CircularProgress />;
+  if (error) return <Typography>Something went wrong.</Typography>;
+  if (isLoading) return <CircularProgress />;
 
   return (
     <Paper sx={{ p: 3 }}>
@@ -194,8 +248,9 @@ export default function Updates() {
       </Typography>
       <AddUpdateForm
         user={user}
-        updates={updates}
-        setUpdates={setUpdates}
+        reportId={reportId}
+        updates={data}
+        setUpdates={mutate}
         show={showUpdateForm}
         isToShow={setShowUpdateForm}
       />
@@ -203,8 +258,12 @@ export default function Updates() {
         <AddUpdateButton setShowUpdateForm={setShowUpdateForm} />
       </Box>
       <Box sx={{ mt: 2, mb: 4 }}>
-        {updates.length > 0 ? (
-          <DisplayUpdates updates={updates} currentUserId={user._id} />
+        {data.length > 0 ? (
+          <DisplayUpdates
+            setUpdates={mutate}
+            updates={data}
+            currentUserId={user._id}
+          />
         ) : (
           <Typography color="GrayText" variant="body2">
             There were no updates yet
@@ -213,4 +272,12 @@ export default function Updates() {
       </Box>
     </Paper>
   );
+}
+
+export default function Updates({ reportId }) {
+  const [user, { loading }] = useUser();
+
+  if (loading) return <CircularProgress />;
+
+  return <Main user={user} reportId={reportId} />;
 }

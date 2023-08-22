@@ -1,8 +1,10 @@
 import calculateTimeElapsed from "@/utils/calculateTimeElapsed";
 import { ampmTimeFormat } from "@/utils/helpers/ampmTimeFormat";
-import { Button, Paper, Typography } from "@mui/material";
+import { Button, CircularProgress, Paper, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
+import useSWR from "swr";
 import InventoryIcon from "@mui/icons-material/Inventory";
+import { fetcher } from "@/lib/hooks";
 
 export default function DateAndTimeReported({ reportedAt }) {
   const date = new Date(reportedAt);
