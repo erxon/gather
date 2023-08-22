@@ -97,10 +97,14 @@ function Update({ content, currentUserId, setUpdates }) {
   );
 }
 
-function DisplayUpdates({ updates, currentUserId, setUpdates }) {
+function DisplayUpdates({selectedDate, updates, currentUserId, setUpdates }) {
   return (
     <Box>
-      {updates.reverse().map((update) => {
+      {updates.filter((update) => {
+        const dateCreated = new Date(update.createdAt)
+        console.log(dateCreated)
+        return dateCreated.toDateString() === selectedDate.toDateString()
+      }).reverse().map((update) => {
         return (
           <Update
             content={update}
@@ -120,6 +124,7 @@ function AddUpdateForm({
   isToShow,
   updates,
   setUpdates,
+  date
 }) {
   const [update, setUpdate] = useState({
     user: user._id,
@@ -139,6 +144,7 @@ function AddUpdateForm({
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        createdAt: date,
         reportId: update.reportId,
         text: update.text,
         image: update.image,
@@ -228,14 +234,14 @@ function AddUpdateButton({ setShowUpdateForm }) {
   );
 }
 
-function Main({ user, reportId }) {
+function Main({date, user, reportId }) {
   const { data, isLoading, error, mutate } = useSWR(
     `/api/reports/management/updates/updates-by-report/${reportId}`,
     fetcher
   );
   const [showUpdateForm, setShowUpdateForm] = useState(false);
-  const [date, setDate] = useState(new Date());
   const time = ampmTimeFormat(date);
+  
 
   if (error) return <Typography>Something went wrong.</Typography>;
   if (isLoading) return <CircularProgress />;
@@ -247,6 +253,7 @@ function Main({ user, reportId }) {
         {date.toDateString()} {time}
       </Typography>
       <AddUpdateForm
+        date={date}
         user={user}
         reportId={reportId}
         updates={data}
@@ -260,6 +267,7 @@ function Main({ user, reportId }) {
       <Box sx={{ mt: 2, mb: 4 }}>
         {data.length > 0 ? (
           <DisplayUpdates
+            selectedDate={date}
             setUpdates={mutate}
             updates={data}
             currentUserId={user._id}
@@ -274,10 +282,10 @@ function Main({ user, reportId }) {
   );
 }
 
-export default function Updates({ reportId }) {
+export default function Updates({ date, reportId }) {
   const [user, { loading }] = useUser();
 
   if (loading) return <CircularProgress />;
 
-  return <Main user={user} reportId={reportId} />;
+  return <Main user={user} date={date} reportId={reportId} />;
 }
