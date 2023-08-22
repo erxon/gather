@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 
 const updateSchema = new mongoose.Schema({
+  user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  reportId: {type: mongoose.Schema.Types.ObjectId, ref: "Report"},
   text: String,
   video: String,
   image: String,

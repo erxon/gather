@@ -2,7 +2,6 @@ import TabLayout from "@/components/reports/TabLayout";
 import { useRouter } from "next/router";
 import Calendar from "@/components/reports/ReportManagement/Calendar";
 import { CircularProgress, Grid } from "@mui/material";
-import Tasks from "@/components/reports/ReportManagement/Tasks";
 import Updates from "@/components/reports/ReportManagement/Updates";
 import useSWR from "swr";
 import { fetcher } from "@/lib/hooks";
@@ -26,7 +25,6 @@ export default function Page() {
         <Grid item xs={12} md={4}>
           <DateAndTimeReported reportedAt={data.reportedAt} />
           <Calendar />
-          <Tasks reportId={reportId}/>
         </Grid>
         <Grid item xs={12} md={8}>
           <Updates />

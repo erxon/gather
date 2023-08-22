@@ -11,7 +11,8 @@ handler.use(auth).get((req, res) => {
         res.json(data)
     }).catch(err => {
         res.json(err)
-    })
+    });
+    
 }).use((req, res, next) => {
     const user = req.user;
     user.then((data) => {

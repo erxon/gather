@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const reportSchema = mongoose.Schema({
+const reportSchema = new mongoose.Schema({
   reporter: { type: mongoose.Schema.Types.ObjectId, ref: "Reporter" },
   status: String,
   found: Boolean,
@@ -37,8 +37,7 @@ const reportSchema = mongoose.Schema({
   socialMediaAccounts: {
     facebook: String,
     twitter: String,
-  },
-  updates: { type: mongoose.Schema.Types.ObjectId, ref: "Update" },
+  }
 });
 
 const Report = mongoose.models.Report || mongoose.model("Report", reportSchema);
