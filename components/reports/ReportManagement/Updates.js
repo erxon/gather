@@ -21,7 +21,7 @@ import {
 import SectionHeader from "@/utils/SectionHeader";
 import useSWR from "swr";
 import FeedOutlinedIcon from "@mui/icons-material/FeedOutlined";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ampmTimeFormat } from "@/utils/helpers/ampmTimeFormat";
 
 import AddIcon from "@mui/icons-material/Add";
@@ -32,6 +32,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ProfilePhoto from "@/components/photo/ProfilePhoto";
 import StackRowLayout from "@/utils/StackRowLayout";
 import { fetcher, useUser } from "@/lib/hooks";
+import { useRouter } from "next/router";
+import Image from "next/image";
 
 function Update({ content, currentUserId, setUpdates }) {
   const { data, error, isLoading } = useSWR(
@@ -97,22 +99,25 @@ function Update({ content, currentUserId, setUpdates }) {
   );
 }
 
-function DisplayUpdates({selectedDate, updates, currentUserId, setUpdates }) {
+function DisplayUpdates({ selectedDate, updates, currentUserId, setUpdates }) {
   return (
     <Box>
-      {updates.filter((update) => {
-        const dateCreated = new Date(update.createdAt)
-        console.log(dateCreated)
-        return dateCreated.toDateString() === selectedDate.toDateString()
-      }).reverse().map((update) => {
-        return (
-          <Update
-            content={update}
-            currentUserId={currentUserId}
-            setUpdates={setUpdates}
-          />
-        );
-      })}
+      {updates
+        .filter((update) => {
+          const dateCreated = new Date(update.createdAt);
+          console.log(dateCreated);
+          return dateCreated.toDateString() === selectedDate.toDateString();
+        })
+        .reverse()
+        .map((update) => {
+          return (
+            <Update
+              content={update}
+              currentUserId={currentUserId}
+              setUpdates={setUpdates}
+            />
+          );
+        })}
     </Box>
   );
 }
@@ -124,7 +129,7 @@ function AddUpdateForm({
   isToShow,
   updates,
   setUpdates,
-  date
+  date,
 }) {
   const [update, setUpdate] = useState({
     user: user._id,
@@ -134,9 +139,30 @@ function AddUpdateForm({
     image: "",
     video: "",
   });
+  const [image, setImage] = useState({
+    src: "",
+    fileName: "",
+    type: "",
+    size: 0,
+  });
 
   const handleChange = (event) => {
     setUpdate({ ...update, text: event.target.value });
+  };
+
+  const handleFileInputChange = (event) => {
+    console.log(event.target);
+    const reader = new FileReader();
+
+    reader.onload = function (onLoadEvent) {
+      setImage({
+        src: onLoadEvent.target.result,
+        fileName: event.target.files[0].name,
+        type: event.target.files[0].type,
+        size: event.target.files[0].size,
+      });
+    };
+    reader.readAsDataURL(event.target.files[0]);
   };
 
   const handleUpdatePost = async () => {
@@ -155,6 +181,7 @@ function AddUpdateForm({
 
     setUpdates();
   };
+
   return (
     <Collapse in={show}>
       <Paper sx={{ p: 3 }} variant="outlined">
@@ -188,6 +215,19 @@ function AddUpdateForm({
                 setUpdate({ ...update, text: "This person is already found" });
               }}
             />
+            <div>
+              <Box sx={{ mt: 2 }}>
+                {image.src && (
+                  <Image
+                    width={450}
+                    height={300}
+                    alt=""
+                    style={{ objectFit: "cover", borderRadius: "10px" }}
+                    src={image.src}
+                  />
+                )}
+              </Box>
+            </div>
             <Stack sx={{ mt: 2 }} direction="row" spacing={1}>
               <Button
                 onClick={handleUpdatePost}
@@ -202,10 +242,18 @@ function AddUpdateForm({
               </Button>
             </Stack>
           </Box>
+
           <Box>
             <Tooltip title="attach image or video">
-              <IconButton color="primary">
+              <IconButton component="label" color="primary">
                 <AttachFileIcon />
+                <form onChange={handleFileInputChange}>
+                  <input
+                    type="file"
+                    accept="image/png, image/jpeg, image/jpg, video/mp4"
+                    hidden
+                  />
+                </form>
               </IconButton>
             </Tooltip>
           </Box>
@@ -234,14 +282,13 @@ function AddUpdateButton({ setShowUpdateForm }) {
   );
 }
 
-function Main({date, user, reportId }) {
+function Main({ date, user, reportId }) {
   const { data, isLoading, error, mutate } = useSWR(
     `/api/reports/management/updates/updates-by-report/${reportId}`,
     fetcher
   );
   const [showUpdateForm, setShowUpdateForm] = useState(false);
   const time = ampmTimeFormat(date);
-  
 
   if (error) return <Typography>Something went wrong.</Typography>;
   if (isLoading) return <CircularProgress />;
@@ -283,7 +330,14 @@ function Main({date, user, reportId }) {
 }
 
 export default function Updates({ date, reportId }) {
+  const router = useRouter();
   const [user, { loading }] = useUser();
+
+  useEffect(() => {
+    if (!user && !loading) {
+      router.push("/login");
+    }
+  }, [user, loading, router]);
 
   if (loading) return <CircularProgress />;
 
