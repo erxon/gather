@@ -11,7 +11,7 @@ export default function Photo({ publicId }) {
     cloudName: "dg0cwy8vx",
     apiKey: process.env.NEXT_PUBLIC_CLOUDINARY_KEY,
     apiSecret: process.env.NEXT_PUBLIC_CLOUDINARY_SECRET,
-  })
+  }).resize(fill().height(350))
 
   return (
     <>

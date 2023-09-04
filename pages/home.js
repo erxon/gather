@@ -251,6 +251,7 @@ const ReportWithPhoto = () => {
     const formData = new FormData();
 
     for (const file of fileInput.files) {
+      console.log(file)
       formData.append("file", file);
     }
 

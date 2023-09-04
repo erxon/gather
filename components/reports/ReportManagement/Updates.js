@@ -18,6 +18,7 @@ import {
   CardContent,
   CardActions,
 } from "@mui/material";
+import Photo from "@/components/photo/Photo";
 import SectionHeader from "@/utils/SectionHeader";
 import useSWR from "swr";
 import FeedOutlinedIcon from "@mui/icons-material/FeedOutlined";
@@ -65,7 +66,7 @@ function Update({ content, currentUserId, setUpdates }) {
 
   return (
     <Box sx={{ mb: 1 }}>
-      <Card variant="outlined">
+      <Card variant="outlined" sx={{width: 350}}>
         <CardHeader
           avatar={
             <Avatar>
@@ -80,6 +81,11 @@ function Update({ content, currentUserId, setUpdates }) {
             {content.text}
           </Typography>
         </CardContent>
+        {content.image && (
+          <CardMedia>
+            <Photo publicId={content.image} />
+          </CardMedia>
+        )}
         <CardActions>
           {data.user._id === currentUserId &&
             (buttonState === "loading" ? (
@@ -139,11 +145,10 @@ function AddUpdateForm({
     image: "",
     video: "",
   });
+
   const [image, setImage] = useState({
     src: "",
-    fileName: "",
-    type: "",
-    size: 0,
+    file: {},
   });
 
   const handleChange = (event) => {
@@ -151,34 +156,56 @@ function AddUpdateForm({
   };
 
   const handleFileInputChange = (event) => {
-    console.log(event.target);
+    console.log(event.target.files[0]);
     const reader = new FileReader();
 
     reader.onload = function (onLoadEvent) {
       setImage({
         src: onLoadEvent.target.result,
-        fileName: event.target.files[0].name,
-        type: event.target.files[0].type,
-        size: event.target.files[0].size,
+        file: event.target.files[0],
       });
     };
     reader.readAsDataURL(event.target.files[0]);
   };
 
   const handleUpdatePost = async () => {
-    const response = await fetch("/api/reports/management/updates", {
+    const formData = new FormData();
+    formData.append("file", image.file);
+    formData.append("upload_preset", "updates");
+
+    const photoUpload = await fetch(
+      "https://api.cloudinary.com/v1_1/dg0cwy8vx/image/upload",
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    const response = await photoUpload.json();
+    console.log(response.public_id);
+
+    const addUpdate = await fetch("/api/reports/management/updates", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         createdAt: date,
         reportId: update.reportId,
         text: update.text,
-        image: update.image,
+        image: response.public_id,
         video: update.video,
       }),
     });
-    console.log(response);
 
+    const addUpdateResponse = await addUpdate.json();
+    console.log(addUpdateResponse);
+    setUpdate({
+      user: user._id,
+      username: user.username,
+      reportId: reportId,
+      text: "",
+      image: "",
+      video: "",
+    });
     setUpdates();
   };
 
