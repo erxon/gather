@@ -23,11 +23,12 @@ const userSchema = mongoose.Schema({
     instagram: String,
   },
   type: { type: String, enum: ["authority", "citizen"] },
+  role: { type: String, enum: ["reports administrator", "report editor"] },
   about: String,
   contacts: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+
   firstName: String,
   lastName: String,
-  MiddleName: String,
   createdAt: Date,
   updatedAt: Date,
   salt: String,

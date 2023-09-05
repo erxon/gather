@@ -5,7 +5,7 @@ const isAuthority = async (req, res, next) => {
     await dbConnect();
     const user = await req.user;
 
-    if (user.type === "authority") {
+    if (user && user.type === "authority") {
       next();
     } else {
       return res.status(400).json({ error: "User not an authority." });

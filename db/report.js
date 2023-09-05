@@ -1,8 +1,20 @@
 import mongoose from "mongoose";
 
+const noteSchema = new mongoose.Schema({
+  user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  createdAt: Date,
+  updatedAt: Date,
+  content: String,
+});
+
 const reportSchema = new mongoose.Schema({
   reporter: { type: mongoose.Schema.Types.ObjectId, ref: "Reporter" },
-  status: String,
+  status: {
+    type: String,
+    enum: ["pending", "under verification", "active", "close", "archived"],
+  },
+  result: { type: String, enum: ["", "found", "not found"] },
+  state: { type: String, enum: ["", "deceased", "alive"] },
   found: Boolean,
   username: { type: String, ref: "User" },
   account: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
@@ -12,10 +24,24 @@ const reportSchema = new mongoose.Schema({
   photoId: { type: mongoose.Schema.Types.ObjectId, ref: "Photo" },
   firstName: {
     type: String,
+    require: true,
   },
   lastName: {
     type: String,
+    require: true,
   },
+  middleName: { type: String, require: true },
+  qualifier: String,
+  aliases: [String],
+  smt: [String],
+  currentHairColor: String,
+  eyeColor: String,
+  prostheticsAndImplants: String,
+  bloodType: String,
+  medications: String,
+  clothingAndAccessories: String,
+  birthDefects: String,
+  dentalAndFingerprint: String,
   details: String,
   condition: String,
   reportedAt: Date,
@@ -37,7 +63,10 @@ const reportSchema = new mongoose.Schema({
   socialMediaAccounts: {
     facebook: String,
     twitter: String,
-  }
+  },
+  notes: [noteSchema],
+  assignedTo: {type: mongoose.Schema.Types.ObjectId, ref: "User"},
+  editors: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 });
 
 const Report = mongoose.models.Report || mongoose.model("Report", reportSchema);
