@@ -11,7 +11,10 @@ export default function ProfilePhoto({ publicId }) {
     cloudName: "dg0cwy8vx",
     apiKey: process.env.NEXT_PUBLIC_CLOUDINARY_KEY,
     apiSecret: process.env.NEXT_PUBLIC_CLOUDINARY_SECRET,
-  }).resize(fill().width(56).height(56));
+  })
+    .resize(fill().width(32).height(32))
+    .roundCorners(max())
+    .delivery(format(auto()));
 
   return (
     <>
