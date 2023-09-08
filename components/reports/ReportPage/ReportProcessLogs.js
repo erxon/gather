@@ -8,11 +8,14 @@ import {
   Paper,
   Divider,
   Avatar,
+  Pagination,
+  PaginationItem,
 } from "@mui/material";
 import Image from "next/image";
 import ProfilePhoto from "@/components/photo/ProfilePhoto";
 import computeElapsedTime from "@/utils/helpers/computeElapsedTime";
 import ProfilePhotoAvatar from "@/components/photo/ProfilePhotoAvatar";
+import { useState } from "react";
 
 function Changes({ oldState, changes }) {
   const isChanged = {
@@ -177,17 +180,26 @@ export default function ReportProcessLogs({ report, reportId, user }) {
     `/api/reports/logs/report-logs/${reportId}`,
     fetcher
   );
+  const [page, setPage] = useState(1);
 
   if (isLoading) return <CircularProgress />;
   if (error) return <Typography>Something went wrong.</Typography>;
   //Display logs
+  const logsToDisplay = data.logs.slice(page - 1, page + 1);
   return (
     <Paper sx={{ p: 3 }}>
       <Typography variant="h6">Updates</Typography>
-      {data.logs.map((log) => {
+      <Pagination
+        onChange={(event, value) => {
+          setPage(value);
+          console.log(value);
+        }}
+        page={page}
+        count={Math.round(data.logs.length / 2)}
+      />
+      {logsToDisplay.map((log) => {
         const changes = JSON.parse(log.changes);
         const oldState = JSON.parse(log.oldState);
-        console.log(log);
 
         return (
           <Log
