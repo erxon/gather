@@ -48,8 +48,7 @@ const reportSchema = new mongoose.Schema({
   condition: String,
   reportedAt: Date,
   updatedAt: Date,
-  updatedByReporter: { type: mongoose.Schema.Types.ObjectId, ref: "Reporter" },
-  updatedByAuthority: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   lastSeen: {
     type: String,
   },

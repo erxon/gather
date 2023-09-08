@@ -7,7 +7,16 @@ import React from "react";
 import Router from "next/router";
 import { useEffect, useState } from "react";
 import { fetcher, useUser } from "@/lib/hooks";
-import { Box, Typography, Button, Grid, CircularProgress } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Button,
+  Grid,
+  CircularProgress,
+  Stack,
+  Chip,
+  Paper,
+} from "@mui/material";
 
 import { getSingleReport, deleteReport } from "@/lib/api-lib/api-reports";
 import EditIcon from "@mui/icons-material/Edit";
@@ -18,6 +27,63 @@ import TabLayout from "@/components/reports/TabLayout";
 import ReportInformation from "@/components/reports/ReportPage/ReportInformation";
 import ReportProcessing from "@/components/reports/ReportPage/ReportProcessing";
 import ReportProcessLogs from "@/components/reports/ReportPage/ReportProcessLogs";
+import ProfilePhoto from "@/components/photo/ProfilePhoto";
+import Image from "next/image";
+import computeElapsedTime from "@/utils/helpers/computeElapsedTime";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+
+function UpdatedBy({ updatedBy, updatedAt }) {
+  const dateUpdated = new Date(updatedAt);
+  const timeElapsed = computeElapsedTime(dateUpdated);
+  const router = useRouter();
+  const { _id, photo, username, firstName, lastName, type } = updatedBy;
+
+  const handleRoute = () => {
+    router.push(`/profile/${_id}`);
+  };
+
+  return (
+    <Paper sx={{ p: 1, maxWidth: 300 }} variant="outlined">
+      <Typography sx={{ mb: 1 }} variant="body2">
+        Updated by
+      </Typography>
+      <Stack direction="row" alignItems="center" spacing={1}>
+        <Box>
+          {photo ? (
+            <ProfilePhoto publicId={photo} />
+          ) : (
+            <Image
+              width={32}
+              height={32}
+              style={{ borderRadius: "100%" }}
+              alt="placeholder for profile photo"
+              src="/assets/placeholder.png"
+            />
+          )}
+        </Box>
+        <Box>
+          <Stack direction="row" alignItems="center" spacing={0.5}>
+            <Typography sx={{ fontWeight: "bold" }} variant="body2">
+              {firstName} {lastName}
+            </Typography>
+            <Typography variant="body2">{timeElapsed}</Typography>
+          </Stack>
+          <Typography sx={{ color: "GrayText" }} variant="body2">
+            {username}
+          </Typography>
+        </Box>
+      </Stack>
+      <Button
+        onClick={handleRoute}
+        sx={{ mt: 1 }}
+        startIcon={<AccountCircleIcon />}
+        size="small"
+      >
+        View Profile
+      </Button>
+    </Paper>
+  );
+}
 
 export default function ReportPage({ data }) {
   const router = useRouter();
@@ -64,10 +130,14 @@ export default function ReportPage({ data }) {
               Edit
             </Button>
           )}
-          <Box sx={{ mt: 3 }}>
-            <Typography>Editted by: </Typography>
-            <Typography>September 4, 2023</Typography>
-          </Box>
+          {data.updatedBy && (
+            <Box sx={{ mt: 3 }}>
+              <UpdatedBy
+                updatedBy={data.updatedBy}
+                updatedAt={data.updatedAt}
+              />
+            </Box>
+          )}
           <Box>
             {((user.type === "authority" &&
               user.role === "reports administrator") ||
@@ -105,7 +175,7 @@ export const getServerSideProps = async ({ params }) => {
 
   //Get single report
   const data = await getSingleReport(rid);
-  console.log(data);
+
   return {
     props: { data },
   };
