@@ -7,16 +7,18 @@ import {
   Box,
   Paper,
   Divider,
+  Avatar,
 } from "@mui/material";
 import Image from "next/image";
 import ProfilePhoto from "@/components/photo/ProfilePhoto";
 import computeElapsedTime from "@/utils/helpers/computeElapsedTime";
+import ProfilePhotoAvatar from "@/components/photo/ProfilePhotoAvatar";
 
 function Changes({ oldState, changes }) {
   const isChanged = {
-    status: oldState.status === changes.status,
-    result: oldState.result === changes.result,
-    state: oldState.state === changes.state,
+    status: oldState.status !== changes.status,
+    result: oldState.result !== changes.result,
+    state: oldState.state !== changes.state,
   };
   const propChanged = {
     backgroundColor: "#3b801d",
@@ -56,9 +58,9 @@ function AssignedTo({ userId }) {
       <Typography variant="body2" sx={{ fontSize: "12px", mb: 1 }}>
         Assigned to
       </Typography>
-      <Stack direction="row" alignItems="center" spacing={1}>
+      <Stack direction="row" alignItems="center" spacing={2}>
         {data.user.photo ? (
-          <ProfilePhoto publicId={photo} />
+          <ProfilePhoto publicId={data.user.photo} />
         ) : (
           <Image
             src="/assets/placeholder.png"
@@ -178,7 +180,6 @@ export default function ReportProcessLogs({ report, reportId, user }) {
 
   if (isLoading) return <CircularProgress />;
   if (error) return <Typography>Something went wrong.</Typography>;
-  console.log(data)
   //Display logs
   return (
     <Paper sx={{ p: 3 }}>

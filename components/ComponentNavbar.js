@@ -18,6 +18,8 @@ import ProfilePhoto from "./photo/ProfilePhoto";
 import Notifications from "./appbar/Notifications";
 import Contacts from "./notifications/Contacts";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
+import Assignment from "./appbar/Assignment";
+import AssignedReports from "./reports/ReportPage/AssignedReports";
 
 export default function ComponentNavbar(props) {
   const [user, { mutate }] = useUser();
@@ -30,13 +32,23 @@ export default function ComponentNavbar(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const [notificationsAnchorEl, setNotifcationsAnchorEl] = React.useState(null);
+  const [assignmentAnchorEl, setAssignmentAnchorEl] = React.useState(null);
 
+  const isAssignmentOpen = Boolean(assignmentAnchorEl);
   const isNotificationsOpen = Boolean(notificationsAnchorEl);
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
+  };
+
+  const handleAssignmentOpen = (event) => {
+    setAssignmentAnchorEl(event.currentTarget);
+  };
+
+  const handleAssignmentClose = (event) => {
+    setAssignmentAnchorEl(null);
   };
 
   const handleNotificationsOpen = (event) => {
@@ -110,6 +122,31 @@ export default function ComponentNavbar(props) {
       )}
     </Popover>
   );
+  const assignmentId = "assignment";
+  const renderAssignment = (
+    <Popover
+      open={isAssignmentOpen}
+      onClose={handleAssignmentClose}
+      anchorEl={assignmentAnchorEl}
+      id={assignmentId}
+      anchorOrigin={{
+        vertical: "bottom",
+        horizontal: "right",
+      }}
+      transformOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+    >
+      {user && (
+        <Box sx={{ maxWidth: 350, p: 3 }}>
+          <Typography sx={{ my: 1 }}>Reports assigned to you</Typography>
+          <Divider />
+          <AssignedReports userId={user._id} />
+        </Box>
+      )}
+    </Popover>
+  );
 
   const mobileMenuId = "primary-search-account-menu-mobile";
   const renderMobileMenu = (
@@ -167,6 +204,9 @@ export default function ComponentNavbar(props) {
                   handleNotificationsOpen={handleNotificationsOpen}
                   userId={user._id}
                 />
+                {user.type === "authority" && (
+                  <Assignment handleAssignmentOpen={handleAssignmentOpen} />
+                )}
                 <IconButton
                   sx={{ mr: 1 }}
                   size="small"
@@ -220,6 +260,12 @@ export default function ComponentNavbar(props) {
                   handleNotificationsOpen={handleNotificationsOpen}
                   userId={user._id}
                 />
+                {user.type === "authority" && (
+                  <Assignment
+                    userId={user._id}
+                    handleAssignmentOpen={handleAssignmentOpen}
+                  />
+                )}
                 <IconButton
                   sx={{ mr: 1 }}
                   size="small"
@@ -261,6 +307,7 @@ export default function ComponentNavbar(props) {
       {renderMobileMenu}
       {renderMenu}
       {renderNotifications}
+      {renderAssignment}
     </Box>
   );
 }

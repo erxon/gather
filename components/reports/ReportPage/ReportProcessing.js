@@ -53,6 +53,47 @@ function NoteViewer({ viewer, setViewer }) {
   );
 }
 
+function Assignment({ currentUser, users, assign, assignTo }) {
+  return (
+    <FormControl size="small" fullWidth>
+      <InputLabel id="select_user">Assign to</InputLabel>
+      <Select
+        label="Assign to"
+        labelId="select_user"
+        value={assign}
+        onChange={(event) => {
+          assignTo(event.target.value);
+        }}
+      >
+        {users
+          .filter((user) => {
+            return user.type === "authority";
+          })
+          .map((user) => {
+            return (
+              <MenuItem value={user._id}>
+                <Typography>
+                  {user.firstName} {user.lastName}
+                  {user._id === currentUser._id && (
+                    <span
+                      style={{
+                        fontWeight: "bold",
+                        fontStyle: "italic",
+                      }}
+                    >
+                      {" "}
+                      you
+                    </span>
+                  )}
+                </Typography>
+              </MenuItem>
+            );
+          })}
+      </Select>
+    </FormControl>
+  );
+}
+
 function ReportProcessingMain({ currentUser, report, users }) {
   const [assign, assignTo] = useState(currentUser._id);
   const [status, setStatus] = useState(report.status);
@@ -102,10 +143,6 @@ function ReportProcessingMain({ currentUser, report, users }) {
 
   const handleStateWhenFound = (event) => {
     setStateWhenFound(event.target.value);
-  };
-
-  const handleSetViewer = (event) => {
-    setViewer(event.target.value);
   };
 
   const handleSave = async () => {
@@ -176,7 +213,7 @@ function ReportProcessingMain({ currentUser, report, users }) {
       <Paper elevation={3} sx={{ p: 3, mt: 3 }}>
         <Box>
           <Box sx={{ mb: 3 }}>
-            <Stack direction="row" spacing={2}>
+            <Stack direction="row" alignItems="center" spacing={2}>
               {currentUser.photo ? (
                 <ProfilePhotoAvatar publicId={currentUser.photo} />
               ) : (
@@ -206,6 +243,7 @@ function ReportProcessingMain({ currentUser, report, users }) {
           <NoteViewer viewer={viewer} setViewer={setViewer} />
         </Stack>
         <TextField
+          focused
           value={noteContent}
           onChange={handleNotes}
           fullWidth
@@ -215,41 +253,8 @@ function ReportProcessingMain({ currentUser, report, users }) {
         />
         <Box sx={{ mt: 2 }}>
           <Stack direction="row" spacing={3}>
-            {/*List users*/}
-            <FormControl size="small" fullWidth>
-              <InputLabel id="select_user">Assign to</InputLabel>
-              <Select
-                label="Assign to"
-                labelId="select_user"
-                value={assign}
-                onChange={handleAssignment}
-              >
-                {users
-                  .filter((user) => {
-                    return user.type === "authority";
-                  })
-                  .map((user) => {
-                    return (
-                      <MenuItem value={user._id}>
-                        <Typography>
-                          {user.firstName} {user.lastName}
-                          {user._id === currentUser._id && (
-                            <span
-                              style={{
-                                fontWeight: "bold",
-                                fontStyle: "italic",
-                              }}
-                            >
-                              {" "}
-                              you
-                            </span>
-                          )}
-                        </Typography>
-                      </MenuItem>
-                    );
-                  })}
-              </Select>
-            </FormControl>
+            {/*Assigning*/}
+            <Assignment assign={assign} assignTo={assignTo} users={users} currentUser={currentUser} />
             {/*Status*/}
             <FormControl size="small" fullWidth>
               <InputLabel id="set_status">Set status</InputLabel>
@@ -320,10 +325,12 @@ export default function ReportProcessing({ currentUser, report }) {
   if (error) return <Typography>Something went wrong.</Typography>;
 
   return (
-    <ReportProcessingMain
-      currentUser={currentUser}
-      report={report}
-      users={data.users}
-    />
+    <div>
+      <ReportProcessingMain
+        currentUser={currentUser}
+        report={report}
+        users={data.users}
+      />
+    </div>
   );
 }

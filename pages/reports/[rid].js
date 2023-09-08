@@ -10,7 +10,6 @@ import { fetcher, useUser } from "@/lib/hooks";
 import { Box, Typography, Button, Grid, CircularProgress } from "@mui/material";
 
 import { getSingleReport, deleteReport } from "@/lib/api-lib/api-reports";
-import useSWR from "swr";
 import EditIcon from "@mui/icons-material/Edit";
 import { useRouter } from "next/router";
 import TabLayout from "@/components/reports/TabLayout";
@@ -70,19 +69,29 @@ export default function ReportPage({ data }) {
             <Typography>September 4, 2023</Typography>
           </Box>
           <Box>
-            {user.type === "authority" &&
-              user.role === "reports administrator" && (
-                <ReportProcessing currentUser={user} report={data} />
-              )}
+            {((user.type === "authority" &&
+              user.role === "reports administrator") ||
+              user._id === data.assignedTo) && (
+              <ReportProcessing currentUser={user} report={data} />
+            )}
           </Box>
           {/*Basic Information */}
           <Grid container spacing={2}>
             <Grid item xs={12} md={8}>
-              <ReportInformation data={data} user={user} />
+              <ReportInformation
+                authorized={authorized}
+                data={data}
+                user={user}
+              />
             </Grid>
             <Grid item xs={12} md={4}>
-              <Box sx={{mt: 3}}>
-              <ReportProcessLogs report={data} user={user} reportId={data._id} /></Box>
+              <Box sx={{ mt: 3 }}>
+                <ReportProcessLogs
+                  report={data}
+                  user={user}
+                  reportId={data._id}
+                />
+              </Box>
             </Grid>
           </Grid>
         </Box>

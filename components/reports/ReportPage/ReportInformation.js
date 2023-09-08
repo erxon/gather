@@ -11,6 +11,7 @@ import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBullet
 import NotesOutlinedIcon from "@mui/icons-material/NotesOutlined";
 import PublicOutlinedIcon from "@mui/icons-material/PublicOutlined";
 import SectionHeader from "@/utils/SectionHeader";
+import ReportPhoto from "@/components/photo/ReportPhoto";
 import {
   Box,
   Typography,
@@ -203,7 +204,7 @@ function SocialMediaAccounts({ socialMediaAccounts, username, user }) {
   );
 }
 
-export default function ReportInformation({ data, user }) {
+export default function ReportInformation({ authorized, data, user }) {
   const reportedAt = new Date(data.reportedAt);
   const timeElapsed = calculateTimeElapsed(reportedAt);
 
