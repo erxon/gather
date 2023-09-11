@@ -67,6 +67,7 @@ const reportSchema = new mongoose.Schema({
   },
   assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   editors: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  attachedDocument: { data: Buffer, contentType: String },
 });
 
 const Report = mongoose.models.Report || mongoose.model("Report", reportSchema);

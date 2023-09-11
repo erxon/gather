@@ -13,12 +13,7 @@ import {
   Select,
   MenuItem,
   Snackbar,
-  Popover,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemText,
-  ListItemIcon,
+  Tooltip,
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import SearchIcon from "@mui/icons-material/Search";
@@ -29,6 +24,10 @@ import ProfilePhotoAvatar from "@/components/photo/ProfilePhotoAvatar";
 import useSWR from "swr";
 import React, { useState } from "react";
 import { fetcher } from "@/lib/hooks";
+import AttachFileIcon from "@mui/icons-material/AttachFile";
+import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
+import CancelIcon from "@mui/icons-material/Cancel";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
 
 function NoteViewer({ viewer, setViewer }) {
   return (
@@ -95,6 +94,7 @@ function Assignment({ currentUser, users, assign, assignTo }) {
 }
 
 function ReportProcessingMain({ currentUser, report, users }) {
+  const [document, setDocument] = useState(); //File type .docx, .pdf, .doc
   const [assign, assignTo] = useState(currentUser._id);
   const [status, setStatus] = useState(report.status);
   const [result, setResult] = useState(report.result);
@@ -124,13 +124,20 @@ function ReportProcessingMain({ currentUser, report, users }) {
     </React.Fragment>
   );
 
-  const handleNotes = (event) => {
-    setNoteContent(event.target.value);
+  const handleFileChange = (event) => {
+    if (event.target.files[0].size > 5000000) {
+      console.log("file size exceeds 5mb");
+      return;
+    }
+    setDocument(event.target.files[0]);
   };
 
-  const handleAssignment = (event) => {
-    console.log(event.target.value);
-    assignTo(event.target.value);
+  const handleFileCancel = () => {
+    setDocument();
+  };
+
+  const handleNotes = (event) => {
+    setNoteContent(event.target.value);
   };
 
   const handleStatusChange = (event) => {
@@ -177,17 +184,36 @@ function ReportProcessingMain({ currentUser, report, users }) {
       }),
     });
 
+    if (document) {
+      const createLogResult = await createLog.json();
+      const { _id } = createLogResult.log;
+      const logData = new FormData();
+
+      logData.append("file", document);
+
+      const uploadFile = await fetch(`/api/reports/file-upload/${_id}`, {
+        method: "POST",
+        body: logData,
+      });
+
+      if (uploadFile.status === 200) {
+        setSnackbar({
+          open: true,
+          message: "File attached",
+        });
+      }
+    }
+
     if (createLog.status === 200) {
       setSnackbar({
         open: true,
         message: "Updated successfully",
       });
       setNoteContent("");
-      setStatus(updateReportResult.data.status);
-      assignTo(updateReportResult.data.assignedTo);
-      setResult(updateReportResult.data.result);
-      setResult(updateReportResult.data.result);
-      setStateWhenFound(updateReportResult.data.state);
+      setStatus(updateReportResult.update.status);
+      assignTo(updateReportResult.update.assignedTo);
+      setResult(updateReportResult.update.result);
+      setStateWhenFound(updateReportResult.update.state);
     } else {
       setSnackbar({
         open: true,
@@ -211,6 +237,7 @@ function ReportProcessingMain({ currentUser, report, users }) {
         action={snackbarAction}
       />
       <Paper elevation={3} sx={{ p: 3, mt: 3 }}>
+        {/* User information */}
         <Box>
           <Box sx={{ mb: 3 }}>
             <Stack direction="row" alignItems="center" spacing={2}>
@@ -236,13 +263,16 @@ function ReportProcessingMain({ currentUser, report, users }) {
             </Stack>
           </Box>
         </Box>
+        {/* Setting note viewer */}
         <Stack sx={{ mb: 1 }} direction="row" alignItems="center">
           <Typography sx={{ mr: 1 }} variant="body2">
             Who can view your note?
           </Typography>
           <NoteViewer viewer={viewer} setViewer={setViewer} />
         </Stack>
+        {/* Notes */}
         <TextField
+          sx={{ mb: 1 }}
           focused
           value={noteContent}
           onChange={handleNotes}
@@ -251,10 +281,52 @@ function ReportProcessingMain({ currentUser, report, users }) {
           multiline
           placeholder="Note"
         />
+
+        {/*File attachment*/}
+        <Stack direction="row" alignItems="center" spacing={2}>
+          <Button
+            disabled={document}
+            component="label"
+            startIcon={<AttachFileIcon />}
+          >
+            Attach document
+            <input
+              onChange={handleFileChange}
+              hidden
+              type="file"
+              accept=".pdf, .docx, .doc"
+            />
+          </Button>
+          {document && (
+            <Paper variant="outlined" sx={{ p: 1 }}>
+              <Stack direction="row" alignItems="center" spacing={0.5}>
+                <InsertDriveFileIcon />
+                <Typography variant="body2">{document.name}</Typography>
+                <Box>
+                  <Tooltip title="cancel">
+                    <IconButton
+                      onClick={handleFileCancel}
+                      color="secondary"
+                      size="small"
+                    >
+                      <CancelIcon />
+                    </IconButton>
+                  </Tooltip>
+                </Box>
+              </Stack>
+            </Paper>
+          )}
+        </Stack>
+
         <Box sx={{ mt: 2 }}>
           <Stack direction="row" spacing={3}>
             {/*Assigning*/}
-            <Assignment assign={assign} assignTo={assignTo} users={users} currentUser={currentUser} />
+            <Assignment
+              assign={assign}
+              assignTo={assignTo}
+              users={users}
+              currentUser={currentUser}
+            />
             {/*Status*/}
             <FormControl size="small" fullWidth>
               <InputLabel id="set_status">Set status</InputLabel>
@@ -273,6 +345,7 @@ function ReportProcessingMain({ currentUser, report, users }) {
                 <MenuItem value={"archive"}>Archive</MenuItem>
               </Select>
             </FormControl>
+            {/*Result*/}
             {status === "close" && (
               <FormControl size="small" fullWidth>
                 <InputLabel id="result">Result</InputLabel>
@@ -287,7 +360,8 @@ function ReportProcessingMain({ currentUser, report, users }) {
                 </Select>
               </FormControl>
             )}
-            {result === "found" && (
+            {/*State when found*/}
+            {status === "close" && result === "found" && (
               <FormControl size="small" fullWidth>
                 <InputLabel id="state_when_found">State when found</InputLabel>
                 <Select
@@ -306,12 +380,15 @@ function ReportProcessingMain({ currentUser, report, users }) {
               Save
             </Button>
           </Stack>
-          <Typography sx={{ mb: 1, mt: 1 }}>
-            Search database for existing report.
-          </Typography>
-          <Button size="small" startIcon={<SearchIcon />} variant="contained">
-            Search
-          </Button>
+          {/*Search DB for existing reports*/}
+          <Box>
+            <Typography sx={{ mb: 1, mt: 1 }}>
+              Search database for existing report.
+            </Typography>
+            <Button size="small" startIcon={<SearchIcon />} variant="contained">
+              Search
+            </Button>
+          </Box>
         </Box>
       </Paper>
     </div>

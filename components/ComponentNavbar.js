@@ -205,7 +205,7 @@ export default function ComponentNavbar(props) {
                   userId={user._id}
                 />
                 {user.type === "authority" && (
-                  <Assignment handleAssignmentOpen={handleAssignmentOpen} />
+                  <Assignment userId={user._id} handleAssignmentOpen={handleAssignmentOpen} />
                 )}
                 <IconButton
                   sx={{ mr: 1 }}

@@ -12,6 +12,10 @@ const reportLogSchema = new mongoose.Schema({
   },
   oldState: String,
   changes: String,
+  attachedDocument: {
+    data: Buffer,
+    contentType: String,
+  },
   createdAt: Date,
   updatedAt: Date,
 });

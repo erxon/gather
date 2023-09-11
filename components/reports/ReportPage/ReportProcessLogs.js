@@ -10,12 +10,15 @@ import {
   Avatar,
   Pagination,
   PaginationItem,
+  Button,
 } from "@mui/material";
 import Image from "next/image";
 import ProfilePhoto from "@/components/photo/ProfilePhoto";
 import computeElapsedTime from "@/utils/helpers/computeElapsedTime";
 import ProfilePhotoAvatar from "@/components/photo/ProfilePhotoAvatar";
 import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/router";
 
 function Changes({ oldState, changes }) {
   const isChanged = {
@@ -114,6 +117,7 @@ function Editor({ username, firstName, lastName, photo }) {
 }
 
 function Log({
+  logId,
   userId,
   owner,
   createdAt,
@@ -122,17 +126,28 @@ function Log({
   changes,
   editor,
   oldState,
+  attachedDocument,
 }) {
+  const router = useRouter();
   const dateCreated = new Date(createdAt);
   const elapsedTime = computeElapsedTime(dateCreated);
   const checkViewer = () => {
     if (note.viewer === "all") {
       return true;
-    } else if (note.viewer === "authority" && userType === "authority") {
+    } else if (
+      userId === changes.assignedTo ||
+      (note.viewer === "authority" && userType === "authority")
+    ) {
       return true;
-    } else if (note.viewer === "citizen" && userType === "citizen") {
+    } else if (
+      userId === changes.assignedTo ||
+      (note.viewer === "citizen" && userType === "citizen")
+    ) {
       return true;
-    } else if (note.viewer === "reporter" && userId === owner) {
+    } else if (
+      userId === changes.assignedTo ||
+      (note.viewer === "reporter" && userId === owner)
+    ) {
       return true;
     } else if (note.viewer === "assigned" && userId === changes.assignedTo) {
       return true;
@@ -143,6 +158,11 @@ function Log({
 
   const isViewer = checkViewer();
 
+  const handleViewFile = async () => {
+    await fetch(
+      `/api/reports/logs/report-logs/view-file/${logId}`
+    );
+  };
   return (
     <div>
       <Box sx={{ p: 3, mb: 3 }}>
@@ -163,6 +183,11 @@ function Log({
               {note.content}
             </Typography>
           </Box>
+        )}
+        {attachedDocument && (
+          <Button size="small" onClick={handleViewFile}>
+            View attached file
+          </Button>
         )}
         <Box sx={{ mb: 2 }}>
           <Changes oldState={oldState} changes={changes} />
@@ -185,24 +210,27 @@ export default function ReportProcessLogs({ report, reportId, user }) {
   if (isLoading) return <CircularProgress />;
   if (error) return <Typography>Something went wrong.</Typography>;
   //Display logs
+
   const logsToDisplay = data.logs.slice(page - 1, page + 1);
+  const pages = Math.round(data.logs.length / 2);
+
+  function handlePageChange(event, value) {
+    setPage(value);
+  }
+
   return (
     <Paper sx={{ p: 3 }}>
       <Typography variant="h6">Updates</Typography>
-      <Pagination
-        onChange={(event, value) => {
-          setPage(value);
-          console.log(value);
-        }}
-        page={page}
-        count={Math.round(data.logs.length / 2)}
-      />
+      <Pagination onChange={handlePageChange} page={page} count={pages} />
       {logsToDisplay.map((log) => {
         const changes = JSON.parse(log.changes);
         const oldState = JSON.parse(log.oldState);
 
         return (
           <Log
+            key={log._id}
+            logId={log._id}
+            attachedDocument={log.attachedDocument && log.attachedDocument}
             owner={report.account}
             userId={user._id}
             userType={user.type}
