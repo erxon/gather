@@ -82,7 +82,7 @@ function Assignment({ currentUser, users, assign, assignTo }) {
           })
           .map((user) => {
             return (
-              <MenuItem value={user._id}>
+              <MenuItem key={user._id} value={user._id}>
                 <Typography>
                   {user.firstName} {user.lastName}
                   {user._id === currentUser._id && (
@@ -131,6 +131,7 @@ function Editor({ id, setEditors, username, photo }) {
       ) : (
         <Image
           src="/assets/placeholder.png"
+          alt="placeholder image for profile photo"
           width={42}
           height={42}
           style={{ borderRadius: "100%" }}
@@ -260,7 +261,7 @@ function FoundReport({ id, firstName, lastName, photo, setOpen }) {
     <ListItem>
       <ListItemButton
         onClick={() => {
-          setOpen(false)
+          setOpen(false);
           router.push(`/reports/${id}`);
         }}
       >
@@ -522,6 +523,7 @@ function ReportProcessingMain({ currentUser, report, users }) {
                 <ProfilePhotoAvatar publicId={currentUser.photo} />
               ) : (
                 <Image
+                  alt="placeholder image for profile photo"
                   style={{ borderRadius: "100%" }}
                   width="56"
                   height="56"

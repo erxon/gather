@@ -66,7 +66,7 @@ function Update({ content, currentUserId, setUpdates }) {
 
   return (
     <Box sx={{ mb: 1 }}>
-      <Card variant="outlined" sx={{width: 350}}>
+      <Card variant="outlined" sx={{ width: 350 }}>
         <CardHeader
           avatar={
             <Avatar>
@@ -118,6 +118,7 @@ function DisplayUpdates({ selectedDate, updates, currentUserId, setUpdates }) {
         .map((update) => {
           return (
             <Update
+              key={update._id}
               content={update}
               currentUserId={currentUserId}
               setUpdates={setUpdates}

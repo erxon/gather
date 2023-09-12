@@ -77,7 +77,7 @@ export default function AssignedReports({ userId }) {
   return (
     <Box>
       {data.map((report) => {
-        return <Report report={report} />;
+        return <Report key={report._id} report={report} />;
       })}
     </Box>
   );

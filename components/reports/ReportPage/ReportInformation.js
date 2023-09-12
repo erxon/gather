@@ -12,6 +12,7 @@ import NotesOutlinedIcon from "@mui/icons-material/NotesOutlined";
 import PublicOutlinedIcon from "@mui/icons-material/PublicOutlined";
 import SectionHeader from "@/utils/SectionHeader";
 import ReportPhoto from "@/components/photo/ReportPhoto";
+import ProfilePhotoAvatar from "@/components/photo/ProfilePhotoAvatar";
 import {
   Box,
   Typography,
@@ -87,6 +88,7 @@ function Reporter({ account }) {
               <ProfilePhotoAvatar publicId={data.user.photo} />
             ) : (
               <Image
+                alt="placeholder image for profile photo"
                 style={{ borderRadius: "100%" }}
                 width="56"
                 height="56"
