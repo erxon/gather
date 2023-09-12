@@ -14,6 +14,13 @@ import {
   MenuItem,
   Snackbar,
   Tooltip,
+  Dialog,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemButton,
+  ListItemText,
+  Avatar,
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import SearchIcon from "@mui/icons-material/Search";
@@ -28,6 +35,10 @@ import AttachFileIcon from "@mui/icons-material/AttachFile";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import CancelIcon from "@mui/icons-material/Cancel";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
+import AddIcon from "@mui/icons-material/Add";
+import ProfilePhoto from "@/components/photo/ProfilePhoto";
+import PersonIcon from "@mui/icons-material/Person";
+import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
 
 function NoteViewer({ viewer, setViewer }) {
   return (
@@ -93,6 +104,155 @@ function Assignment({ currentUser, users, assign, assignTo }) {
   );
 }
 
+function Editor({ id, setEditors, username, photo }) {
+  const [mouseEnter, setMouseEnter] = useState(false);
+
+  const handleRemove = () => {
+    setEditors((prev) => {
+      return [
+        ...prev.filter((item) => {
+          return item !== id;
+        }),
+      ];
+    });
+  };
+
+  return (
+    <Stack
+      onMouseEnter={() => setMouseEnter(true)}
+      onMouseLeave={() => setMouseEnter(false)}
+      direction="row"
+      alignItems="center"
+      spacing={1}
+    >
+      {photo ? (
+        <ProfilePhotoAvatar publicId={photo} />
+      ) : (
+        <Image
+          src="/assets/placeholder.png"
+          width={42}
+          height={42}
+          style={{ borderRadius: "100%" }}
+        />
+      )}
+      <Typography variant="body2">{username}</Typography>
+      <IconButton
+        onClick={handleRemove}
+        size="small"
+        sx={{ visibility: !mouseEnter ? "hidden" : "visible" }}
+      >
+        <PersonRemoveIcon />
+      </IconButton>
+    </Stack>
+  );
+}
+
+function SelectUser({
+  currentUser,
+  editors,
+  users,
+  open,
+  setOpenDialog,
+  setEditors,
+}) {
+  const handleSelect = (id) => {
+    console.log(editors);
+    if (!editors.includes(id)) {
+      setEditors((prev) => {
+        return [...prev, id];
+      });
+    }
+    setOpenDialog(false);
+  };
+
+  return (
+    <Dialog
+      onClose={() => {
+        setOpenDialog(false);
+      }}
+      open={open}
+    >
+      <List>
+        {users
+          .filter((user) => {
+            return user._id !== currentUser._id;
+          })
+          .map((user) => {
+            const { _id, type, firstName, lastName, photo } = user;
+            return (
+              <ListItem disableGutters key={_id}>
+                <ListItemButton onClick={() => handleSelect(_id)}>
+                  <ListItemAvatar>
+                    {photo ? (
+                      <ProfilePhotoAvatar publicId={photo} />
+                    ) : (
+                      <Avatar>
+                        <PersonIcon />
+                      </Avatar>
+                    )}
+                  </ListItemAvatar>
+                  <ListItemText
+                    secondary={type}
+                    primary={`${firstName} ${lastName}`}
+                  />
+                </ListItemButton>
+              </ListItem>
+            );
+          })}
+      </List>
+    </Dialog>
+  );
+}
+
+function AddEditors({ currentUser, users, editors, setEditors }) {
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const handleOpen = () => {
+    setOpenDialog(true);
+  };
+
+  console.log(editors);
+
+  return (
+    <div>
+      <SelectUser
+        users={users}
+        currentUser={currentUser}
+        editors={editors}
+        setEditors={setEditors}
+        open={openDialog}
+        setOpenDialog={setOpenDialog}
+      />
+      <Paper sx={{ maxWidth: 300, my: 3, p: 1 }} variant="outlined">
+        <Stack direction="row" alignItems="center" spacing={1}>
+          <Typography variant="body2">Editors</Typography>
+          <IconButton onClick={handleOpen} size="small">
+            <AddIcon />
+          </IconButton>
+        </Stack>
+        {editors.length > 0 ? (
+          editors.map((editor) => {
+            const user = users.find((user) => {
+              return user._id === editor;
+            });
+            return (
+              <Editor
+                key={user._id}
+                id={user._id}
+                setEditors={setEditors}
+                username={user.username}
+                photo={user.photo}
+              />
+            );
+          })
+        ) : (
+          <Typography variant="body2">No editors added yet</Typography>
+        )}
+      </Paper>
+    </div>
+  );
+}
+
 function ReportProcessingMain({ currentUser, report, users }) {
   const [document, setDocument] = useState(); //File type .docx, .pdf, .doc
   const [assign, assignTo] = useState(currentUser._id);
@@ -105,6 +265,9 @@ function ReportProcessingMain({ currentUser, report, users }) {
     message: "",
   });
   const [viewer, setViewer] = useState("authority");
+  const [editors, setEditors] = useState(
+    report.editors ? [...report.editors] : []
+  );
 
   const snackbarAction = (
     <React.Fragment>
@@ -162,6 +325,7 @@ function ReportProcessingMain({ currentUser, report, users }) {
         result: result,
         state: stateWhenFound,
         assignedTo: assign,
+        editors: editors,
       }),
     });
 
@@ -179,11 +343,13 @@ function ReportProcessingMain({ currentUser, report, users }) {
           result: updateReportResult.data.result,
           state: updateReportResult.data.state,
           assignedTo: updateReportResult.data.assignedTo,
+          editors: updateReportResult.data.editors
         }),
         changes: JSON.stringify(updateReportResult.update),
       }),
     });
 
+    //if there is a file attached
     if (document) {
       const createLogResult = await createLog.json();
       const { _id } = createLogResult.log;
@@ -214,6 +380,7 @@ function ReportProcessingMain({ currentUser, report, users }) {
       assignTo(updateReportResult.update.assignedTo);
       setResult(updateReportResult.update.result);
       setStateWhenFound(updateReportResult.update.state);
+      setDocument();
     } else {
       setSnackbar({
         open: true,
@@ -380,15 +547,19 @@ function ReportProcessingMain({ currentUser, report, users }) {
               Save
             </Button>
           </Stack>
+
+          {/*Add editors*/}
+          <AddEditors
+            currentUser={currentUser}
+            users={users}
+            editors={editors}
+            setEditors={setEditors}
+          />
+
           {/*Search DB for existing reports*/}
-          <Box>
-            <Typography sx={{ mb: 1, mt: 1 }}>
-              Search database for existing report.
-            </Typography>
-            <Button size="small" startIcon={<SearchIcon />} variant="contained">
-              Search
-            </Button>
-          </Box>
+          <Button size="small" startIcon={<SearchIcon />} variant="contained">
+            Search
+          </Button>
         </Box>
       </Paper>
     </div>

@@ -159,9 +159,10 @@ function Log({
   const isViewer = checkViewer();
 
   const handleViewFile = async () => {
-    await fetch(
+    const getFile = await fetch(
       `/api/reports/logs/report-logs/view-file/${logId}`
     );
+    window.open(getFile.url)
   };
   return (
     <div>

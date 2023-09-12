@@ -7,10 +7,6 @@ import {
   InputAdornment,
   IconButton,
   Paper,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Snackbar,
   CircularProgress,
   Grid,
@@ -34,10 +30,7 @@ import {
   uploadReportPhoto,
 } from "@/lib/api-lib/api-reports";
 import Image from "next/image";
-import UploadReferencePhotos from "@/components/myreports/UploadReferencePhotos";
 import ReferencePhotos from "@/components/myreports/ReferencePhotos";
-import { useRouter } from "next/router";
-import StackRowLayout from "@/utils/StackRowLayout";
 
 export default function EditReport({ data }) {
   const [user, { loading }] = useUser();
@@ -89,24 +82,6 @@ export default function EditReport({ data }) {
       renderImage: URL.createObjectURL(event.target.files[0]),
       file: event.target.files[0],
     });
-  };
-
-  //Status
-  const handleStatusChange = (event) => {
-    setStatusChange(event.target.value !== data.status);
-    setStatus(event.target.value);
-  };
-
-  const handleStatusChangeSubmit = async () => {
-    const result = await fetch("/api/reports/status", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: data._id, status: status }),
-    });
-    if (result.status === 200) {
-      data.status = status;
-      setSnackbarValues({ open: true, message: "Status updated" });
-    }
   };
 
   //Features
@@ -238,30 +213,6 @@ export default function EditReport({ data }) {
               </Typography>
             )}
           </Box>
-          {user && user.type === "authority" && (
-            <Box sx={{ my: 3, width: "300px" }}>
-              <FormControl fullWidth>
-                <InputLabel>Set Status</InputLabel>
-                <Select
-                  value={status}
-                  label="Set Status"
-                  onChange={handleStatusChange}
-                >
-                  <MenuItem value="pending">Pending</MenuItem>
-                  <MenuItem value="active">Active</MenuItem>
-                  <MenuItem value="closed">Closed</MenuItem>
-                </Select>
-              </FormControl>
-              <Button
-                sx={{ mt: 1 }}
-                onClick={handleStatusChangeSubmit}
-                disabled={!isStatusChange}
-                variant="outlined"
-              >
-                change status
-              </Button>
-            </Box>
-          )}
           {/*Save button*/}
           <Button
             sx={{ mb: 3 }}

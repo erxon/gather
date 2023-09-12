@@ -7,7 +7,14 @@ import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import ArticleIcon from "@mui/icons-material/Article";
 import { useRouter } from "next/router";
 
-export default function TabLayout({ children, reportId, index }) {
+export default function TabLayout({
+  userType,
+  userId,
+  reportOwner,
+  children,
+  reportId,
+  index,
+}) {
   const router = useRouter();
   const [value, setValue] = React.useState(index);
 
@@ -36,13 +43,15 @@ export default function TabLayout({ children, reportId, index }) {
             icon={<ArticleIcon />}
             label="Overview"
           />
-          <Tab
-            onClick={() => {
-              handleRoute(`/reports/report-management/${reportId}`);
-            }}
-            icon={<ManageAccountsIcon />}
-            label="Manage"
-          />
+          {(userType === "authority" || userId === reportOwner) && (
+            <Tab
+              onClick={() => {
+                handleRoute(`/reports/report-management/${reportId}`);
+              }}
+              icon={<ManageAccountsIcon />}
+              label="Manage"
+            />
+          )}
         </Tabs>
       </Box>
       {children}

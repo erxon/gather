@@ -116,20 +116,28 @@ export default function ReportPage({ data }) {
 
   return (
     <>
-      <TabLayout reportId={data._id} index={0}>
+      <TabLayout
+        userType={user && user.type}
+        userId={user && user._id}
+        reportOwner={data.account}
+        reportId={data._id}
+        index={0}
+      >
         <Box>
-          {authorized && (
-            <Button
-              variant="outlined"
-              startIcon={<EditIcon />}
-              onClick={() => {
-                router.push(`/reports/edit/${data._id}`);
-              }}
-              size="small"
-            >
-              Edit
-            </Button>
-          )}
+          {user &&
+            ((data.editors.length > 0 && data.editors.includes(user._id)) ||
+              user.role === "reports administrator") && (
+              <Button
+                variant="outlined"
+                startIcon={<EditIcon />}
+                onClick={() => {
+                  router.push(`/reports/edit/${data._id}`);
+                }}
+                size="small"
+              >
+                Edit
+              </Button>
+            )}
           {data.updatedBy && (
             <Box sx={{ mt: 3 }}>
               <UpdatedBy
@@ -139,31 +147,43 @@ export default function ReportPage({ data }) {
             </Box>
           )}
           <Box>
-            {((user.type === "authority" &&
-              user.role === "reports administrator") ||
-              user._id === data.assignedTo) && (
-              <ReportProcessing currentUser={user} report={data} />
-            )}
+            {user &&
+              ((user.type === "authority" &&
+                user.role === "reports administrator") ||
+                user._id === data.assignedTo) && (
+                <ReportProcessing currentUser={user} report={data} />
+              )}
           </Box>
           {/*Basic Information */}
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={8}>
-              <ReportInformation
-                authorized={authorized}
-                data={data}
-                user={user}
-              />
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <Box sx={{ mt: 3 }}>
-                <ReportProcessLogs
-                  report={data}
+          {user &&
+          (user._id === data.account ||
+            user.role === "reports administrator" ||
+            user.type === "authority") ? (
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={8}>
+                <ReportInformation
+                  authorized={authorized}
+                  data={data}
                   user={user}
-                  reportId={data._id}
                 />
-              </Box>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <Box sx={{ mt: 3 }}>
+                  <ReportProcessLogs
+                    report={data}
+                    user={user}
+                    reportId={data._id}
+                  />
+                </Box>
+              </Grid>
             </Grid>
-          </Grid>
+          ) : (
+            <ReportInformation
+              authorized={authorized}
+              data={data}
+              user={user}
+            />
+          )}
         </Box>
       </TabLayout>
     </>
