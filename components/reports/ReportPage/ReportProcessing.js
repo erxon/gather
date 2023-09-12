@@ -21,11 +21,13 @@ import {
   ListItemButton,
   ListItemText,
   Avatar,
+  DialogTitle,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
 } from "@mui/material";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
-import PublicIcon from "@mui/icons-material/Public";
 import Image from "next/image";
 import ProfilePhotoAvatar from "@/components/photo/ProfilePhotoAvatar";
 import useSWR from "swr";
@@ -34,11 +36,10 @@ import { fetcher } from "@/lib/hooks";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import CancelIcon from "@mui/icons-material/Cancel";
-import FileUploadIcon from "@mui/icons-material/FileUpload";
 import AddIcon from "@mui/icons-material/Add";
-import ProfilePhoto from "@/components/photo/ProfilePhoto";
 import PersonIcon from "@mui/icons-material/Person";
 import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
+import { useRouter } from "next/router";
 
 function NoteViewer({ viewer, setViewer }) {
   return (
@@ -253,6 +254,107 @@ function AddEditors({ currentUser, users, editors, setEditors }) {
   );
 }
 
+function FoundReport({ id, firstName, lastName, photo, setOpen }) {
+  const router = useRouter();
+  return (
+    <ListItem>
+      <ListItemButton
+        onClick={() => {
+          setOpen(false)
+          router.push(`/reports/${id}`);
+        }}
+      >
+        <ListItemAvatar>
+          {photo ? (
+            <ProfilePhotoAvatar publicId={photo} />
+          ) : (
+            <Avatar>
+              <PersonIcon />
+            </Avatar>
+          )}
+        </ListItemAvatar>
+        <ListItemText primary={`${firstName} ${lastName}`} />
+      </ListItemButton>
+    </ListItem>
+  );
+}
+
+function SearchForExistingReport({ id, firstName, lastName, open, setOpen }) {
+  const [searching, setSearching] = useState(false);
+  const [message, setMessage] = useState("");
+  const [foundReports, setFoundReports] = useState([]);
+
+  const handleSearch = async () => {
+    setSearching(true);
+
+    const searchReport = await fetch("/api/reports/search-report", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        firstName: firstName,
+        lastName: lastName,
+      }),
+    });
+
+    const result = await searchReport.json();
+    const filterResult = result.filter((report) => {
+      return report._id !== id;
+    });
+
+    setSearching(false);
+    if (filterResult.length === 0) {
+      setMessage("No similar report found");
+    } else {
+      setMessage("Similar report found");
+      setFoundReports(filterResult);
+    }
+  };
+
+  return (
+    <Dialog open={open} onClose={() => setOpen(false)}>
+      <DialogTitle>Search existing report</DialogTitle>
+      <DialogContent sx={{ display: "flex", alignItems: "center" }}>
+        <DialogContentText>
+          <Typography>
+            Search{" "}
+            <span style={{ fontWeight: "bold" }}>
+              {firstName} {lastName}
+            </span>{" "}
+            in database
+          </Typography>
+          {message !== "" && <Typography variant="body2">{message}</Typography>}
+        </DialogContentText>
+        {searching ? (
+          <CircularProgress sx={{ ml: 1 }} size={24} />
+        ) : (
+          <IconButton onClick={handleSearch} color="primary" sx={{ ml: 1 }}>
+            <SearchIcon />
+          </IconButton>
+        )}
+      </DialogContent>
+      {foundReports.length > 0 && (
+        <List>
+          {foundReports.map((report) => {
+            return (
+              <FoundReport
+                key={report._id}
+                id={report._id}
+                firstName={report.firstName}
+                lastName={report.lastName}
+                photo={report.photo}
+                setOpen={setOpen}
+              />
+            );
+          })}
+        </List>
+      )}
+      <DialogActions>
+        <Button onClick={() => setOpen(false)}>close</Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
+
 function ReportProcessingMain({ currentUser, report, users }) {
   const [document, setDocument] = useState(); //File type .docx, .pdf, .doc
   const [assign, assignTo] = useState(currentUser._id);
@@ -268,6 +370,7 @@ function ReportProcessingMain({ currentUser, report, users }) {
   const [editors, setEditors] = useState(
     report.editors ? [...report.editors] : []
   );
+  const [openSearchDialog, setOpenSearchDialog] = useState(false);
 
   const snackbarAction = (
     <React.Fragment>
@@ -343,7 +446,7 @@ function ReportProcessingMain({ currentUser, report, users }) {
           result: updateReportResult.data.result,
           state: updateReportResult.data.state,
           assignedTo: updateReportResult.data.assignedTo,
-          editors: updateReportResult.data.editors
+          editors: updateReportResult.data.editors,
         }),
         changes: JSON.stringify(updateReportResult.update),
       }),
@@ -402,6 +505,13 @@ function ReportProcessingMain({ currentUser, report, users }) {
         }}
         message={snackbar.message}
         action={snackbarAction}
+      />
+      <SearchForExistingReport
+        id={report._id}
+        firstName={report.firstName}
+        lastName={report.lastName}
+        open={openSearchDialog}
+        setOpen={setOpenSearchDialog}
       />
       <Paper elevation={3} sx={{ p: 3, mt: 3 }}>
         {/* User information */}
@@ -557,7 +667,12 @@ function ReportProcessingMain({ currentUser, report, users }) {
           />
 
           {/*Search DB for existing reports*/}
-          <Button size="small" startIcon={<SearchIcon />} variant="contained">
+          <Button
+            onClick={() => setOpenSearchDialog(true)}
+            size="small"
+            startIcon={<SearchIcon />}
+            variant="contained"
+          >
             Search
           </Button>
         </Box>

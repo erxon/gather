@@ -1,5 +1,21 @@
 import dbConnect from "@/db/dbConnect";
 
+const isAuthorized = async (req, res, next) => {
+  try {
+    await dbConnect();
+
+    const user = await req.user;
+    if (!user) {
+      return res.status(400).json({ error: "unauthorized" });
+    }
+    next();
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ error: error, message: "Something went wrong." });
+  }
+};
+
 const isAuthority = async (req, res, next) => {
   try {
     await dbConnect();
@@ -30,7 +46,4 @@ const isVerified = async (req, res, next) => {
   }
 };
 
-export {
-    isAuthority,
-    isVerified
-}
+export { isAuthority, isVerified, isAuthorized };
