@@ -36,340 +36,342 @@ import Image from "next/image";
 import ReportPhoto from "@/components/photo/ReportPhoto";
 import TextFieldWithValidation from "@/components/forms/TextFieldWithValidation";
 import ErrorAlert from "@/components/ErrorAlert";
+import ReportWithPhoto from "@/components/home/ReportWithPhoto";
+import ReportToManage from "@/components/home/ReportToManage";
 
-const ReportToManage = () => {
-  const [gender, setGender] = useState("");
-  const [isSubmitted, setSubissionState] = useState(false);
-  const [alert, setAlert] = useState({
-    open: false,
-    message: "",
-  });
-  const [values, setValues] = useState({
-    firstName: "",
-    lastName: "",
-    lastSeen: "",
-    details: "",
-    age: "",
-  });
+// const ReportToManage = () => {
+//   const [gender, setGender] = useState("");
+//   const [isSubmitted, setSubissionState] = useState(false);
+//   const [alert, setAlert] = useState({
+//     open: false,
+//     message: "",
+//   });
+//   const [values, setValues] = useState({
+//     firstName: "",
+//     lastName: "",
+//     lastSeen: "",
+//     details: "",
+//     age: "",
+//   });
 
-  const handleChange = (event) => {
-    const { value, name } = event.target;
-    setValues({ ...values, [name]: value });
-  };
-  //Handle submission of Report and Manage form
-  const handleSubmit = async () => {
-    setSubissionState(true);
-    if (
-      values.firstName === "" ||
-      values.lastName === "" ||
-      values.age === "" ||
-      values.lastSeen === "" ||
-      values.details === ""
-    ) {
-      setAlert({ open: true, message: "Please fill all the required fields." });
-      return;
-    }
-    const body = {
-      firstName: values.firstName,
-      lastName: values.lastName,
-      lastSeen: values.lastSeen,
-      age: values.age,
-      details: values.details,
-      gender: gender,
-      status: "pending",
-    };
+//   const handleChange = (event) => {
+//     const { value, name } = event.target;
+//     setValues({ ...values, [name]: value });
+//   };
+//   //Handle submission of Report and Manage form
+//   const handleSubmit = async () => {
+//     setSubissionState(true);
+//     if (
+//       values.firstName === "" ||
+//       values.lastName === "" ||
+//       values.age === "" ||
+//       values.lastSeen === "" ||
+//       values.details === ""
+//     ) {
+//       setAlert({ open: true, message: "Please fill all the required fields." });
+//       return;
+//     }
+//     const body = {
+//       firstName: values.firstName,
+//       lastName: values.lastName,
+//       lastSeen: values.lastSeen,
+//       age: values.age,
+//       details: values.details,
+//       gender: gender,
+//       status: "pending",
+//     };
 
-    //Create new report
-    const data = await createReport(body);
+//     //Create new report
+//     const data = await createReport(body);
 
-    if (data) {
-      Router.push(`/reports/create-account/${data.data._id}`);
-    }
-  };
+//     if (data) {
+//       Router.push(`/reports/create-account/${data.data._id}`);
+//     }
+//   };
 
-  return (
-    <>
-      <Paper elevation={2} sx={{ p: 3 }}>
-        <Typography variant="h5">Report and manage</Typography>
-        <Typography sx={{ my: 2 }} variant="body1">
-          Manage, and keep updated on the report you have filed.
-        </Typography>
-        <Stack sx={{ mb: 3 }} direction="row" spacing={1}>
-          <TextFieldWithValidation
-            id="age"
-            label="Age"
-            name="age"
-            variant="outlined"
-            type="text"
-            size="small"
-            isSubmitted={isSubmitted}
-            value={values.age}
-            changeHandler={handleChange}
-          />
-          <FormControl sx={{ minWidth: 120 }}>
-            <InputLabel>Gender</InputLabel>
-            <Select
-              onChange={(event) => {
-                setGender(event.target.value);
-              }}
-              value={gender}
-              label="Gender"
-            >
-              <MenuItem value={"male"}>Male</MenuItem>
-              <MenuItem value={"female"}>Female</MenuItem>
-            </Select>
-          </FormControl>
-        </Stack>
-        <Divider sx={{ mb: 3 }} />
-        <Stack sx={{ mb: 2 }} direction="row" spacing={1}>
-          {/*First name*/}
-          <TextFieldWithValidation
-            id="firstName"
-            label="First Name"
-            variant="outlined"
-            name="firstName"
-            type="text"
-            isSubmitted={isSubmitted}
-            value={values.firstName}
-            isFullWidth={true}
-            changeHandler={handleChange}
-          />
-          {/*Last name*/}
-          <TextFieldWithValidation
-            id="lastName"
-            label="Last Name"
-            variant="outlined"
-            name="lastName"
-            type="text"
-            size="small"
-            isSubmitted={isSubmitted}
-            value={values.lastName}
-            isFullWidth={true}
-            changeHandler={handleChange}
-          />
-        </Stack>
-        {/*Last seen*/}
-        <TextFieldWithValidation
-          id="lastSeen"
-          label="Last Seen"
-          variant="outlined"
-          name="lastSeen"
-          type="text"
-          size="small"
-          style={{ mb: 1 }}
-          isSubmitted={isSubmitted}
-          value={values.lastSeen}
-          isFullWidth={true}
-          changeHandler={handleChange}
-        />
-        <Typography sx={{ my: 1 }} color="GrayText">
-          Please state as much details as needed for your report. Adequate
-          information will help investigators or authorities find the person.
-        </Typography>
-        <TextFieldWithValidation
-          id="details"
-          label="Details"
-          variant="outlined"
-          name="details"
-          type="text"
-          style={{ mb: 1 }}
-          isSubmitted={isSubmitted}
-          value={values.details}
-          isFullWidth={true}
-          isMultiline={true}
-          rows={4}
-          changeHandler={handleChange}
-        />
-        <ErrorAlert
-          open={alert.open}
-          message={alert.message}
-          close={() => setAlert({ open: false })}
-        />
-        <Button
-          startIcon={<ArticleIcon />}
-          size="small"
-          sx={{ my: 2 }}
-          type="submit"
-          variant="contained"
-          onClick={handleSubmit}
-        >
-          Report
-        </Button>
-      </Paper>
-    </>
-  );
-};
+//   return (
+//     <>
+//       <Paper elevation={2} sx={{ p: 3 }}>
+//         <Typography variant="h5">Report and manage</Typography>
+//         <Typography sx={{ my: 2 }} variant="body1">
+//           Manage, and keep updated on the report you have filed.
+//         </Typography>
+//         <Stack sx={{ mb: 3 }} direction="row" spacing={1}>
+//           <TextFieldWithValidation
+//             id="age"
+//             label="Age"
+//             name="age"
+//             variant="outlined"
+//             type="text"
+//             size="small"
+//             isSubmitted={isSubmitted}
+//             value={values.age}
+//             changeHandler={handleChange}
+//           />
+//           <FormControl sx={{ minWidth: 120 }}>
+//             <InputLabel>Gender</InputLabel>
+//             <Select
+//               onChange={(event) => {
+//                 setGender(event.target.value);
+//               }}
+//               value={gender}
+//               label="Gender"
+//             >
+//               <MenuItem value={"male"}>Male</MenuItem>
+//               <MenuItem value={"female"}>Female</MenuItem>
+//             </Select>
+//           </FormControl>
+//         </Stack>
+//         <Divider sx={{ mb: 3 }} />
+//         <Stack sx={{ mb: 2 }} direction="row" spacing={1}>
+//           {/*First name*/}
+//           <TextFieldWithValidation
+//             id="firstName"
+//             label="First Name"
+//             variant="outlined"
+//             name="firstName"
+//             type="text"
+//             isSubmitted={isSubmitted}
+//             value={values.firstName}
+//             isFullWidth={true}
+//             changeHandler={handleChange}
+//           />
+//           {/*Last name*/}
+//           <TextFieldWithValidation
+//             id="lastName"
+//             label="Last Name"
+//             variant="outlined"
+//             name="lastName"
+//             type="text"
+//             size="small"
+//             isSubmitted={isSubmitted}
+//             value={values.lastName}
+//             isFullWidth={true}
+//             changeHandler={handleChange}
+//           />
+//         </Stack>
+//         {/*Last seen*/}
+//         <TextFieldWithValidation
+//           id="lastSeen"
+//           label="Last Seen"
+//           variant="outlined"
+//           name="lastSeen"
+//           type="text"
+//           size="small"
+//           style={{ mb: 1 }}
+//           isSubmitted={isSubmitted}
+//           value={values.lastSeen}
+//           isFullWidth={true}
+//           changeHandler={handleChange}
+//         />
+//         <Typography sx={{ my: 1 }} color="GrayText">
+//           Please state as much details as needed for your report. Adequate
+//           information will help investigators or authorities find the person.
+//         </Typography>
+//         <TextFieldWithValidation
+//           id="details"
+//           label="Details"
+//           variant="outlined"
+//           name="details"
+//           type="text"
+//           style={{ mb: 1 }}
+//           isSubmitted={isSubmitted}
+//           value={values.details}
+//           isFullWidth={true}
+//           isMultiline={true}
+//           rows={4}
+//           changeHandler={handleChange}
+//         />
+//         <ErrorAlert
+//           open={alert.open}
+//           message={alert.message}
+//           close={() => setAlert({ open: false })}
+//         />
+//         <Button
+//           startIcon={<ArticleIcon />}
+//           size="small"
+//           sx={{ my: 2 }}
+//           type="submit"
+//           variant="contained"
+//           onClick={handleSubmit}
+//         >
+//           Report
+//         </Button>
+//       </Paper>
+//     </>
+//   );
+// };
 
-const ReportWithPhoto = () => {
-  const [photo, setPhoto] = useState({
-    src: "",
-    fileName: "",
-    type: "",
-    size: 0,
-  });
-  const [uploadData, setUploadData] = useState();
-  //Snackbar
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    severity: "error",
-    message: "",
-  });
+// const ReportWithPhoto = () => {
+//   const [photo, setPhoto] = useState({
+//     src: "",
+//     fileName: "",
+//     type: "",
+//     size: 0,
+//   });
+//   const [uploadData, setUploadData] = useState();
+//   //Snackbar
+//   const [snackbar, setSnackbar] = useState({
+//     open: false,
+//     severity: "error",
+//     message: "",
+//   });
 
-  const handleSnackbarClose = () => {
-    setSnackbar({
-      open: false,
-      severity: "",
-      message: "",
-    });
-  };
+//   const handleSnackbarClose = () => {
+//     setSnackbar({
+//       open: false,
+//       severity: "",
+//       message: "",
+//     });
+//   };
 
-  //Handle change in image element to display the preview
-  //of the image before uploading
-  const handleChange = (event) => {
-    const reader = new FileReader();
+//   //Handle change in image element to display the preview
+//   //of the image before uploading
+//   const handleChange = (event) => {
+//     const reader = new FileReader();
 
-    reader.onload = function (onLoadEvent) {
-      setPhoto({
-        src: onLoadEvent.target.result,
-        fileName: event.target.files[0].name,
-        type: event.target.files[0].type,
-        size: event.target.files[0].size,
-      });
-      setUploadData(undefined);
-    };
-    reader.readAsDataURL(event.target.files[0]);
-  };
+//     reader.onload = function (onLoadEvent) {
+//       setPhoto({
+//         src: onLoadEvent.target.result,
+//         fileName: event.target.files[0].name,
+//         type: event.target.files[0].type,
+//         size: event.target.files[0].size,
+//       });
+//       setUploadData(undefined);
+//     };
+//     reader.readAsDataURL(event.target.files[0]);
+//   };
 
-  //Handle uploading of an image
-  const handleImageSubmit = async (e) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const fileInput = Array.from(form.elements).find(
-      ({ name }) => name === "file"
-    );
+//   //Handle uploading of an image
+//   const handleImageSubmit = async (e) => {
+//     e.preventDefault();
+//     const form = e.currentTarget;
+//     const fileInput = Array.from(form.elements).find(
+//       ({ name }) => name === "file"
+//     );
 
-    const formData = new FormData();
+//     const formData = new FormData();
 
-    for (const file of fileInput.files) {
-      console.log(file)
-      formData.append("file", file);
-    }
+//     for (const file of fileInput.files) {
+//       console.log(file)
+//       formData.append("file", file);
+//     }
 
-    formData.append("upload_preset", "query-photos");
+//     formData.append("upload_preset", "query-photos");
 
-    //Upload photo to Cloudinary
-    const cloudUpload = await uploadReportPhoto(formData);
-    const publicId = cloudUpload.public_id.substring(13);
+//     //Upload photo to Cloudinary
+//     const cloudUpload = await uploadReportPhoto(formData);
+//     const publicId = cloudUpload.public_id.substring(13);
 
-    //Upload photo to Database
-    const setValues = {
-      type: "query",
-      image: publicId,
-      fileName: photo.fileName,
-    };
-    const uploadToDatabase = await fetch("/api/photos", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(setValues),
-    });
-    const newQueryPhoto = await uploadToDatabase.json();
-    if (uploadToDatabase.status === 400) {
-      setSnackbar({
-        open: true,
-        severity: "error",
-        message: "Something went wrong",
-      });
-    } else {
-      Router.push(`/reports/upload/${newQueryPhoto.data._id}`);
-    }
-  };
+//     //Upload photo to Database
+//     const setValues = {
+//       type: "query",
+//       image: publicId,
+//       fileName: photo.fileName,
+//     };
+//     const uploadToDatabase = await fetch("/api/photos", {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify(setValues),
+//     });
+//     const newQueryPhoto = await uploadToDatabase.json();
+//     if (uploadToDatabase.status === 400) {
+//       setSnackbar({
+//         open: true,
+//         severity: "error",
+//         message: "Something went wrong",
+//       });
+//     } else {
+//       Router.push(`/reports/upload/${newQueryPhoto.data._id}`);
+//     }
+//   };
 
-  return (
-    <>
-      <Paper
-        sx={{
-          p: 3,
-          mb: 3,
-        }}
-        elevation={2}
-      >
-        {/*Snackbar*/}
-        <Snackbar open={snackbar.open} onClose={handleSnackbarClose}>
-          <Alert severity={snackbar.severity} />
-        </Snackbar>
-        {/*Report with Photo*/}
+//   return (
+//     <>
+//       <Paper
+//         sx={{
+//           p: 3,
+//           mb: 3,
+//         }}
+//         elevation={2}
+//       >
+//         {/*Snackbar*/}
+//         <Snackbar open={snackbar.open} onClose={handleSnackbarClose}>
+//           <Alert severity={snackbar.severity} />
+//         </Snackbar>
+//         {/*Report with Photo*/}
 
-        <form
-          method="post"
-          onChange={handleChange}
-          onSubmit={handleImageSubmit}
-        >
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={6}>
-              <Stack
-                spacing={1}
-                alignItems="center"
-                direction="row"
-                sx={{ marginBottom: "16px" }}
-              >
-                <Typography variant="h5">Report with Photo</Typography>
-              </Stack>
-              <Typography variant="body1">
-                Report a missing person with only an image at hand.
-              </Typography>
-              <Button
-                startIcon={<AttachFileIcon />}
-                sx={{ mt: 2 }}
-                variant="contained"
-                component="label"
-                size="small"
-                disabled={!!photo.src}
-              >
-                Select file
-                <input
-                  hidden
-                  type="file"
-                  name="file"
-                  accept="image/jpeg, image/png"
-                />
-              </Button>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              {photo.src && (
-                <div className={styles.imagecontainer}>
-                  <Image
-                    width={150}
-                    height={150}
-                    alt=""
-                    style={{ objectFit: "cover" }}
-                    src={photo.src}
-                  />
-                </div>
-              )}
-              {photo.src && !uploadData && (
-                <p>
-                  <Button
-                    startIcon={<FileUploadIcon />}
-                    type="submit"
-                    variant="contained"
-                    size="small"
-                  >
-                    upload files
-                  </Button>
-                </p>
-              )}
-              {uploadData && (
-                <code>
-                  <pre>{JSON.stringify(uploadData, null, 2)}</pre>
-                </code>
-              )}
-            </Grid>
-          </Grid>
-        </form>
-      </Paper>
-    </>
-  );
-};
+//         <form
+//           method="post"
+//           onChange={handleChange}
+//           onSubmit={handleImageSubmit}
+//         >
+//           <Grid container spacing={2}>
+//             <Grid item xs={12} md={6}>
+//               <Stack
+//                 spacing={1}
+//                 alignItems="center"
+//                 direction="row"
+//                 sx={{ marginBottom: "16px" }}
+//               >
+//                 <Typography variant="h5">Report with Photo</Typography>
+//               </Stack>
+//               <Typography variant="body1">
+//                 Report a missing person with only an image at hand.
+//               </Typography>
+//               <Button
+//                 startIcon={<AttachFileIcon />}
+//                 sx={{ mt: 2 }}
+//                 variant="contained"
+//                 component="label"
+//                 size="small"
+//                 disabled={!!photo.src}
+//               >
+//                 Select file
+//                 <input
+//                   hidden
+//                   type="file"
+//                   name="file"
+//                   accept="image/jpeg, image/png"
+//                 />
+//               </Button>
+//             </Grid>
+//             <Grid item xs={12} md={6}>
+//               {photo.src && (
+//                 <div className={styles.imagecontainer}>
+//                   <Image
+//                     width={150}
+//                     height={150}
+//                     alt=""
+//                     style={{ objectFit: "cover" }}
+//                     src={photo.src}
+//                   />
+//                 </div>
+//               )}
+//               {photo.src && !uploadData && (
+//                 <p>
+//                   <Button
+//                     startIcon={<FileUploadIcon />}
+//                     type="submit"
+//                     variant="contained"
+//                     size="small"
+//                   >
+//                     upload files
+//                   </Button>
+//                 </p>
+//               )}
+//               {uploadData && (
+//                 <code>
+//                   <pre>{JSON.stringify(uploadData, null, 2)}</pre>
+//                 </code>
+//               )}
+//             </Grid>
+//           </Grid>
+//         </form>
+//       </Paper>
+//     </>
+//   );
+// };
 
 function Report({ reportId, photo, name, lastSeen, gender, age }) {
   const router = useRouter();

@@ -18,6 +18,10 @@ import {
 import PlaceIcon from "@mui/icons-material/Place";
 import { fetcher } from "@/lib/hooks";
 import SmallMap from "@/components/map/SmallMap";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import StackRowLayout from "@/utils/StackRowLayout";
+import Link from "next/link";
+import InfoIcon from "@mui/icons-material/Info";
 
 export default function Upload() {
   const router = useRouter();
@@ -64,8 +68,8 @@ function Form({ publicId, photoId }) {
       longitude: currentPosition.longitude,
       latitude: currentPosition.latitude,
       email: e.target.email.value,
-    };
-    console.log(JSON.stringify(body));
+    }
+    
     await fetch("/api/reports/upload", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -76,95 +80,127 @@ function Form({ publicId, photoId }) {
   };
 
   return (
-    <>
+    <div>
       {submitted ? (
-        <div>
-          <Typography variant="body1">
-            Thank you for informing us about this missing person. Authorities
-            will contact you at any given moment to verify this report.
-          </Typography>
-        </div>
+        <Box sx={{ display: "flex", justifyContent: "center" }}>
+          <Paper sx={{ p: 3, maxWidth: 400 }}>
+            <Stack
+              sx={{ mb: 2 }}
+              direction="row"
+              alignItems="center"
+              spacing={1}
+            >
+              <InfoIcon color="primary" />
+              <Typography variant="h5">Thank you</Typography>
+            </Stack>
+            <Typography sx={{ mb: 2 }}>
+              Thank you for informing us about this missing person. Authorities
+              will contact you at any given moment to verify this report.
+            </Typography>
+            <StackRowLayout spacing={0.5}>
+              <Typography>Save this link for updates: </Typography>
+              <Link href="#">
+                <Typography>http://example.com/</Typography>
+              </Link>
+            </StackRowLayout>
+          </Paper>
+        </Box>
       ) : (
-        <Box>
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={4}>
-              <Paper sx={{ p: 3 }}>
-                <AdvancedImage cldImg={myImage} width="100%" height="auto" />
-              </Paper>
-              <form onSubmit={handleSubmit}>
-                <Button
-                  size="small"
-                  disableElevation
-                  variant="contained"
-                  type="submit"
-                  sx={{ my: 2 }}
-                >
-                  Submit
-                </Button>
-                <Paper sx={{ p: 3, mb: 3 }}>
-                  <Typography sx={{ mb: 3 }} variant="h6">
-                    Please provide some of your information
-                  </Typography>
-                  <Stack
-                    sx={{ mb: 2 }}
-                    spacing={1}
-                    direction={{ xs: "column", md: "row" }}
-                    alignItems="center"
-                  >
-                    <TextField
-                      fullWidth
-                      variant="outlined"
-                      label="First name"
-                      type="text"
-                      name="firstName"
-                      required
-                    />
-                    <TextField
-                      fullWidth
-                      variant="outlined"
-                      label="Last name"
-                      type="text"
-                      name="lastName"
-                      required
-                    />
-                  </Stack>
-                  <Stack
-                    sx={{ mb: 2 }}
-                    spacing={1}
-                    direction={{ xs: "column", md: "row" }}
-                    alignItems="center"
-                  >
-                    <TextField
-                      fullWidth
-                      variant="outlined"
-                      label="Contact number"
-                      type="text"
-                      name="contactNumber"
-                      required
-                    />
-                    <TextField
-                      fullWidth
-                      variant="outlined"
-                      label="Email"
-                      type="text"
-                      name="email"
-                      required
-                    />
-                  </Stack>
-                </Paper>
-              </form>
-            </Grid>
-            <Grid item xs={12} md={8}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Paper sx={{ p: 3, maxWidth: 500 }}>
+            <Box
+              sx={{
+                bgcolor: "#f0f0f0",
+                borderRadius: "10px",
+                textAlign: "center",
+                maxWidth: 500,
+                height: "auto",
+                mb: 2,
+              }}
+            >
+              <AdvancedImage cldImg={myImage} width="200" height="auto" />
+            </Box>
+            <Box>
+              <StackRowLayout spacing={0.5}>
+                <LocationOnIcon />
+                <Typography sx={{ fontWeight: "bold" }}>You're here</Typography>
+              </StackRowLayout>
               {/* {currentPosition && (
-                <SmallMap
-                  lng={currentPosition.longitude}
-                  lat={currentPosition.latitude}
+            <SmallMap
+              lng={currentPosition.longitude}
+              lat={currentPosition.latitude}
+            />
+          )*/}
+            </Box>
+            <form onSubmit={handleSubmit}>
+              <Button
+                size="small"
+                disableElevation
+                variant="contained"
+                type="submit"
+                sx={{ my: 2 }}
+              >
+                Submit
+              </Button>
+              <Typography sx={{ mb: 3 }}>
+                Please provide some of your information
+              </Typography>
+              <Stack
+                sx={{ mb: 2 }}
+                spacing={1}
+                direction={{ xs: "column", md: "row" }}
+                alignItems="center"
+              >
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  label="First name"
+                  type="text"
+                  name="firstName"
+                  required
                 />
-              )} */}
-            </Grid>
-          </Grid>
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  label="Last name"
+                  type="text"
+                  name="lastName"
+                  required
+                />
+              </Stack>
+              <Stack
+                sx={{ mb: 2 }}
+                spacing={1}
+                direction={{ xs: "column", md: "row" }}
+                alignItems="center"
+              >
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  label="Contact number"
+                  type="text"
+                  name="contactNumber"
+                  required
+                />
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  label="Email"
+                  type="text"
+                  name="email"
+                  required
+                />
+              </Stack>
+            </form>
+          </Paper>
         </Box>
       )}
-    </>
+    </div>
   );
 }

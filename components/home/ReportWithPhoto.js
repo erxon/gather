@@ -6,20 +6,23 @@ import {
   Snackbar,
   Alert,
   Grid,
+  Box,
+  IconButton,
 } from "@mui/material";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
-import FileUploadIcon from "@mui/icons-material/FileUpload";
 import styles from "@/public/style/home.module.css";
 import Image from "next/image";
-
+import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
+import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
+import { uploadReportPhoto } from "@/lib/api-lib/api-reports";
 import { useState } from "react";
+import Router from "next/router";
 
 export default function ReportWithPhoto() {
   const [photo, setPhoto] = useState({
     src: "",
-    fileName: "",
-    type: "",
-    size: 0,
+    file: {},
   });
   const [uploadData, setUploadData] = useState();
   //Snackbar
@@ -45,29 +48,22 @@ export default function ReportWithPhoto() {
     reader.onload = function (onLoadEvent) {
       setPhoto({
         src: onLoadEvent.target.result,
-        fileName: event.target.files[0].name,
-        type: event.target.files[0].type,
-        size: event.target.files[0].size,
+        file: event.target.files[0],
       });
       setUploadData(undefined);
     };
+
     reader.readAsDataURL(event.target.files[0]);
   };
+  
 
   //Handle uploading of an image
   const handleImageSubmit = async (e) => {
     e.preventDefault();
-    const form = e.currentTarget;
-    const fileInput = Array.from(form.elements).find(
-      ({ name }) => name === "file"
-    );
 
     const formData = new FormData();
 
-    for (const file of fileInput.files) {
-      formData.append("file", file);
-    }
-
+    formData.append("file", photo.file);
     formData.append("upload_preset", "query-photos");
 
     //Upload photo to Cloudinary
@@ -95,6 +91,23 @@ export default function ReportWithPhoto() {
     } else {
       Router.push(`/reports/upload/${newQueryPhoto.data._id}`);
     }
+  };
+
+  const handleCancelImage = () => {
+
+    console.log(photo);
+    setPhoto({
+      src: "",
+      file: {}
+    });
+  };
+
+  const imageUploadBox = {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    height: 150,
   };
 
   return (
@@ -130,38 +143,46 @@ export default function ReportWithPhoto() {
               <Typography variant="body1">
                 Report a missing person with only an image at hand.
               </Typography>
-              <Button
-                startIcon={<AttachFileIcon />}
-                sx={{ mt: 2 }}
-                variant="contained"
-                component="label"
-                size="small"
-              >
-                Select file
-                <input
-                  hidden
-                  type="file"
-                  name="file"
-                  accept="image/jpeg, image/png"
-                />
-              </Button>
             </Grid>
             <Grid item xs={12} md={6}>
-              {photo.src && (
-                <div className={styles.imagecontainer}>
+              {photo.src ? (
+                <Paper variant="outlined" sx={imageUploadBox}>
                   <Image width={150} height={150} alt="" src={photo.src} />
-                </div>
+                </Paper>
+              ) : (
+                <Paper variant="outlined" sx={imageUploadBox}>
+                  <IconButton component="label" color="primary">
+                    <AddPhotoAlternateIcon />
+                    <input
+                      hidden
+                      type="file"
+                      name="file"
+                      accept="image/jpeg, image/png"
+                    />
+                  </IconButton>
+                  <Typography variant="body2">Upload file here</Typography>
+                </Paper>
               )}
               {photo.src && !uploadData && (
                 <p>
-                  <Button
-                    startIcon={<FileUploadIcon />}
-                    type="submit"
-                    variant="contained"
-                    size="small"
+                  <Paper
+                    variant="outlined"
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      p: 0.75,
+                    }}
                   >
-                    upload files
-                  </Button>
+                    <Typography sx={{ width: "100%" }} variant="body2">
+                      {photo.file.name}
+                    </Typography>
+                    <IconButton color="primary" type="submit">
+                      <FileUploadIcon />
+                    </IconButton>
+                    <IconButton onClick={handleCancelImage} color="secondary">
+                      <CancelOutlinedIcon />
+                    </IconButton>
+                  </Paper>
                 </p>
               )}
               {uploadData && (

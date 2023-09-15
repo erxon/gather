@@ -13,6 +13,7 @@ import {
   CardHeader,
   CardMedia,
   Avatar,
+  CardContent,
 } from "@mui/material";
 
 import { useEffect, useState } from "react";
@@ -23,6 +24,7 @@ import { useRouter } from "next/router";
 import computeElapsedTime from "@/utils/helpers/computeElapsedTime";
 import QueryPhoto from "../photo/QueryPhoto";
 import _ from "lodash";
+import DialogFoundMissingPerson from "../reports/DialogFoundMissingPerson";
 
 export default function NotificationsMain({ user }) {
   const api =
@@ -92,8 +94,6 @@ function Notifications(props) {
     await removeNotification(id);
   };
 
-  console.log(notifications);
-
   return (
     <>
       <Box sx={{ overflowY: "scroll", height: 500 }}>
@@ -147,23 +147,28 @@ function Notification(props) {
   const router = useRouter();
   const date = new Date(props.createdAt);
   const elapsedTime = computeElapsedTime(date);
-  console.log(props.type);
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const handleOpenDialog = () => {
+    setOpenDialog(true);
+  };
+
   return (
     <>
+      <DialogFoundMissingPerson
+        reportId={props.reportId}
+        photo={props.photo}
+        reportLocation={props.reportLocation}
+        open={openDialog}
+        setOpen={setOpenDialog}
+      />
       <Box sx={{ my: 2 }}>
-        <Card>
-          <CardHeader
-            avatar={<Avatar>{props.name.charAt(0)}</Avatar>}
-            title={props.title}
-            subheader={`${props.name} ${elapsedTime}`}
-          />
-
+        <Card sx={{ display: "flex", p: 2 }}>
           {props.photo ? (
             <CardMedia
               sx={{
-                height: 300,
+                height: 100,
                 backgroundColor: "#ECEEEE",
-                textAlign: "center",
               }}
             >
               <DisplayPhoto id={props.photo} />
@@ -172,10 +177,23 @@ function Notification(props) {
             <CardMedia
               component="img"
               image="/assets/placeholder.png"
-              sx={{ height: 300 }}
+              sx={{ height: 100, width: 100 }}
             />
           )}
-
+          <CardContent>
+            <Typography variant="body2" sx={{ fontWeight: "bold", mb: 0.75 }}>
+              {props.type === "upload-photo" && "Found missing person"}
+              {props.type === "report-manage" && "New report"}
+              {props.type === "status-change" && "New active report"}
+            </Typography>
+            <Typography variant="body2">
+              Reported by{" "}
+              <span style={{ fontWeight: "bold" }}>{props.name}</span>
+            </Typography>
+            <Typography color="GrayText" variant="body2">
+              {elapsedTime}
+            </Typography>
+          </CardContent>
           <CardActions>
             <Stack
               sx={{ mt: 2 }}
@@ -190,18 +208,16 @@ function Notification(props) {
                     router.push(`/reports/${props.reportId}`);
                   }}
                   size="small"
-                  variant="contained"
+                  variant="outlined"
                 >
                   View
                 </Button>
               )}
               {props.type === "upload-photo" && (
                 <Button
-                  onClick={() => {
-                    router.push(`/authority/matches/${props.photo}`);
-                  }}
+                  onClick={handleOpenDialog}
                   size="small"
-                  variant="contained"
+                  variant="outlined"
                 >
                   View
                 </Button>

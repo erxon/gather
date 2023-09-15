@@ -35,7 +35,10 @@ export default function SmallMap(props) {
 
   return (
     <div>
-      <Box ref={mapContainer} sx={{ height: "500px" }}></Box>
+      <Box
+        ref={mapContainer}
+        sx={{ borderRadius: "10px", height: 200, maxWidth: 500 }}
+      ></Box>
     </div>
   );
 }

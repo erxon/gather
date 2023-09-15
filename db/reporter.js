@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const reporterSchema = mongoose.Schema({
+const reporterSchema = new mongoose.Schema({
   photoUploaded: { type: mongoose.Schema.Types.ObjectId, ref: "Photo" },
   location: String,
   username: { type: String, ref: "User" },
