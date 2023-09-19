@@ -56,7 +56,7 @@ export default function ModalFoundMissingPerson({ photo, open, setOpen, id }) {
               <RouteIcon />
               <Typography variant="body2">
                 <span style={{ fontWeight: "bold" }}>View route</span> - view
-                route from your location to the missing person's location
+                route from your location to the missing person&apos;s location
               </Typography>
             </StackRowLayout>
             <StackRowLayout spacing={0.5}>
