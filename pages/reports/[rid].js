@@ -31,6 +31,13 @@ import ProfilePhoto from "@/components/photo/ProfilePhoto";
 import Image from "next/image";
 import computeElapsedTime from "@/utils/helpers/computeElapsedTime";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import useSWR from "swr";
+import QueryPhotoLarge from "@/components/photo/QueryPhotoLarge";
+import QueryPhoto from "@/components/photo/QueryPhoto";
+import IconText from "@/utils/components/IconText";
+import PhoneIcon from "@mui/icons-material/Phone";
+import EmailIcon from "@mui/icons-material/Email";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 
 function UpdatedBy({ updatedBy, updatedAt }) {
   const dateUpdated = new Date(updatedAt);
@@ -81,6 +88,51 @@ function UpdatedBy({ updatedBy, updatedAt }) {
       >
         View Profile
       </Button>
+    </Paper>
+  );
+}
+
+function MatchedPhoto({ photo }) {
+  const { data, isLoading, error } = useSWR(`/api/photos/${photo}`);
+
+  if (isLoading) return <CircularProgress />
+  if (error) return <Typography>Something went wrong</Typography>
+  
+  return <QueryPhoto publicId={data.image} />;
+}
+
+function Match({ photo }) {
+  const { data, error, isLoading } = useSWR(
+    `/api/reporters/uploaded-photo/${photo}`,
+    fetcher
+  );
+
+  if (isLoading) return <CircularProgress />;
+  if (error) return <Typography>Something went wrong.</Typography>;
+
+  const date = data.createdAt;
+  const elapsedTime = computeElapsedTime(date);
+
+  return (
+    <Paper sx={{ p: 3, mt: 2 }}>
+      <Typography variant="h6">Match found</Typography>
+      <Stack sx={{ mt: 2 }} direction="row" alignItems="flex-start" spacing={1}>
+        <MatchedPhoto photo={photo} />
+        <Box>
+          <Typography sx={{ mb: 1 }} variant="body2">
+            This matches the photo uploaded by {data.firstName} {data.lastName}{" "}
+            {elapsedTime}
+          </Typography>
+          <Typography>
+            About {data.firstName} {data.lastName}
+          </Typography>
+          <IconText
+            icon={<PhoneIcon fontSize="small" />}
+            text={data.contactNumber}
+          />
+          <IconText icon={<EmailIcon fontSize="small" />} text={data.email} />
+        </Box>
+      </Stack>
     </Paper>
   );
 }
@@ -154,6 +206,7 @@ export default function ReportPage({ data }) {
                 <ReportProcessing currentUser={user} report={data} />
               )}
           </Box>
+
           {/*Basic Information */}
           {user &&
           (user._id === data.account ||
@@ -161,6 +214,7 @@ export default function ReportPage({ data }) {
             user.type === "authority") ? (
             <Grid container spacing={2}>
               <Grid item xs={12} md={8}>
+                {data.match && <Match photo={data.match} />}
                 <ReportInformation
                   authorized={authorized}
                   data={data}

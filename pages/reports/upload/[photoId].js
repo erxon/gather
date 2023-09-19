@@ -83,7 +83,7 @@ function Form({ publicId, photoId }) {
     <div>
       {submitted ? (
         <Box sx={{ display: "flex", justifyContent: "center" }}>
-          <Paper sx={{ p: 3, maxWidth: 400 }}>
+          <Paper sx={{ p: 3, maxWidth: 600 }}>
             <Stack
               sx={{ mb: 2 }}
               direction="row"
@@ -98,9 +98,9 @@ function Form({ publicId, photoId }) {
               will contact you at any given moment to verify this report.
             </Typography>
             <StackRowLayout spacing={0.5}>
-              <Typography>Save this link for updates: </Typography>
-              <Link href="#">
-                <Typography>http://example.com/</Typography>
+              <Typography variant="body2">Save this link for updates: </Typography>
+              <Link href={`http://localhost:3000/found-person/${photoId}`}>
+                <Typography variant="body2">http://localhost:3000/found-person/{photoId}</Typography>
               </Link>
             </StackRowLayout>
           </Paper>

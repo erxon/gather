@@ -27,6 +27,8 @@ const reporterSchema = new mongoose.Schema({
     type: Map,
     of: Number
   },
+  reportMatchFound: Boolean,
+  match: {type: mongoose.Schema.Types.ObjectId, ref: "Report"},
   createdAt: Date,
   updatedAt: Date,
 });

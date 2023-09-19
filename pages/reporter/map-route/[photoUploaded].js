@@ -7,6 +7,7 @@ import {
   Box,
   Grid,
   Stack,
+  Button,
 } from "@mui/material";
 import QueryPhoto from "@/components/photo/QueryPhoto";
 import QueryPhotoLarge from "@/components/photo/QueryPhotoLarge";
@@ -15,6 +16,7 @@ import { fetcher } from "@/lib/hooks";
 import computeElapsedTime from "@/utils/helpers/computeElapsedTime";
 import StackRowLayout from "@/utils/StackRowLayout";
 import RouteOutlinedIcon from "@mui/icons-material/RouteOutlined";
+import EditIcon from "@mui/icons-material/Edit";
 
 function DisplayPhoto({ photoUploaded }) {
   const { data, isLoading, error } = useSWR(
@@ -37,7 +39,7 @@ function DisplayMap({ data, position, reporterLocation }) {
         p: 3,
       }}
     >
-      <Box sx={{mb: 2}}>
+      <Box sx={{ mb: 2 }}>
         <StackRowLayout spacing={1}>
           <RouteOutlinedIcon />
           <Typography variant="h5" sx={{ mb: 2 }}>
@@ -65,12 +67,15 @@ function DisplayMap({ data, position, reporterLocation }) {
                 </Typography>
                 <Typography color="GrayText">{elapsedTime}</Typography>
               </StackRowLayout>
+              <Button fullWidth startIcon={<EditIcon />} sx={{ mt: 1 }}>
+                Update
+              </Button>
             </Box>
           </Paper>
         </Grid>
         <Grid item xs={12} md={8}>
           <Paper sx={{ p: 2 }}>
-            <Map
+            {/* <Map
               reporters={[{ ...data }]}
               userLocation={{
                 lat: position.latitude,
@@ -78,7 +83,7 @@ function DisplayMap({ data, position, reporterLocation }) {
               }}
               destination={reporterLocation}
               height="500px"
-            />
+            /> */}
           </Paper>
         </Grid>
       </Grid>

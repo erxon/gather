@@ -17,9 +17,7 @@ export default function QueryPhotoLarge(props) {
     cloudName: "dg0cwy8vx",
     apiKey: process.env.NEXT_PUBLIC_CLOUDINARY_KEY,
     apiSecret: process.env.NEXT_PUBLIC_CLOUDINARY_SECRET,
-  })
-    .resize(fill().height(250).width(250))
-    .roundCorners(max());
+  }).resize(fill().height(250).width(250));
 
   return <AdvancedImage cldImg={image} />;
 }

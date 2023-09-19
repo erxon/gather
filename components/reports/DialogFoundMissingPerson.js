@@ -76,7 +76,11 @@ export default function ModalFoundMissingPerson({ photo, open, setOpen, id }) {
           >
             View route
           </Button>
-          <Button variant="outlined" startIcon={<PersonSearchIcon />}>
+          <Button
+            onClick={() => router.push(`/authority/matches/${photo}`)}
+            variant="outlined"
+            startIcon={<PersonSearchIcon />}
+          >
             Search face
           </Button>
         </Box>

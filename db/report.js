@@ -65,6 +65,7 @@ const reportSchema = new mongoose.Schema({
     facebook: String,
     twitter: String,
   },
+  match: { type: mongoose.Schema.Types.ObjectId, ref: "Photo" },
   assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   editors: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   attachedDocument: { data: Buffer, contentType: String },

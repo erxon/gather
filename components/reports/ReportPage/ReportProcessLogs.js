@@ -193,7 +193,7 @@ function Log({
         <Box sx={{ mb: 2 }}>
           <Changes oldState={oldState} changes={changes} />
         </Box>
-        <AssignedTo userId={changes.assignedTo} />
+        {changes.assignedTo && <AssignedTo userId={changes.assignedTo} />}
       </Box>
       <Divider />
     </div>
