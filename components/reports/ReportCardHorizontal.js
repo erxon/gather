@@ -18,7 +18,7 @@ export default function ReportCardHorizontal(props) {
   return (
     <Card sx={{ display: "flex" }}>
       <CardMedia sx={{ width: "150", height: "150" }}>
-        <Image aalt="placeholder" width="150" height="150" src="/assets/placeholder.png" />
+        <Image alt="placeholder" width="150" height="150" src="/assets/placeholder.png" />
       </CardMedia>
       <CardContent>
         <Typography>{props.distance}</Typography>

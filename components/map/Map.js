@@ -104,7 +104,15 @@ export default function Map({
         ) // add popup
         .addTo(map.current);
     });
-  }, [destination, reporters, lat, lng, zoom]);
+  }, [
+    destination,
+    reporters,
+    userLocation.lat,
+    userLocation.lng,
+    lat,
+    lng,
+    zoom,
+  ]);
 
   return (
     <div>

@@ -165,7 +165,7 @@ function ShareDialog({ open, setOpen, photoId }) {
   );
 }
 
-export default function () {
+export default function Page() {
   const router = useRouter();
   const { photoId } = router.query;
   const { data, error, isLoading } = useSWR(
