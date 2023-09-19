@@ -75,7 +75,7 @@ function DisplayMap({ data, position, reporterLocation }) {
         </Grid>
         <Grid item xs={12} md={8}>
           <Paper sx={{ p: 2 }}>
-            {/* <Map
+            <Map
               reporters={[{ ...data }]}
               userLocation={{
                 lat: position.latitude,
@@ -83,7 +83,7 @@ function DisplayMap({ data, position, reporterLocation }) {
               }}
               destination={reporterLocation}
               height="500px"
-            /> */}
+            />
           </Paper>
         </Grid>
       </Grid>
