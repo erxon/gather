@@ -93,11 +93,11 @@ function UpdatedBy({ updatedBy, updatedAt }) {
 }
 
 function MatchedPhoto({ photo }) {
-  const { data, isLoading, error } = useSWR(`/api/photos/${photo}`);
+  const { data, isLoading, error } = useSWR(`/api/photos/${photo}`, fetcher);
 
   if (isLoading) return <CircularProgress />
   if (error) return <Typography>Something went wrong</Typography>
-  
+
   return <QueryPhoto publicId={data.image} />;
 }
 

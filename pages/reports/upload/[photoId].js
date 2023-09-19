@@ -68,8 +68,8 @@ function Form({ publicId, photoId }) {
       longitude: currentPosition.longitude,
       latitude: currentPosition.latitude,
       email: e.target.email.value,
-    }
-    
+    };
+
     await fetch("/api/reports/upload", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -98,9 +98,13 @@ function Form({ publicId, photoId }) {
               will contact you at any given moment to verify this report.
             </Typography>
             <StackRowLayout spacing={0.5}>
-              <Typography variant="body2">Save this link for updates: </Typography>
+              <Typography variant="body2">
+                Save this link for updates:{" "}
+              </Typography>
               <Link href={`http://localhost:3000/found-person/${photoId}`}>
-                <Typography variant="body2">http://localhost:3000/found-person/{photoId}</Typography>
+                <Typography variant="body2">
+                  http://localhost:3000/found-person/{photoId}
+                </Typography>
               </Link>
             </StackRowLayout>
           </Paper>
@@ -129,14 +133,16 @@ function Form({ publicId, photoId }) {
             <Box>
               <StackRowLayout spacing={0.5}>
                 <LocationOnIcon />
-                <Typography sx={{ fontWeight: "bold" }}>You're here</Typography>
+                <Typography sx={{ fontWeight: "bold" }}>
+                  You&apos;re here
+                </Typography>
               </StackRowLayout>
-              {/* {currentPosition && (
-            <SmallMap
-              lng={currentPosition.longitude}
-              lat={currentPosition.latitude}
-            />
-          )*/}
+              {currentPosition && (
+                <SmallMap
+                  lng={currentPosition.longitude}
+                  lat={currentPosition.latitude}
+                />
+              )}
             </Box>
             <form onSubmit={handleSubmit}>
               <Button
