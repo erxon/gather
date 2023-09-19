@@ -120,9 +120,9 @@ export default function Page({ data }) {
 
 export async function getServerSideProps(context) {
   const { photoUploaded } = context.params;
-
+  const url = process.env.API_URL || "http://localhost:3000";
   const request = await fetch(
-    `http://localhost:3000/api/reporters/uploaded-photo/${photoUploaded}`
+    `${url}/api/reporters/uploaded-photo/${photoUploaded}`
   );
   const data = await request.json();
 

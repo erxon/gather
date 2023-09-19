@@ -129,11 +129,10 @@ function Report({ photo }) {
 
 function ShareDialog({ open, setOpen, photoId }) {
   const [tooltipTitle, setTooltipTitle] = useState("copy");
+  const url = process.env.API_URL || "http://localhost:3000";
   const handleCopy = (event) => {
     event.preventDefault();
-    navigator.clipboard.writeText(
-      `http://localhost:3000/found-person/${photoId}`
-    );
+    navigator.clipboard.writeText(`${url}/found-person/${photoId}`);
     setTooltipTitle("copied");
   };
 
@@ -143,7 +142,7 @@ function ShareDialog({ open, setOpen, photoId }) {
       <DialogContent>
         <TextField
           fullWidth
-          defaultValue={`http://localhost:3000/found-person/${photoId}`}
+          defaultValue={`${url}/found-person/${photoId}`}
           InputProps={{
             readOnly: true,
             endAdornment: (

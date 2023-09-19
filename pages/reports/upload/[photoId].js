@@ -35,6 +35,7 @@ export default function Upload() {
 function Form({ publicId, photoId }) {
   const [currentPosition, setCurrentPosition] = useState(null);
   const [submitted, isSubmitted] = useState(false);
+  const url = process.env.API_URL || "http://localhost:3000";
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
@@ -101,9 +102,9 @@ function Form({ publicId, photoId }) {
               <Typography variant="body2">
                 Save this link for updates:{" "}
               </Typography>
-              <Link href={`http://localhost:3000/found-person/${photoId}`}>
+              <Link href={`${url}/found-person/${photoId}`}>
                 <Typography variant="body2">
-                  http://localhost:3000/found-person/{photoId}
+                  {url}/found-person/{photoId}
                 </Typography>
               </Link>
             </StackRowLayout>
