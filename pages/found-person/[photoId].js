@@ -23,6 +23,8 @@ import {
   DialogActions,
   InputAdornment,
   Tooltip,
+  CardActions,
+  CardContent,
 } from "@mui/material";
 import { useRouter } from "next/router";
 import useSWR from "swr";
@@ -32,10 +34,11 @@ import EmailIcon from "@mui/icons-material/Email";
 import ShareIcon from "@mui/icons-material/Share";
 import IconText from "@/utils/components/IconText";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import QueryPhoto from "@/components/photo/QueryPhoto";
 import QueryPhotoLarge from "@/components/photo/QueryPhotoLarge";
-import QueryPhotoSmall from "@/components/photo/QueryPhotoSmall";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { useState } from "react";
+import SmallMap from "@/components/map/SmallMap";
+import StackRowLayout from "@/utils/StackRowLayout";
 
 function ReportMatched({ reportId }) {
   const router = useRouter();
@@ -57,12 +60,13 @@ function ReportMatched({ reportId }) {
       <Typography variant="body2" sx={{ mb: 0.5, fontWeight: "bold" }}>
         Match found
       </Typography>
-      <CardActionArea onClick={() => router.push(`/reports/${reportId}`)}>
-        <Card variant="outlined" sx={{ display: "flex", height: 100 }}>
-          <CardMedia>
-            {photo && <ReportPhotoSmall publicId={photo} />}
-          </CardMedia>
-          <Box sx={{ ml: 2, pt: 1, pb: 1 }}>
+      <Card
+        variant="outlined"
+        sx={{ display: "flex", alignItems: "center", p: 2, height: 125 }}
+      >
+        <CardMedia>{photo && <ReportPhotoSmall publicId={photo} />}</CardMedia>
+        <CardContent sx={{ width: "100%" }}>
+          <Box sx={{ ml: 2 }}>
             <Typography variant="body2" sx={{ fontWeight: "bold" }}>
               {firstName} {lastName}
             </Typography>
@@ -76,8 +80,13 @@ function ReportMatched({ reportId }) {
               {age}, {gender}
             </Typography>
           </Box>
-        </Card>
-      </CardActionArea>
+        </CardContent>
+        <CardActions>
+          <Button onClick={() => router.push(`/reports/${reportId}`)}>
+            View
+          </Button>
+        </CardActions>
+      </Card>
     </div>
   );
 }
@@ -184,30 +193,44 @@ export default function Page() {
         open={openShareDialog}
         setOpen={setOpenShareDialog}
       />
-      <Paper sx={{ p: 3 }}>
-        <Stack sx={{ mb: 2 }} direction="row" alignItems="center" spacing={0.5}>
-          <Typography variant="h6">Summary</Typography>
-          <IconButton onClick={() => setOpenShareDialog(true)}>
-            <ShareIcon />
-          </IconButton>
-        </Stack>
-        <Box sx={{ mb: 3 }}>
-          <Reporter reporter={data} />
-        </Box>
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={6}>
+      <Stack sx={{ mb: 2 }} direction="row" alignItems="center" spacing={0.5}>
+        <Typography variant="h6">Summary</Typography>
+        <IconButton onClick={() => setOpenShareDialog(true)}>
+          <ShareIcon />
+        </IconButton>
+      </Stack>
+      <Box sx={{ mb: 3, p: 2 }}>
+        <Reporter reporter={data} />
+      </Box>
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={6}>
+          <Paper sx={{ p: 2 }}>
             <Report photo={photoId} />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Typography sx={{ fontWeight: "bold", mb: 1 }}>Updates</Typography>
+          </Paper>
+          <Paper sx={{ p: 2, mt: 1 }}>
+            <Stack sx={{mb: 2}} direction="row" alignItems="center" spacing={0.75}>
+              <LocationOnIcon />
+              <Typography variant="h6">Last known location</Typography>
+            </Stack>
+            <SmallMap
+              lng={data.position.longitude}
+              lat={data.position.latitude}
+            />
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Paper sx={{ p: 2 }}>
+            <Typography variant="h6" sx={{ mb: 1 }}>
+              Updates
+            </Typography>
             {data.match ? (
               <ReportMatched reportId={data.match} />
             ) : (
               <Typography>No updates yet</Typography>
             )}
-          </Grid>
+          </Paper>
         </Grid>
-      </Paper>
+      </Grid>
     </div>
   );
 }

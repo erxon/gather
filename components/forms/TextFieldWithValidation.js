@@ -12,11 +12,13 @@ export default function TextFieldWithValidation({
   rows,
   style,
   inputProps,
+  size
 }) {
   const isError = value === "" && isSubmitted;
   return (
     <TextField
       fullWidth={isFullWidth}
+      size={size}
       error={isError}
       helperText={isError && "This field is required."}
       type={type}

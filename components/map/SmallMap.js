@@ -24,6 +24,7 @@ export default function SmallMap(props) {
     // Create a new marker.
     new mapboxgl.Marker().setLngLat([props.lng, props.lat]).addTo(map.current);
   });
+
   useEffect(() => {
     if (!map.current) return; // wait for map to initialize
     map.current.on("move", () => {
@@ -35,10 +36,7 @@ export default function SmallMap(props) {
 
   return (
     <div>
-      <Box
-        ref={mapContainer}
-        sx={{ borderRadius: "10px", height: 200, maxWidth: 500 }}
-      ></Box>
+      <Box ref={mapContainer} sx={{ borderRadius: "10px", height: 200 }}></Box>
     </div>
   );
 }
