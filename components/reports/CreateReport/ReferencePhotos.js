@@ -7,6 +7,8 @@ import {
   IconButton,
   Box,
   Typography,
+  Alert,
+  Collapse,
 } from "@mui/material";
 import Image from "next/image";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
@@ -15,7 +17,11 @@ import FileUploadIcon from "@mui/icons-material/FileUpload";
 import CancelIcon from "@mui/icons-material/Cancel";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-export default function ReferencePhotos(setIsCompleted) {
+export default function ReferencePhotos({
+  setReferencePhotos,
+  referencePhotos,
+  isSubmitted,
+}) {
   //Upload photo
   //Train face-recognition API
 
@@ -23,7 +29,6 @@ export default function ReferencePhotos(setIsCompleted) {
     src: "",
     file: null,
   });
-  const [referencePhotos, setReferencePhotos] = useState([]);
 
   const selectFileHandler = (event) => {
     const reader = new FileReader();
@@ -69,7 +74,10 @@ export default function ReferencePhotos(setIsCompleted) {
   };
 
   return (
-    <Layout head="Reference Photos">
+    <Layout
+      head="Reference Photos"
+      subheading="Please add at least 3 photos for more accurate matching"
+    >
       <Box>
         <Paper
           variant="outlined"
@@ -79,6 +87,7 @@ export default function ReferencePhotos(setIsCompleted) {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            mb: 2,
           }}
         >
           {photo.file ? (
@@ -103,6 +112,9 @@ export default function ReferencePhotos(setIsCompleted) {
             </Box>
           )}
         </Paper>
+        <Collapse in={isSubmitted && referencePhotos.length < 3}>
+          <Alert severity="error">Insufficient number of images</Alert>
+        </Collapse>
         {photo.file && (
           <Box sx={{ mt: 1 }}>
             <StackRowLayout spacing={1}>
@@ -123,11 +135,6 @@ export default function ReferencePhotos(setIsCompleted) {
               </IconButton>
             </StackRowLayout>
           </Box>
-        )}
-        {referencePhotos.length > 0 && (
-          <Button sx={{ mt: 1 }} onClick={uploadReferencePhotos}>
-            Upload all
-          </Button>
         )}
         <Grid container spacing={1} sx={{ mt: 1 }}>
           {referencePhotos.map((photo) => {

@@ -5,13 +5,15 @@ import {
   InputAdornment,
   IconButton,
   Box,
-  Chip
+  Chip,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 
 export default function MultipleItemField({
   collection,
-  setCollection,
+  collectionName,
+  collections,
+  setCollections,
   label,
 }) {
   const [value, setValue] = useState("");
@@ -22,16 +24,25 @@ export default function MultipleItemField({
 
   const handleAdd = () => {
     if (value === "") return;
-    setCollection([...collection, { name: value, index: collection.length }]);
+    setCollections({
+      ...collections,
+      [collectionName]: [
+        ...collection,
+        { name: value, index: collection.length },
+      ],
+    });
     setValue("");
   };
 
   const handleDelete = (index) => {
-    setCollection(
-      collection.filter((item) => {
-        return item.index !== index;
-      })
-    );
+    setCollections({
+      ...collections,
+      [collectionName]: [
+        ...collection.filter((item) => {
+          return item.index !== index;
+        }),
+      ],
+    });
   };
 
   return (
@@ -46,7 +57,7 @@ export default function MultipleItemField({
         onChange={handleChange}
         InputProps={{
           endAdornment: (
-            <InputAdornment>
+            <InputAdornment position="end">
               <IconButton size="small" onClick={handleAdd}>
                 <AddIcon fontSize="small" />
               </IconButton>

@@ -40,7 +40,7 @@ export default function MapWithSearchBox(props) {
       const lngLat = marker.getLngLat();
       setLng(lngLat.lng);
       setLat(lngLat.lat);
-      props.setNewPosition(lngLat);
+      props.setNewPosition({ longitude: lngLat.lng, latitude: lngLat.lat });
     });
   });
 
