@@ -19,6 +19,7 @@ import {
   ListItemText,
   Paper,
   Popover,
+  TextField,
   Typography,
 } from "@mui/material";
 import TextFieldWithValidation from "@/components/forms/TextFieldWithValidation";
@@ -169,14 +170,16 @@ function NewImageDialog({ open, setOpen, setPhoto, photo, setPhotoAdded }) {
   );
 }
 
-function UploadNewImage({ photoAdded, setPhotoAdded }) {
+function UploadNewImage({
+  photoAdded,
+  setPhotoAdded,
+  photo,
+  setPhoto,
+  selectedImage,
+  setSelectedImage,
+}) {
   const [anchorEl, setAnchorEl] = useState(null);
 
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [photo, setPhoto] = useState({
-    src: false,
-    file: null,
-  });
   const [openNewImageDialog, setOpenNewImageDialog] = useState(false);
   const [selectExistingImageDialog, setSelectExistingImageDialog] =
     useState(false);
@@ -280,6 +283,10 @@ export default function BasicInformation({
   isSubmitted,
   photoAdded,
   setPhotoAdded,
+  photo,
+  setPhoto,
+  selectedImage,
+  setSelectedImage,
 }) {
   const handleInput = (event) => {
     const { name, value } = event.target;
@@ -296,9 +303,13 @@ export default function BasicInformation({
           <UploadNewImage
             photoAdded={photoAdded}
             setPhotoAdded={setPhotoAdded}
+            photo={photo}
+            setPhoto={setPhoto}
+            selectedImage={selectedImage}
+            setSelectedImage={setSelectedImage}
           />
           {
-            <Collapse sx={{mb: 2}} in={!photoAdded.added && isSubmitted}>
+            <Collapse sx={{ mb: 2 }} in={!photoAdded.added && isSubmitted}>
               <Alert severity="error">Please select a photo</Alert>
             </Collapse>
           }
@@ -332,13 +343,11 @@ export default function BasicInformation({
             variant="standard"
             label="Middle Name"
           />
-          <TextFieldWithValidation
-            isSubmitted={isSubmitted}
-            style={{ mb: 2, maxWidth: 100 }}
+          <TextField
+            sx={{ mb: 2, maxWidth: 100 }}
             value={formValues.basicInformation.qualifier}
-            changeHandler={handleInput}
+            onChange={handleInput}
             name="qualifier"
-            variant="standard"
             label="Qualifier"
           />
         </Grid>

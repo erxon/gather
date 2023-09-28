@@ -1,24 +1,31 @@
 import nextConnect from "next-connect";
 import { createReport, getReports } from "@/lib/controllers/reportController";
 import { newReport } from "@/lib/controllers/smsNotification";
+import auth from "@/middleware/auth";
 
 const handler = nextConnect();
 
 handler
-  .post((req, res) => {
+  .use(auth)
+  .post(async (req, res) => {
+    const user = await req.user;
     const data = {
       ...req.body,
+      account: user ? user._id : null,
+      username: user ? user.username : null,
       reportedAt: new Date(),
     };
 
     createReport(data)
       .then(async (response) => {
         if (response && response.errors) {
-          res.status(400).json({ error: "Important fields are missing" });
+          return res
+            .status(400)
+            .json({ error: "Important fields are missing" });
         }
         //Uncomment this to enable messaging notifications
         // await newReport()
-        res
+        return res
           .status(200)
           .json({ data: response, message: "successfully uploaded" });
       })

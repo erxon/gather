@@ -26,20 +26,17 @@ export default function MultipleItemField({
     if (value === "") return;
     setCollections({
       ...collections,
-      [collectionName]: [
-        ...collection,
-        { name: value, index: collection.length },
-      ],
+      [collectionName]: [...collection, value],
     });
     setValue("");
   };
 
-  const handleDelete = (index) => {
+  const handleDelete = (indexToDelete) => {
     setCollections({
       ...collections,
       [collectionName]: [
-        ...collection.filter((item) => {
-          return item.index !== index;
+        ...collection.filter((item, index) => {
+          if (indexToDelete !== index) return item;
         }),
       ],
     });
@@ -66,13 +63,13 @@ export default function MultipleItemField({
         }}
       />
       <Box>
-        {collection.map((item) => {
+        {collection.map((item, index) => {
           return (
             <Chip
               sx={{ mr: 1, mb: 1 }}
-              key={item.index}
-              label={item.name}
-              onDelete={() => handleDelete(item.index)}
+              key={index}
+              label={item}
+              onDelete={() => handleDelete(index)}
             />
           );
         })}

@@ -26,22 +26,22 @@ const reportSchema = new mongoose.Schema({
   photoId: { type: mongoose.Schema.Types.ObjectId, ref: "Photo" },
   firstName: {
     type: String,
-    require: true,
+    required: true,
   },
   lastName: {
     type: String,
-    require: true,
+    required: true,
   },
-  middleName: { type: String, require: true },
+  middleName: { type: String, required: true },
   qualifier: String,
   aliases: [String],
   smt: [String],
   currentHairColor: String,
   eyeColor: String,
-  prostheticsAndImplants: String,
+  prostheticsAndImplants: [String],
   bloodType: String,
-  medications: String,
-  clothingAndAccessories: String,
+  medications: [String],
+  clothingAndAccessories: [String],
   birthDefects: String,
   dentalAndFingerprint: String,
   details: String,
@@ -69,6 +69,10 @@ const reportSchema = new mongoose.Schema({
   assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   editors: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   attachedDocument: { data: Buffer, contentType: String },
+  location: {
+    type: Map,
+    of: Number,
+  },
 });
 
 const Report = mongoose.models.Report || mongoose.model("Report", reportSchema);
