@@ -15,8 +15,11 @@ import { useState } from "react";
 import ArticleIcon from "@mui/icons-material/Article";
 import TextFieldWithValidation from "../forms/TextFieldWithValidation";
 import ErrorAlert from "../ErrorAlert";
+import { createReport } from "@/lib/api-lib/api-reports";
+import { useRouter } from "next/router";
 
 export default function ReportToManage() {
+  const router = useRouter();
   const [gender, setGender] = useState("");
   const [isSubmitted, setSubissionState] = useState(false);
   const [alert, setAlert] = useState({
@@ -25,7 +28,9 @@ export default function ReportToManage() {
   });
   const [values, setValues] = useState({
     firstName: "",
+    middleName: "",
     lastName: "",
+    qualifier: "",
     lastSeen: "",
     details: "",
     age: "",
@@ -51,6 +56,8 @@ export default function ReportToManage() {
     const body = {
       firstName: values.firstName,
       lastName: values.lastName,
+      middleName: values.middleName,
+      qualifier: values.qualifier,
       lastSeen: values.lastSeen,
       age: values.age,
       details: values.details,
@@ -60,9 +67,10 @@ export default function ReportToManage() {
 
     //Create new report
     const data = await createReport(body);
+    console.log(data)
 
     if (data) {
-      Router.push(`/reports/create-account/${data.data._id}`);
+      router.push(`/reports/create-account/${data.data._id}`);
     }
   };
 
@@ -80,7 +88,6 @@ export default function ReportToManage() {
             name="age"
             variant="outlined"
             type="text"
-            size="small"
             isSubmitted={isSubmitted}
             value={values.age}
             changeHandler={handleChange}
@@ -100,7 +107,11 @@ export default function ReportToManage() {
           </FormControl>
         </Stack>
         <Divider sx={{ mb: 3 }} />
-        <Stack sx={{ mb: 2 }} direction="row" spacing={1}>
+        <Stack
+          sx={{ mb: 2 }}
+          direction={{ xs: "column", md: "row" }}
+          spacing={1}
+        >
           {/*First name*/}
           <TextFieldWithValidation
             id="firstName"
@@ -113,6 +124,18 @@ export default function ReportToManage() {
             isFullWidth={true}
             changeHandler={handleChange}
           />
+          {/*Middle name*/}
+          <TextFieldWithValidation
+            id="middleName"
+            label="Middle Name"
+            variant="outlined"
+            name="middleName"
+            type="text"
+            isSubmitted={isSubmitted}
+            value={values.middleName}
+            isFullWidth={true}
+            changeHandler={handleChange}
+          />
           {/*Last name*/}
           <TextFieldWithValidation
             id="lastName"
@@ -120,11 +143,19 @@ export default function ReportToManage() {
             variant="outlined"
             name="lastName"
             type="text"
-            size="small"
             isSubmitted={isSubmitted}
             value={values.lastName}
             isFullWidth={true}
             changeHandler={handleChange}
+          />
+          <TextField
+            id="qualifier"
+            label="Qualifier"
+            variant="outlined"
+            name="qualifier"
+            value={values.qualifier}
+            onChange={handleChange}
+            sx={{ maxWidth: 175 }}
           />
         </Stack>
         {/*Last seen*/}
@@ -134,7 +165,6 @@ export default function ReportToManage() {
           variant="outlined"
           name="lastSeen"
           type="text"
-          size="small"
           style={{ mb: 1 }}
           isSubmitted={isSubmitted}
           value={values.lastSeen}

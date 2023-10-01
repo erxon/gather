@@ -30,6 +30,7 @@ import {
 } from "@/lib/api-lib/api-reports";
 import Image from "next/image";
 import TextFieldWithValidation from "@/components/forms/TextFieldWithValidation";
+import DataPrivacyDialog from "@/components/reports/DataPrivacyDialog";
 //Signup user
 //Update the report
 
@@ -321,6 +322,7 @@ function Report({ data }) {
 }
 
 export default function CreateAccount({ data }) {
+  const [dataPrivacyDialog, setDataPrivacyDialog] = useState(false);
   //Initialize user using useUser hook
   const [user, { mutate }] = useUser();
   //Control input fields
@@ -342,8 +344,13 @@ export default function CreateAccount({ data }) {
     });
   };
   //Handle submit for signup and report update.
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
+    setDataPrivacyDialog(true);
+  };
+
+  const handleConfirm = async () => {
     //Signup the user first
+    setDataPrivacyDialog(false);
     setSubmissionState(true);
     const registerUser = await fetch("/api/users", {
       method: "POST",
@@ -389,6 +396,11 @@ export default function CreateAccount({ data }) {
 
   return (
     <>
+      <DataPrivacyDialog
+        open={dataPrivacyDialog}
+        setOpen={setDataPrivacyDialog}
+        onConfirm={handleConfirm}
+      />
       <Box sx={{ margin: "auto", width: { xs: "100%", md: "50%" } }}>
         <Box sx={{ mb: 4 }}>
           <Typography variant="h5">Create your account</Typography>
