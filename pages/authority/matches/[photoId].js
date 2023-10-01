@@ -23,6 +23,8 @@ import {
   DialogContentText,
   TextField,
   Snackbar,
+  Chip,
+  CardActionArea,
 } from "@mui/material";
 import Image from "next/image";
 import Authenticate from "@/utils/authority/Authenticate";
@@ -52,6 +54,7 @@ import SmallMap from "@/components/map/SmallMap";
 import computeElapsedTime from "@/utils/helpers/computeElapsedTime";
 import IconText from "@/utils/components/IconText";
 import DisplaySnackbar from "@/components/DisplaySnackbar";
+import Link from "next/link";
 
 function DisplayModal({ handleClose, openModal, matchId, userId }) {
   const router = useRouter();
@@ -591,6 +594,107 @@ function FindMatches({ photoUploadedId, queryPhotoId }) {
   // return <ReportCardHorizontal distance={"Distance: 10%"} />;
 }
 
+function PossibleMatch({ possibleMatch, photoId, queryPhoto }) {
+  const [showDialog, setShowDialog] = useState(false);
+  const [showSnackbar, setShowSnackbar] = useState({
+    open: false,
+    message: "",
+  });
+  const {
+    _id,
+    firstName,
+    middleName,
+    lastName,
+    qualifier,
+    status,
+    reportedAt,
+    photo,
+  } = possibleMatch;
+
+  const date = new Date(reportedAt);
+  const elapsedTime = computeElapsedTime(date);
+  const handleSnackbarClose = () => {
+    setShowSnackbar({
+      open: false,
+      message: "",
+    });
+  };
+
+  return (
+    <div>
+      <UpdateReportDialog
+        report={possibleMatch}
+        queryPhoto={queryPhoto}
+        photoUploadedId={photoId}
+        setOpen={setShowDialog}
+        open={showDialog}
+        setSnackbarOpen={setShowSnackbar}
+      />
+      {!showDialog && showSnackbar.open && (
+        <DisplaySnackbar
+          open={showSnackbar.open}
+          message={showSnackbar.message}
+          handleClose={() => handleSnackbarClose()}
+        />
+      )}
+      <Box>
+        <Typography sx={{ mb: 0.25 }} variant="body2">
+          The photo possibly matches this report
+        </Typography>
+        <CardActionArea onClick={() => setShowDialog(true)}>
+          <Card variant="outlined" sx={{ display: "flex", height: 100 }}>
+            <CardMedia>
+              <ReportPhotoSmall publicId={photo} />
+            </CardMedia>
+            <CardContent>
+              <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                {firstName} {middleName} {lastName} {qualifier}
+              </Typography>
+              <Typography variant="body2">{elapsedTime}</Typography>
+              <Chip size="small" label={status} />
+            </CardContent>
+          </Card>
+        </CardActionArea>
+      </Box>
+    </div>
+  );
+}
+
+function Reporter({ queryPhotoId, queryPhoto }) {
+  const { data, isLoading, error } = useSWR(
+    `/api/reporters/uploaded-photo/${queryPhotoId}`,
+    fetcher
+  );
+
+  if (isLoading) return <CircularProgress />;
+  if (error) return <Typography>Something went wrong.</Typography>;
+
+  if (data) {
+    const { firstName, lastName, createdAt } = data;
+    const date = new Date(createdAt);
+    const elapsedTime = computeElapsedTime(date);
+
+    return (
+      <Box>
+        <Typography>Reported By</Typography>
+        <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+          {firstName} {lastName}
+        </Typography>
+        <Typography variant="body2">{elapsedTime}</Typography>
+        <Box sx={{ mt: 2 }}>
+          {data.possibleMatch && (
+            <PossibleMatch
+              possibleMatch={data.possibleMatch}
+              queryPhoto={queryPhoto}
+              photoId={queryPhotoId}
+            />
+          )}
+        </Box>
+      </Box>
+    );
+  }
+}
+
 function RenderMatches({ queryPhotoId }) {
   const router = useRouter();
   const { data, error, isLoading } = useSWRImmutable(
@@ -628,6 +732,14 @@ function RenderMatches({ queryPhotoId }) {
               >
                 <QueryPhoto publicId={data.image} />
               </Box>
+              <Box sx={{ mt: 1 }}>
+                <Reporter queryPhoto={data.image} queryPhotoId={queryPhotoId} />
+              </Box>
+              {/*No match found?*/}
+              <Typography sx={{ mt: 2 }} variant="body2">
+                No match found?{" "}
+                <Link href="/reports/create-report">Create report.</Link>
+              </Typography>
             </Paper>
           </Grid>
           <Grid item xs={12} md={8}>

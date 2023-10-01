@@ -279,7 +279,7 @@ export default function Page() {
       console.log("2. Report uploaded");
 
       //upload reference photos
-      await uploadReferencePhotos(result._id);
+      await uploadReferencePhotos(result.data._id);
 
       //upload photos to database
       return result;

@@ -25,10 +25,11 @@ const reporterSchema = new mongoose.Schema({
   socialMediaAccount: [String],
   position: {
     type: Map,
-    of: Number
+    of: Number,
   },
   reportMatchFound: Boolean,
-  match: {type: mongoose.Schema.Types.ObjectId, ref: "Report"},
+  match: { type: mongoose.Schema.Types.ObjectId, ref: "Report" },
+  possibleMatch: { type: mongoose.Schema.Types.ObjectId, ref: "Report" },
   createdAt: Date,
   updatedAt: Date,
 });

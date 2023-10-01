@@ -25,6 +25,7 @@ import {
   Tooltip,
   CardActions,
   CardContent,
+  Chip,
 } from "@mui/material";
 import { useRouter } from "next/router";
 import useSWR from "swr";
@@ -39,6 +40,7 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { useState } from "react";
 import SmallMap from "@/components/map/SmallMap";
 import StackRowLayout from "@/utils/StackRowLayout";
+import computeElapsedTime from "@/utils/helpers/computeElapsedTime";
 
 function ReportMatched({ reportId }) {
   const router = useRouter();
@@ -60,13 +62,15 @@ function ReportMatched({ reportId }) {
       <Typography variant="body2" sx={{ mb: 0.5, fontWeight: "bold" }}>
         Match found
       </Typography>
-      <Card
-        variant="outlined"
-        sx={{ display: "flex", alignItems: "center", p: 2, height: 125 }}
-      >
-        <CardMedia>{photo && <ReportPhotoSmall publicId={photo} />}</CardMedia>
-        <CardContent sx={{ width: "100%" }}>
-          <Box sx={{ ml: 2 }}>
+      <CardActionArea onClick={() => router.push(`/reports/${reportId}`)}>
+        <Card
+          variant="outlined"
+          sx={{ display: "flex", alignItems: "center", height: 100 }}
+        >
+          <CardMedia>
+            {photo && <ReportPhotoSmall publicId={photo} />}
+          </CardMedia>
+          <CardContent>
             <Typography variant="body2" sx={{ fontWeight: "bold" }}>
               {firstName} {lastName}
             </Typography>
@@ -79,14 +83,9 @@ function ReportMatched({ reportId }) {
             <Typography variant="body2" sx={{ color: "GrayText" }}>
               {age}, {gender}
             </Typography>
-          </Box>
-        </CardContent>
-        <CardActions>
-          <Button onClick={() => router.push(`/reports/${reportId}`)}>
-            View
-          </Button>
-        </CardActions>
-      </Card>
+          </CardContent>
+        </Card>
+      </CardActionArea>
     </div>
   );
 }
@@ -173,6 +172,36 @@ function ShareDialog({ open, setOpen, photoId }) {
   );
 }
 
+function PossibleMatch({ possibleMatch }) {
+  const {
+    firstName,
+    middleName,
+    lastName,
+    qualifier,
+    reportedAt,
+    status,
+    photo,
+  } = possibleMatch;
+
+  const date = new Date(reportedAt);
+  const elapsedTime = computeElapsedTime(date);
+
+  return (
+    <Card variant="outlined" sx={{ display: "flex", height: 100 }}>
+      <CardMedia>
+        <ReportPhotoSmall publicId={photo} />
+      </CardMedia>
+      <CardContent>
+        <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+          {lastName}, {firstName} {middleName} {qualifier}
+        </Typography>
+        <Typography variant="body2">Reported {elapsedTime}</Typography>
+        <Chip size="small" label={status} />
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function Page() {
   const router = useRouter();
   const { photoId } = router.query;
@@ -184,8 +213,12 @@ export default function Page() {
 
   if (isLoading) return <CircularProgress />;
   if (error) return <Typography>Something went wrong.</Typography>;
+
   //match found
   //no match found (added to DB)
+
+  console.log(data);
+
   return (
     <div>
       <ShareDialog
@@ -207,8 +240,21 @@ export default function Page() {
           <Paper sx={{ p: 2 }}>
             <Report photo={photoId} />
           </Paper>
+          {data.possibleMatch && (
+            <Paper sx={{ my: 2, p: 2 }}>
+              <Typography variant="h6" sx={{ mb: 2 }}>
+                Possible Match
+              </Typography>
+              <PossibleMatch possibleMatch={data.possibleMatch} />
+            </Paper>
+          )}
           <Paper sx={{ p: 2, mt: 1 }}>
-            <Stack sx={{mb: 2}} direction="row" alignItems="center" spacing={0.75}>
+            <Stack
+              sx={{ mb: 2 }}
+              direction="row"
+              alignItems="center"
+              spacing={0.75}
+            >
               <LocationOnIcon />
               <Typography variant="h6">Last known location</Typography>
             </Stack>

@@ -9,17 +9,6 @@ import nextConnect from "next-connect";
 const handler = nextConnect();
 
 handler
-  .use(auth)
-  .use(async (req, res, next) => {
-    const user = await req.user;
-    if (!user) {
-      res.status(400).json({ error: "unauthorized" });
-    } else {
-      next();
-    }
-  })
-  .use((req, res, next) => isVerified(req, res, next))
-  .use((req, res, next) => isAuthority(req, res, next))
   .use((req, res, next) => {
     findMatches(req, res, next);
   })

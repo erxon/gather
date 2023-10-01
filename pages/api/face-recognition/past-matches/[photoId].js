@@ -9,13 +9,6 @@ import { isAuthority, isVerified } from "@/utils/api-helpers/authorize";
 const handler = nextConnect();
 
 handler
-  .use(auth)
-  .use((req, res, next) => {
-    isAuthority(req, res, next);
-  })
-  .use((req, res, next) => {
-    isVerified(req, res, next);
-  })
   .get((req, res, next) => {
     getMatches(req, res, next);
   })

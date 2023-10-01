@@ -13,6 +13,10 @@ import {
   Paper,
   Stack,
   CircularProgress,
+  Card,
+  CardMedia,
+  CardContent,
+  Chip,
 } from "@mui/material";
 
 import PlaceIcon from "@mui/icons-material/Place";
@@ -22,6 +26,8 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import StackRowLayout from "@/utils/StackRowLayout";
 import Link from "next/link";
 import InfoIcon from "@mui/icons-material/Info";
+import SearchFoundPerson from "@/components/reports/SearchFoundPerson";
+import ReportPhotoSmall from "@/components/photo/ReportPhotoSmall";
 
 export default function Upload() {
   const router = useRouter();
@@ -32,8 +38,38 @@ export default function Upload() {
   if (data) return <Form publicId={data.image} photoId={photoId} />;
 }
 
+function PossibleMatch({ name, status, reportedAt, score, photo }) {
+  return (
+    <Card variant="outlined" sx={{ display: "flex", alignItems: "flex-start", height: 100 }}>
+      <CardMedia>
+        <ReportPhotoSmall publicId={photo} />
+      </CardMedia>
+      <CardContent>
+        <Typography> Match score: {Math.round(score)}%</Typography>
+        <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+          {" "}
+          {name}
+        </Typography>
+        <StackRowLayout spacing={1}>
+          <Typography variant="body2">Reported {reportedAt}</Typography>
+          <Chip size="small" label={status} />
+        </StackRowLayout>
+      </CardContent>
+    </Card>
+  );
+}
+
 function Form({ publicId, photoId }) {
   const [currentPosition, setCurrentPosition] = useState(null);
+  const [possibleMatch, setPossibleMatch] = useState({
+    _id: null,
+    photo: null,
+    name: "",
+    status: "",
+    reportedAt: "",
+    score: null,
+  });
+
   const [submitted, isSubmitted] = useState(false);
   const url = process.env.API_URL || "http://localhost:3000";
 
@@ -69,6 +105,7 @@ function Form({ publicId, photoId }) {
       longitude: currentPosition.longitude,
       latitude: currentPosition.latitude,
       email: e.target.email.value,
+      possibleMatch: possibleMatch._id,
     };
 
     await fetch("/api/reports/upload", {
@@ -79,6 +116,8 @@ function Form({ publicId, photoId }) {
 
     isSubmitted(true);
   };
+
+  console.log(possibleMatch);
 
   return (
     <div>
@@ -130,6 +169,18 @@ function Form({ publicId, photoId }) {
               }}
             >
               <AdvancedImage cldImg={myImage} width="200" height="auto" />
+            </Box>
+            {possibleMatch._id && (
+              <PossibleMatch
+                name={possibleMatch.name}
+                photo={possibleMatch.photo}
+                status={possibleMatch.status}
+                reportedAt={possibleMatch.reportedAt}
+                score={possibleMatch.score}
+              />
+            )}
+            <Box sx={{ my: 3 }}>
+              <SearchFoundPerson setPossibleMatch={setPossibleMatch} />
             </Box>
             <Box>
               <StackRowLayout spacing={0.5}>
