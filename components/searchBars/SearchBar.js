@@ -11,13 +11,16 @@ import {
   CardContent,
   Box,
   InputBase,
+  CardActionArea,
+  CardMedia,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import ProfilePhoto from "../photo/ProfilePhoto";
 import { useRouter } from "next/router";
-import ClearIcon from '@mui/icons-material/Clear';
+import ClearIcon from "@mui/icons-material/Clear";
+import Image from "next/image";
 
 function stringToColor(string) {
   let hash = 0;
@@ -37,42 +40,41 @@ function stringToColor(string) {
   return color;
 }
 
-function characterAvatar(name) {
-  return {
-    sx: {
-      bgcolor: stringToColor(name),
-    },
-    children: `${name.charAt(0)}`,
-  };
-}
-
 function ResultCard({ id, name, photo, link }) {
   const router = useRouter();
   return (
-    <Card
+    <CardActionArea
       onClick={() => {
         router.push(`${link}/${id}`);
       }}
-      variant="outlined"
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        cursor: "pointer",
-        p: 2,
-        mb: 2,
-      }}
     >
-      {photo ? (
-        <ProfilePhoto publicId={photo} />
-      ) : (
-        <Avatar {...characterAvatar(name)} />
-      )}
-      <CardContent>
-        <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
+      <Card
+        variant="outlined"
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          p: 1,
+          mb: 1,
+        }}
+      >
+        <CardMedia>
+          {photo ? (
+            <ProfilePhoto publicId={photo} />
+          ) : (
+            <Image
+              alt="placeholder image"
+              src="/assets/placeholder.png"
+              style={{ borderRadius: "100%" }}
+              width={32}
+              height={32}
+            />
+          )}
+        </CardMedia>
+        <Typography variant="body2" sx={{ fontWeight: "bold", ml: 1 }}>
           {name}
         </Typography>
-      </CardContent>
-    </Card>
+      </Card>
+    </CardActionArea>
   );
 }
 
@@ -124,6 +126,7 @@ export default function SearchBar(props) {
                 <ResultCard
                   key={data._id}
                   link={props.link}
+                  photo={data.photo}
                   id={data._id}
                   name={`${data.firstName} ${data.lastName}`}
                 />

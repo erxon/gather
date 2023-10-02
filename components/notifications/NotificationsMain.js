@@ -179,7 +179,7 @@ function Notification(props) {
         open={openDialog}
         setOpen={setOpenDialog}
       />
-      <Card sx={{ display: "flex", p: 2, my: 2 }} variant="outlined">
+      <Card sx={{ display: "flex", alignItems: "flex-start", p: 2, my: 2 }} variant="outlined">
         {props.photo ? (
           <CardMedia
             sx={{
@@ -197,7 +197,7 @@ function Notification(props) {
           />
         )}
         <Box>
-          <CardContent>
+          <CardContent sx={{py: 0, px: 2}}>
             <Typography variant="body2" sx={{ fontWeight: "bold", mb: 0.75 }}>
               {props.type === "upload-photo" && "Found missing person"}
               {props.type === "report-manage" && "New report"}
@@ -211,7 +211,7 @@ function Notification(props) {
               {elapsedTime}
             </Typography>
           </CardContent>
-          <Stack sx={{ mt: 2 }} direction="row" spacing={1} alignItems="center">
+          <Stack sx={{ mt: 2, mx: 2 }} direction="row" spacing={1} alignItems="center">
             {(props.type === "report-manage" ||
               props.type === "status-change") && (
               <Button
