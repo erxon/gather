@@ -10,12 +10,14 @@ import {
   Card,
   CardContent,
   Box,
+  InputBase,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import ProfilePhoto from "../photo/ProfilePhoto";
 import { useRouter } from "next/router";
+import ClearIcon from '@mui/icons-material/Clear';
 
 function stringToColor(string) {
   let hash = 0;
@@ -98,34 +100,35 @@ export default function SearchBar(props) {
 
   return (
     <Box>
-      <TextField
-        sx={{ maxWidth: 500 }}
-        variant="outlined"
-        size="small"
-        label={props.label}
-        name={props.name}
-        value={props.value}
-        onChange={handleChange}
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="start">
-              <SearchIcon />
-            </InputAdornment>
-          ),
-        }}
-      />
+      <Paper
+        sx={{ p: 2, display: "flex", alignItems: "center", maxWidth: 400 }}
+      >
+        <InputBase
+          variant="outlined"
+          size="small"
+          placeholder={props.label}
+          name={props.name}
+          value={value}
+          onChange={handleChange}
+          sx={{ width: "100%" }}
+        />
+        <IconButton onClick={() => setValue("")} color="secondary">
+          <ClearIcon />
+        </IconButton>
+      </Paper>
       <Collapse sx={{ position: "absolute", zIndex: 1 }} in={open}>
         <Paper sx={{ maxWidth: 500, p: 1 }}>
-          {result && result.map((data) => {
-            return (
-              <ResultCard
-                key={data._id}
-                link={props.link}
-                id={data._id}
-                name={`${data.firstName} ${data.lastName}`}
-              />
-            );
-          })}
+          {result &&
+            result.map((data) => {
+              return (
+                <ResultCard
+                  key={data._id}
+                  link={props.link}
+                  id={data._id}
+                  name={`${data.firstName} ${data.lastName}`}
+                />
+              );
+            })}
           <Button
             onClick={handleClose}
             size="small"

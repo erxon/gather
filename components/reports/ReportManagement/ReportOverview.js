@@ -21,33 +21,37 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import EditIcon from "@mui/icons-material/Edit";
 import FeedOutlinedIcon from "@mui/icons-material/FeedOutlined";
 import { useRouter } from "next/router";
+import ReportPhotoLarge from "@/components/photo/ReportPhotoLarge";
+import ReportPhoto from "@/components/photo/ReportPhoto";
 
 function Report({ report }) {
   const router = useRouter();
   return (
     <Box>
-      <Paper sx={{ p: 1 }}>
-        <Card
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            p: 1,
-            flexDirection: { xs: "column", sm: "row", md: "row" },
-          }}
-          variant="outlined"
-        >
-          <CardMedia>
-            {report.photo ? (
-              <ReportPhotoSmall publicId={report.photo} />
-            ) : (
-              <Image
-                alt="placeholder"
-                src="/assets/placeholder.png"
-                width={150}
-                height={150}
-              />
-            )}
-          </CardMedia>
+      <Card
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          flexDirection: { xs: "column", sm: "row", md: "row" },
+          mb: 2,
+          p: 1,
+          maxWidth: 300,
+        }}
+        variant="outlined"
+      >
+        <CardMedia>
+          {report.photo ? (
+            <ReportPhotoSmall publicId={report.photo} />
+          ) : (
+            <Image
+              alt="placeholder"
+              src="/assets/placeholder.png"
+              width={150}
+              height={150}
+            />
+          )}
+        </CardMedia>
+        <Box>
           <CardContent
             sx={{ textAlign: { xs: "center", sm: "row", md: "left" } }}
           >
@@ -65,7 +69,7 @@ function Report({ report }) {
             >
               <LocationOnIcon color="disabled" />
               <Typography color="GrayText" variant="body2">
-                {report.lastSeen}
+                {report.lastSeen ? report.lastSeen : "Unknown"}
               </Typography>
             </Stack>
             <Stack
@@ -76,44 +80,31 @@ function Report({ report }) {
             >
               <PersonIcon color="disabled" />
               <Typography color="GrayText" variant="body2">
-                {report.age}, {report.gender}
+                {report.age ? report.age : "Unknown age"},{" "}
+                {report.gender ? report.gender : "Unknown gender"}
               </Typography>
             </Stack>
           </CardContent>
-          <CardActions>
-            <Button
-              onClick={() => {
-                router.push(`/reports/${report._id}`);
-              }}
-              size="small"
-              variant="contained"
-            >
-              View
-            </Button>
-            <Button
-              onClick={() => {
-                router.push(`/reports/edit/${report._id}`);
-              }}
-              size="small"
-              variant="outlined"
-              startIcon={<EditIcon />}
-            >
-              Edit
-            </Button>
-          </CardActions>
-        </Card>
-        <Box variant="outlined" sx={{ p: 1, mt: 1 }}>
-          <Stack direction="row" alignItems="center" spacing={1}>
-            <FeedOutlinedIcon />
-            <Typography sx={{ fontWeight: "bold" }}>Updates</Typography>
-          </Stack>
-          <Box>
-            <Typography sx={{ my: 1 }} variant="body2" color="GrayText">
-              Updates will appear here
-            </Typography>
-          </Box>
         </Box>
-      </Paper>
+      </Card>
+      <Button
+        onClick={() => {
+          router.push(`/reports/${report._id}`);
+        }}
+        size="small"
+        sx={{ mr: 1 }}
+      >
+        View
+      </Button>
+      <Button
+        onClick={() => {
+          router.push(`/reports/edit/${report._id}`);
+        }}
+        size="small"
+        startIcon={<EditIcon />}
+      >
+        Edit
+      </Button>
     </Box>
   );
 }
@@ -129,10 +120,14 @@ export default function ReportOverview({ username }) {
   if (isLoading) return <CircularProgress />;
 
   return (
-    <Box>
-      {data.data.map((report) => {
-        return <Report report={report} key={report._id} />;
-      })}
-    </Box>
+    <Paper sx={{ p: 3, mb: 2 }}>
+      <Typography sx={{ mb: 2 }} variant="h5">
+        Your Report
+      </Typography>
+      {data.data &&
+        data.data.map((report) => {
+          return <Report report={report} key={report._id} />;
+        })}
+    </Paper>
   );
 }

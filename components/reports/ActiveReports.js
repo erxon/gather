@@ -42,6 +42,7 @@ function Report(props) {
         alignItems: "center",
         my: 1,
       }}
+      variant="outlined"
     >
       <CardMedia sx={{height: 150}}>
         {photo ? (

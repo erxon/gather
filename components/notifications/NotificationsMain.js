@@ -14,6 +14,7 @@ import {
   CardMedia,
   Avatar,
   CardContent,
+  Pagination,
 } from "@mui/material";
 
 import { useEffect, useState } from "react";
@@ -66,6 +67,7 @@ function Notifications(props) {
   const [notifications, setNotifications] = useState([
     ...props.notificationsFromDB,
   ]);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     const channel1 = pusherJS.subscribe(props.channel1);
@@ -94,39 +96,54 @@ function Notifications(props) {
     await removeNotification(id);
   };
 
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
+  console.log(notifications.length);
+
   return (
     <>
-      <Box sx={{ overflowY: "scroll", height: 500 }}>
-        {notifications.reverse().map((object) => {
-          return object.body.type === "match-found" ? (
-            <NotificationMatchFound
-              id={object._id}
-              message={object.body.message}
-              createdAt={object.createdAt}
-              reportId={object.body.reportId}
-              photoUploaded={object.body.photoUploaded}
-              onRemove={handleDelete}
-            />
-          ) : (
-            <Notification
-              name={`${object.body.firstName} ${object.body.lastName}`}
-              lastSeen={object.body.lastSeen}
-              reporter={object.body.reporter}
-              title={object.body.title}
-              id={object._id}
-              key={object._id}
-              reportId={object.body.reportId}
-              photo={
-                object.body.hasOwnProperty("photoUploaded")
-                  ? object.body.photoUploaded
-                  : null
-              }
-              type={object.type}
-              createdAt={object.createdAt}
-              onRemove={handleDelete}
-            />
-          );
-        })}
+      <Box>
+        {notifications.length > 3 && (
+          <Pagination
+            page={page}
+            onChange={handlePageChange}
+            count={notifications.length - 2}
+          />
+        )}
+        {notifications
+          .reverse()
+          .slice(page - 1, page + 2)
+          .map((object) => {
+            return object.body.type === "match-found" ? (
+              <NotificationMatchFound
+                id={object._id}
+                message={object.body.message}
+                createdAt={object.createdAt}
+                reportId={object.body.reportId}
+                photoUploaded={object.body.photoUploaded}
+                onRemove={handleDelete}
+              />
+            ) : (
+              <Notification
+                name={`${object.body.firstName} ${object.body.lastName}`}
+                lastSeen={object.body.lastSeen}
+                reporter={object.body.reporter}
+                title={object.body.title}
+                id={object._id}
+                key={object._id}
+                reportId={object.body.reportId}
+                photo={
+                  object.body.hasOwnProperty("photoUploaded")
+                    ? object.body.photoUploaded
+                    : null
+                }
+                type={object.type}
+                createdAt={object.createdAt}
+                onRemove={handleDelete}
+              />
+            );
+          })}
       </Box>
     </>
   );
@@ -162,24 +179,24 @@ function Notification(props) {
         open={openDialog}
         setOpen={setOpenDialog}
       />
-      <Box sx={{ my: 2 }}>
-        <Card sx={{ display: "flex", p: 2 }}>
-          {props.photo ? (
-            <CardMedia
-              sx={{
-                height: 100,
-                backgroundColor: "#ECEEEE",
-              }}
-            >
-              <DisplayPhoto id={props.photo} />
-            </CardMedia>
-          ) : (
-            <CardMedia
-              component="img"
-              image="/assets/placeholder.png"
-              sx={{ height: 100, width: 100 }}
-            />
-          )}
+      <Card sx={{ display: "flex", p: 2, my: 2 }} variant="outlined">
+        {props.photo ? (
+          <CardMedia
+            sx={{
+              height: 100,
+              backgroundColor: "#ECEEEE",
+            }}
+          >
+            <DisplayPhoto id={props.photo} />
+          </CardMedia>
+        ) : (
+          <CardMedia
+            component="img"
+            image="/assets/placeholder.png"
+            sx={{ height: 100, width: 100 }}
+          />
+        )}
+        <Box>
           <CardContent>
             <Typography variant="body2" sx={{ fontWeight: "bold", mb: 0.75 }}>
               {props.type === "upload-photo" && "Found missing person"}
@@ -194,47 +211,35 @@ function Notification(props) {
               {elapsedTime}
             </Typography>
           </CardContent>
-          <CardActions>
-            <Stack
-              sx={{ mt: 2 }}
-              direction="row"
-              spacing={1}
-              alignItems="center"
-            >
-              {(props.type === "report-manage" ||
-                props.type === "status-change") && (
-                <Button
-                  onClick={() => {
-                    router.push(`/reports/${props.reportId}`);
-                  }}
-                  size="small"
-                  variant="outlined"
-                >
-                  View
-                </Button>
-              )}
-              {props.type === "upload-photo" && (
-                <Button
-                  onClick={handleOpenDialog}
-                  size="small"
-                  variant="outlined"
-                >
-                  View
-                </Button>
-              )}
+          <Stack sx={{ mt: 2 }} direction="row" spacing={1} alignItems="center">
+            {(props.type === "report-manage" ||
+              props.type === "status-change") && (
               <Button
                 onClick={() => {
-                  props.onRemove(props.id);
+                  router.push(`/reports/${props.reportId}`);
                 }}
-                disableElevation
                 size="small"
               >
-                Dismiss
+                View
               </Button>
-            </Stack>
-          </CardActions>
-        </Card>
-      </Box>
+            )}
+            {props.type === "upload-photo" && (
+              <Button onClick={handleOpenDialog} size="small">
+                View
+              </Button>
+            )}
+            <Button
+              onClick={() => {
+                props.onRemove(props.id);
+              }}
+              disableElevation
+              size="small"
+            >
+              Dismiss
+            </Button>
+          </Stack>
+        </Box>
+      </Card>
     </>
   );
 }
@@ -265,7 +270,6 @@ function NotificationMatchFound({
       </Typography>
       <Button
         size="small"
-        variant="contained"
         onClick={() => {
           router.push(`/reporter/${photoUploaded}`);
         }}

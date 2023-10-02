@@ -36,13 +36,13 @@ function DashboardMain({ user, mutate }) {
 
   return (
     <>
-      <StackRowLayout spacing={1}>
-        <DashboardIcon />
-        <Typography sx={{ mr: 3 }} variant="h5">
+      <Stack direction="row" alignItems="center" sx={{ mb: 3 }} spacing={1}>
+        <DashboardIcon fontSize="large" />
+        <Typography sx={{ mr: 3 }} variant="h4">
           Dashboard
         </Typography>
-        <SearchBarReports />
-      </StackRowLayout>
+      </Stack>
+      <SearchBarReports />
       {user.status === "unverified" && (
         <Box sx={{ mt: 3 }}>
           <Typography sx={{ mb: 1 }}>
@@ -62,46 +62,18 @@ function DashboardMain({ user, mutate }) {
         </Box>
       )}
       <Grid container spacing={2} sx={{ mt: 3 }}>
-        <Grid item xs={12} sm={12} md={6}>
-          <Box
-            sx={{
-              padding: "3% 5%",
-            }}
-          >
-            <Stack
-              direction="row"
-              sx={{ mt: 2 }}
-              spacing={2}
-              alignItems="center"
-            >
-              <AssignmentIndOutlinedIcon />
-              <Typography variant="h6">Report overview</Typography>
-            </Stack>
-            <Box sx={{ my: 4 }}>
-              <ReportOverview username={user.username} />
-            </Box>
-          </Box>
-          <Box
-            sx={{
-              padding: "3% 5%",
-            }}
-          >
-            <Stack
-              direction="row"
-              sx={{ mt: 2 }}
-              spacing={2}
-              alignItems="center"
-            >
-              <ArticleOutlinedIcon />
-              <Typography variant="h6">Active reports</Typography>
-            </Stack>
-            <Box sx={{ my: 4 }}>
-              <ActiveReports />
-            </Box>
-            <Button href="/reports" size="small" variant="contained">
+        <Grid item xs={12} sm={12} md={7}>
+          <ReportOverview username={user.username} />
+
+          <Paper sx={{ p: 3 }}>
+            <Typography sx={{ mb: 2 }} variant="h6">
+              Active reports
+            </Typography>
+            <ActiveReports />
+            <Button href="/reports" size="small">
               View All
             </Button>
-          </Box>
+          </Paper>
           <Paper
             sx={user.status === "verified" ? { p: 3, mt: 3 } : { p: 3 }}
             variant="outlined"
@@ -114,21 +86,12 @@ function DashboardMain({ user, mutate }) {
             </Box>
           </Paper>
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={5}>
           {user.status === "verified" && (
-            <Box>
-              <Stack
-                direction="row"
-                alignItems="center"
-                spacing={2}
-                sx={{ mt: 4, mb: 2 }}
-              >
-                <DynamicFeedOutlinedIcon />
-                <Typography variant="h6">Feeds</Typography>
-              </Stack>
-
+            <Paper sx={{p: 3, height: 700}}>
+              <Typography sx={{mb: 2}} variant="h6">Updates</Typography>
               <NotificationsMain user={user} />
-            </Box>
+            </Paper>
           )}
         </Grid>
       </Grid>
