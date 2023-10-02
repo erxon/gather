@@ -12,6 +12,10 @@ import {
   AlertTitle,
   Collapse,
   IconButton,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import Button from "@mui/material/Button";
 import CloseIcon from "@mui/icons-material/Close";
@@ -22,7 +26,28 @@ import { useRouter } from "next/router";
 import PasswordField from "@/components/forms/PasswordField";
 import TextFieldWithValidation from "@/components/forms/TextFieldWithValidation";
 
-export default function Signup({ type }) {
+function TypeSelection({ error, type, setType }) {
+  const handleChange = (event) => {
+    setType(event.target.value);
+  };
+  return (
+    <FormControl error={error} fullWidth>
+      <InputLabel id="demo-simple-select-label">Type</InputLabel>
+      <Select
+        labelId="demo-simple-select-label"
+        id="demo-simple-select"
+        value={type}
+        label="Type"
+        onChange={handleChange}
+      >
+        <MenuItem value={"citizen"}>Citizen</MenuItem>
+        <MenuItem value={"authority"}>Authority</MenuItem>
+      </Select>
+    </FormControl>
+  );
+}
+
+export default function Signup() {
   const [user, { mutate }] = useUser();
 
   const [values, setValues] = useState({
@@ -33,6 +58,7 @@ export default function Signup({ type }) {
     password: "",
     rpassword: "",
   });
+  const [type, setType] = useState("");
   const [error, setError] = useState({
     title: "",
     show: false,
@@ -53,7 +79,8 @@ export default function Signup({ type }) {
       values.username === "" ||
       values.email === "" ||
       values.password === "" ||
-      values.rpassword === ""
+      values.rpassword === "" ||
+      type === ""
     ) {
       setError({
         title: "Missing Fields",
@@ -111,12 +138,7 @@ export default function Signup({ type }) {
 
   return (
     <>
-      <Box
-        sx={{
-          margin: "auto",
-          width: { xs: "100%", md: "40%" },
-        }}
-      >
+      <Box>
         <Paper sx={{ p: 3 }}>
           <Stack
             direction="row"
@@ -130,9 +152,7 @@ export default function Signup({ type }) {
               Sign up
             </Typography>
           </Stack>
-          <Typography variant="h6">
-            {type && (type === "authority" ? "Authority" : "Concerned Citizen")}
-          </Typography>
+          <TypeSelection error={error.show} type={type} setType={setType} />
           <Stack sx={{ mb: 2, mt: 2 }}>
             <Stack direction="row" spacing={1}>
               <TextFieldWithValidation

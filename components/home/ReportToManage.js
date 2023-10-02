@@ -9,6 +9,10 @@ import {
   MenuItem,
   Button,
   Divider,
+  Dialog,
+  DialogActions,
+  DialogTitle,
+  DialogContent,
 } from "@mui/material";
 
 import { useState } from "react";
@@ -17,32 +21,27 @@ import TextFieldWithValidation from "../forms/TextFieldWithValidation";
 import ErrorAlert from "../ErrorAlert";
 import { createReport } from "@/lib/api-lib/api-reports";
 import { useRouter } from "next/router";
+import AccountBoxIcon from "@mui/icons-material/AccountBox";
 
-export default function ReportToManage() {
-  const router = useRouter();
-  const [gender, setGender] = useState("");
-  const [isSubmitted, setSubissionState] = useState(false);
-  const [alert, setAlert] = useState({
-    open: false,
-    message: "",
-  });
-  const [values, setValues] = useState({
-    firstName: "",
-    middleName: "",
-    lastName: "",
-    qualifier: "",
-    lastSeen: "",
-    details: "",
-    age: "",
-  });
-
+function CreateReportForm({
+  open,
+  setOpen,
+  values,
+  setValues,
+  alert,
+  setAlert,
+  gender,
+  setGender,
+  setSubmissionState,
+  isSubmitted,
+}) {
   const handleChange = (event) => {
     const { value, name } = event.target;
     setValues({ ...values, [name]: value });
   };
-  //Handle submission of Report and Manage form
+
   const handleSubmit = async () => {
-    setSubissionState(true);
+    setSubmissionState(true);
     if (
       values.firstName === "" ||
       values.lastName === "" ||
@@ -67,7 +66,7 @@ export default function ReportToManage() {
 
     //Create new report
     const data = await createReport(body);
-    console.log(data)
+    console.log(data);
 
     if (data) {
       router.push(`/reports/create-account/${data.data._id}`);
@@ -75,12 +74,10 @@ export default function ReportToManage() {
   };
 
   return (
-    <>
-      <Paper elevation={2} sx={{ p: 3 }}>
-        <Typography variant="h5">Report and manage</Typography>
-        <Typography sx={{ my: 2 }} variant="body1">
-          Manage, and keep updated on the report you have filed.
-        </Typography>
+    <Dialog open={open} onClose={() => setOpen(false)}>
+      {" "}
+      <DialogTitle>Create Report</DialogTitle>
+      <DialogContent>
         <Stack sx={{ mb: 3 }} direction="row" spacing={1}>
           <TextFieldWithValidation
             id="age"
@@ -194,16 +191,62 @@ export default function ReportToManage() {
           message={alert.message}
           close={() => setAlert({ open: false })}
         />
-        <Button
-          startIcon={<ArticleIcon />}
-          size="small"
-          sx={{ my: 2 }}
-          type="submit"
-          variant="contained"
-          onClick={handleSubmit}
-        >
+      </DialogContent>
+      <DialogActions>
+        <Button type="submit" onClick={handleSubmit}>
           Report
         </Button>
+        <Button onClick={() => setOpen(false)}>Cancel</Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
+
+export default function ReportToManage() {
+  const router = useRouter();
+  const [gender, setGender] = useState("");
+  const [isSubmitted, setSubmissionState] = useState(false);
+  const [alert, setAlert] = useState({
+    open: false,
+    message: "",
+  });
+  const [values, setValues] = useState({
+    firstName: "",
+    middleName: "",
+    lastName: "",
+    qualifier: "",
+    lastSeen: "",
+    details: "",
+    age: "",
+  });
+  const [openDialog, setOpenDialog] = useState(false);
+
+  return (
+    <>
+      <CreateReportForm
+        open={openDialog}
+        setOpen={setOpenDialog}
+        values={values}
+        setValues={setValues}
+        gender={gender}
+        setGender={setGender}
+        alert={alert}
+        setAlert={setAlert}
+        isSubmitted={isSubmitted}
+        setSubmissionState={setSubmissionState}
+      />
+      <Paper sx={{ p: 3 }}>
+        <Stack sx={{ height: 140 }} alignItems="flex-start">
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <AccountBoxIcon fontSize="medium" />
+            <Typography variant="h5">Report Profile</Typography>
+          </Stack>
+          <Typography sx={{ my: 1, height: "100%" }} variant="body1">
+            Create a profile for your report. This will help you and the
+            authorities manage missing person report.
+          </Typography>
+          <Button onClick={() => setOpenDialog(true)}>Report</Button>
+        </Stack>
       </Paper>
     </>
   );
