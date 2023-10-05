@@ -77,9 +77,12 @@ export default function Map({
         data.duration / 60
       )} mins</p>`;
     }
-    map.current.on("load", () => {
-      getRoute(destination);
-    });
+
+    if (destination) {
+      map.current.on("load", () => {
+        getRoute(destination);
+      });
+    }
 
     new mapboxgl.Marker({
       color: "#00adb5",

@@ -10,6 +10,8 @@ import {
   Button,
   Grid,
   Divider,
+  Pagination,
+  Paper,
 } from "@mui/material";
 import useSWR from "swr";
 import { fetcher, useUser } from "@/lib/hooks";
@@ -23,6 +25,8 @@ import Head from "@/components/Head";
 import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
 import { useRouter } from "next/router";
 import computeElapsedTime from "@/utils/helpers/computeElapsedTime";
+import QueryPhotoLarge from "@/components/photo/QueryPhotoLarge";
+import { useState } from "react";
 
 function UploadedPhoto({ photoId }) {
   const { data, error, isLoading } = useSWR(`/api/photos/${photoId}`, fetcher);
@@ -34,7 +38,7 @@ function UploadedPhoto({ photoId }) {
 
     return (
       <Box sx={{ textAlign: "center" }}>
-        <QueryPhoto publicId={data.image} />
+        <QueryPhotoLarge publicId={data.image} />
         <Typography variant="body2" color="GrayText">
           Uploaded {timeElapsed}
         </Typography>
@@ -47,12 +51,8 @@ function Reporter(props) {
   const { name, contact, email } = props;
   return (
     <Box>
-      <Typography variant="subtitle2" component="label">
-        Reported by
-      </Typography>
-      <Typography sx={{ mb: 1.5, fontWeight: "bold" }} variant="h6">
-        {name}
-      </Typography>
+      <Typography variant="body2">Reported by</Typography>
+      <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>{name}</Typography>
       <IconTypography
         customStyles={{ mb: 0.5 }}
         Icon={<LocalPhoneIcon color="disabled" />}
@@ -68,7 +68,7 @@ function Report(props) {
   return (
     <Grid item xs={12} md={3} sm={6}>
       <Card>
-        <CardMedia>
+        <CardMedia sx={{ bgcolor: "#F2F4F4" }}>
           <UploadedPhoto photoId={props.photoUploaded} />
         </CardMedia>
         <Box sx={{ p: 2 }}>
@@ -81,8 +81,6 @@ function Report(props) {
           </CardContent>
           <CardActions>
             <Button
-              fullWidth
-              variant="contained"
               size="small"
               onClick={() =>
                 router.push(`/authority/matches/${props.photoUploaded}`)
@@ -98,17 +96,30 @@ function Report(props) {
 }
 
 function Reports() {
+  const [page, setPage] = useState(1);
   const { data, error, isLoading } = useSWR("/api/reporters", fetcher);
   if (isLoading) return <CircularProgress />;
   if (error) return <Typography>Something went wrong</Typography>;
+
+  const handlePage = (event, value) => {
+    setPage(value);
+  };
+
   if (data) {
     const reporters = data.data;
+
     return (
       <Box>
         <Head title="Photos" icon={<InsertPhotoIcon />} />
-        <Grid container spacing={1}>
+        <Pagination
+          sx={{mb: 2}}
+          onChange={handlePage}
+          page={page}
+          count={reporters.length - 3}
+        />
+        <Grid container spacing={3}>
           {reporters.length > 0 ? (
-            reporters.map((reporter) => {
+            reporters.slice(page - 1, page + 3).map((reporter) => {
               return (
                 <Report
                   key={reporter._id}
@@ -121,7 +132,7 @@ function Reports() {
               );
             })
           ) : (
-            <Box sx={{p: 2}}>
+            <Box sx={{ p: 2 }}>
               <Typography color="GrayText">No photos uploaded yet</Typography>
             </Box>
           )}

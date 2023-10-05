@@ -598,7 +598,7 @@ function ReportProcessingMain({ currentUser, report, users }) {
         </Stack>
 
         <Box sx={{ mt: 2 }}>
-          <Stack direction="row" spacing={3}>
+          <Stack direction={{ xs: "column", md: "row" }} spacing={3}>
             {/*Assigning*/}
             <Assignment
               assign={assign}

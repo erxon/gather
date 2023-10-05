@@ -12,6 +12,7 @@ import {
   CardActions,
   Chip,
   Paper,
+  Grid,
 } from "@mui/material";
 import Image from "next/image";
 import useSWR from "swr";
@@ -23,6 +24,7 @@ import FeedOutlinedIcon from "@mui/icons-material/FeedOutlined";
 import { useRouter } from "next/router";
 import ReportPhotoLarge from "@/components/photo/ReportPhotoLarge";
 import ReportPhoto from "@/components/photo/ReportPhoto";
+import AddIcon from "@mui/icons-material/Add";
 
 function Report({ report }) {
   const router = useRouter();
@@ -31,10 +33,10 @@ function Report({ report }) {
       <Card
         sx={{
           display: "flex",
-          alignItems: "center",
-          flexDirection: { xs: "column", sm: "row", md: "row" },
+          alignItems: { xs: "center", md: "flex-start" },
+          flexDirection: "column",
           mb: 2,
-          p: 1,
+          p: 2,
           maxWidth: 300,
         }}
         variant="outlined"
@@ -46,70 +48,74 @@ function Report({ report }) {
             <Image
               alt="placeholder"
               src="/assets/placeholder.png"
-              width={150}
-              height={150}
+              width={100}
+              height={100}
             />
           )}
         </CardMedia>
-        <Box>
-          <CardContent
-            sx={{ textAlign: { xs: "center", sm: "row", md: "left" } }}
+        <CardContent
+          sx={{
+            p: 0,
+            textAlign: { xs: "center", sm: "row", md: "left" },
+          }}
+        >
+          <Box sx={{ mb: 1 }}>
+            <Typography sx={{ fontWeight: "bold" }}>
+              {report.firstName} {report.lastName}
+            </Typography>
+            <Chip label={report.status} size="small" />
+          </Box>
+          <Stack
+            direction="row"
+            alignItems="center"
+            spacing={0.5}
+            justifyContent={{ xs: "center", md: "flex-start" }}
           >
-            <Box sx={{ mb: 1 }}>
-              <Typography sx={{ fontWeight: "bold" }}>
-                {report.firstName} {report.lastName}
-              </Typography>
-              <Chip label={report.status} size="small" />
-            </Box>
-            <Stack
-              direction="row"
-              alignItems="center"
-              spacing={0.5}
-              justifyContent={{ xs: "center", md: "flex-start" }}
-            >
-              <LocationOnIcon color="disabled" />
-              <Typography color="GrayText" variant="body2">
-                {report.lastSeen ? report.lastSeen : "Unknown"}
-              </Typography>
-            </Stack>
-            <Stack
-              direction="row"
-              alignItems="center"
-              spacing={0.5}
-              justifyContent={{ xs: "center", md: "flex-start" }}
-            >
-              <PersonIcon color="disabled" />
-              <Typography color="GrayText" variant="body2">
-                {report.age ? report.age : "Unknown age"},{" "}
-                {report.gender ? report.gender : "Unknown gender"}
-              </Typography>
-            </Stack>
-          </CardContent>
-        </Box>
+            <LocationOnIcon color="disabled" />
+            <Typography color="GrayText" variant="body2">
+              {report.lastSeen ? report.lastSeen : "Unknown"}
+            </Typography>
+          </Stack>
+          <Stack
+            direction="row"
+            alignItems="center"
+            spacing={0.5}
+            justifyContent={{ xs: "center", md: "flex-start" }}
+          >
+            <PersonIcon color="disabled" />
+            <Typography color="GrayText" variant="body2">
+              {report.age ? report.age : "Unknown age"},{" "}
+              {report.gender ? report.gender : "Unknown gender"}
+            </Typography>
+          </Stack>
+        </CardContent>
+        <CardActions sx={{ p: 0, mt: 2 }}>
+          <Button
+            onClick={() => {
+              router.push(`/reports/${report._id}`);
+            }}
+            size="small"
+          >
+            View
+          </Button>
+          <Button
+            onClick={() => {
+              router.push(`/reports/edit/${report._id}`);
+            }}
+            size="small"
+            sx={{ mr: 1 }}
+            startIcon={<EditIcon />}
+          >
+            Edit
+          </Button>
+        </CardActions>
       </Card>
-      <Button
-        onClick={() => {
-          router.push(`/reports/${report._id}`);
-        }}
-        size="small"
-        sx={{ mr: 1 }}
-      >
-        View
-      </Button>
-      <Button
-        onClick={() => {
-          router.push(`/reports/edit/${report._id}`);
-        }}
-        size="small"
-        startIcon={<EditIcon />}
-      >
-        Edit
-      </Button>
     </Box>
   );
 }
 
 export default function ReportOverview({ username }) {
+  const router = useRouter();
   const { data, error, isLoading } = useSWR(
     `/api/reports/user/${username}`,
     fetcher
@@ -122,12 +128,32 @@ export default function ReportOverview({ username }) {
   return (
     <Paper sx={{ p: 3, mb: 2 }}>
       <Typography sx={{ mb: 2 }} variant="h5">
-        Your Report
+        Your Reports
       </Typography>
-      {data.data &&
-        data.data.map((report) => {
-          return <Report report={report} key={report._id} />;
-        })}
+      <Button
+        onClick={() => router.push("/reports/create-report")}
+        variant="contained"
+        startIcon={<AddIcon />}
+        sx={{ my: 2 }}
+      >
+        New Report
+      </Button>
+      <Grid container spacing={1}>
+        {data.data.length > 0 &&
+          data.data.map((report, index) => {
+            if (index > 1) return;
+            return (
+              <Grid item key={report._id} xs={12} md={6}>
+                <Report report={report} key={report._id} />
+              </Grid>
+            );
+          })}
+      </Grid>
+      {data.data.length > 0 && (
+        <Button sx={{ mt: 1 }} size="small">
+          View all
+        </Button>
+      )}
     </Paper>
   );
 }

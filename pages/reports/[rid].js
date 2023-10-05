@@ -16,6 +16,7 @@ import {
   Stack,
   Chip,
   Paper,
+  Collapse,
 } from "@mui/material";
 
 import { getSingleReport, deleteReport } from "@/lib/api-lib/api-reports";
@@ -39,6 +40,8 @@ import PhoneIcon from "@mui/icons-material/Phone";
 import EmailIcon from "@mui/icons-material/Email";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import StackRowLayout from "@/utils/StackRowLayout";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 
 function UpdatedBy({ updatedBy, updatedAt }) {
   const dateUpdated = new Date(updatedAt);
@@ -117,19 +120,15 @@ function Match({ photo }) {
   const elapsedTime = computeElapsedTime(date);
 
   const handleRoute = () => {
-    router.push(`/found-person/${photo}`)
-  }
+    router.push(`/found-person/${photo}`);
+  };
 
   return (
     <Paper sx={{ px: 3, pt: 2, pb: 2, mt: 2 }}>
       {" "}
       <Typography variant="h6">Match found</Typography>
-      <Paper variant="outlined" sx={{p: 2, mt: 2}}>
-        <Stack
-          direction="row"
-          alignItems="flex-start"
-          spacing={1}
-        >
+      <Paper variant="outlined" sx={{ p: 2, mt: 2 }}>
+        <Stack direction="row" alignItems="flex-start" spacing={1}>
           <MatchedPhoto photo={photo} />
           <Box>
             <Typography sx={{ mb: 1 }} variant="body2">
@@ -164,6 +163,7 @@ export default function ReportPage({ data }) {
   const router = useRouter();
   const [user, { mutate, loading }] = useUser();
   const [authorized, isAuthorized] = useState(false);
+  const [updateReport, setUpdateReport] = useState(false);
 
   //Checks if the user is authorized
   useEffect(() => {
@@ -199,34 +199,47 @@ export default function ReportPage({ data }) {
         index={0}
       >
         <Box>
-          {user &&
-            ((data.editors.length > 0 && data.editors.includes(user._id)) ||
-              user.role === "reports administrator") && (
-              <Button
-                variant="outlined"
-                startIcon={<EditIcon />}
-                onClick={() => {
-                  router.push(`/reports/edit/${data._id}`);
-                }}
-                size="small"
-              >
-                Edit
-              </Button>
-            )}
           {data.updatedBy && (
-            <Box sx={{ mt: 3 }}>
+            <Box sx={{ mb: 3 }}>
               <UpdatedBy
                 updatedBy={data.updatedBy}
                 updatedAt={data.updatedAt}
               />
             </Box>
           )}
+          {user &&
+            ((data.editors.length > 0 && data.editors.includes(user._id)) ||
+              user.role === "reports administrator") && (
+              <Paper sx={{ p: 3 }}>
+                <Button
+                  startIcon={<EditIcon />}
+                  onClick={() => {
+                    router.push(`/reports/edit/${data._id}`);
+                  }}
+                  sx={{ mr: 2 }}
+                >
+                  Edit
+                </Button>
+                <Button
+                  endIcon={
+                    !updateReport ? <ArrowDropDownIcon /> : <ArrowDropUpIcon />
+                  }
+                  onClick={() => setUpdateReport(!updateReport)}
+                >
+                  Update Report
+                </Button>
+              </Paper>
+            )}
           <Box>
             {user &&
               ((user.type === "authority" &&
                 user.role === "reports administrator") ||
                 user._id === data.assignedTo) && (
-                <ReportProcessing currentUser={user} report={data} />
+                <Box>
+                  <Collapse in={updateReport}>
+                    <ReportProcessing currentUser={user} report={data} />
+                  </Collapse>
+                </Box>
               )}
           </Box>
 

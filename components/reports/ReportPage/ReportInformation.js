@@ -10,6 +10,7 @@ import GroupOutlinedIcon from "@mui/icons-material/GroupOutlined";
 import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
 import NotesOutlinedIcon from "@mui/icons-material/NotesOutlined";
 import PublicOutlinedIcon from "@mui/icons-material/PublicOutlined";
+import InfoIcon from "@mui/icons-material/Info";
 import SectionHeader from "@/utils/SectionHeader";
 import ReportPhoto from "@/components/photo/ReportPhoto";
 import ProfilePhotoAvatar from "@/components/photo/ProfilePhotoAvatar";
@@ -26,6 +27,7 @@ import {
   CardContent,
   IconButton,
   CardActions,
+  CardMedia,
 } from "@mui/material";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -46,14 +48,16 @@ function ReferencePhotos({ reportId }) {
         Reference Photos
       </Typography>
       {data ? (
-        data.images.map((image) => {
-          return (
-            <ReportPhotoSmall
-              key={image._id}
-              publicId={`report-photos/${image.publicId}`}
-            />
-          );
-        })
+        <Stack direction="row" alignItems="center">
+          {data.images.map((image) => {
+            return (
+              <ReportPhotoSmall
+                key={image._id}
+                publicId={`report-photos/${image.publicId}`}
+              />
+            );
+          })}
+        </Stack>
       ) : (
         <Typography color="GrayText">
           Please add reference photos. This will help our system to accurately
@@ -73,43 +77,45 @@ function Reporter({ account }) {
   if (isLoading) return <CircularProgress />;
 
   return (
-    <div>
+    <Paper sx={{ p: 3 }}>
+      <Typography sx={{ mb: 2 }} variant="h6">
+        Reporter
+      </Typography>
       <Card
         variant="outlined"
-        sx={{ display: "flex", alignItems: "flex-start", p: 1 }}
+        sx={{ display: "flex", alignItems: "flex-start", p: 3 }}
       >
-        <CardActions>
-          <IconButton
-            onClick={() => {
-              router.push(`/profile/${account}`);
-            }}
-          >
-            {data.photo ? (
-              <ProfilePhotoAvatar publicId={data.user.photo} />
-            ) : (
-              <Image
-                alt="placeholder image for profile photo"
-                style={{ borderRadius: "100%" }}
-                width="56"
-                height="56"
-                src="/assets/placeholder.png"
-              />
-            )}
-          </IconButton>
-        </CardActions>
-        <CardContent>
-          <Typography sx={{ fontWeight: "bold" }}>
-            {data.user.firstName} {data.user.lastName}
-          </Typography>
-          <Chip sx={{ mr: 1 }} size="small" label={data.user.type} />
-          <Chip size="small" label={data.user.status} />
-          <Typography sx={{ mt: 1 }} variant="body2">
-            {data.user.username}
-          </Typography>
-          <Typography variant="body2">{data.user.email}</Typography>
-        </CardContent>
+        <CardMedia>
+          {data.photo ? (
+            <ProfilePhotoAvatar publicId={data.user.photo} />
+          ) : (
+            <Image
+              alt="placeholder image for profile photo"
+              style={{ borderRadius: "100%" }}
+              width="56"
+              height="56"
+              src="/assets/placeholder.png"
+            />
+          )}
+        </CardMedia>
+        <Box>
+          <CardContent sx={{ p: 0, ml: 2 }}>
+            <Typography sx={{ fontWeight: "bold" }}>
+              {data.user.firstName} {data.user.lastName}
+            </Typography>
+            <Chip sx={{ mr: 1 }} size="small" label={data.user.type} />
+            <Chip size="small" label={data.user.status} />
+            <Typography sx={{ mt: 1 }} variant="body2">
+              {data.user.username}
+            </Typography>
+            <Typography variant="body2">{data.user.email}</Typography>
+          </CardContent>
+          <CardActions>
+            <Button>Profile</Button>
+          </CardActions>
+        </Box>
       </Card>
-    </div>
+    </Paper>
   );
 }
 
@@ -127,36 +133,58 @@ function SocialMediaShareButtons({ firstName, id }) {
   );
 }
 
-function ReportDetails({ details }) {
+function DetailSection({ data, title }) {
+  console.log(typeof data);
   return (
-    <Paper sx={{ p: 3, mb: 1 }}>
-      <SectionHeader icon={<NotesOutlinedIcon />} title="Details" />
-      <Typography variant="body1" sx={{ my: 2 }}>
-        {details}
+    <Box sx={{ mb: 2 }}>
+      <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
+        {title}
       </Typography>
-      <Button size="small">View all</Button>
-    </Paper>
+      {typeof data === "object" ? (
+        data.length > 0 ? (
+          data.map((item, index) => {
+            return <Chip key={index} label={item} />;
+          })
+        ) : (
+          <Typography variant="body2" color="GrayText">
+            None
+          </Typography>
+        )
+      ) : (
+        <Typography variant="body2">{data}</Typography>
+      )}
+    </Box>
   );
 }
 
-function Features({ features, username, user }) {
+function ReportDetails({
+  details,
+  aliases,
+  smt,
+  medications,
+  prostheticsAndImplants,
+  clothingAndAccessories,
+  bloodType,
+}) {
   return (
     <Paper sx={{ p: 3, mb: 1 }}>
-      <SectionHeader
-        icon={<FormatListBulletedOutlinedIcon />}
-        title="Features"
+      <SectionHeader title="Details" />
+      <Typography variant="body1" sx={{ my: 2 }}>
+        {details}
+      </Typography>
+      <DetailSection data={aliases} title={"Aliases"} />
+      <DetailSection data={smt} title={"Scars, Marks, and Tattoos"} />
+      <DetailSection data={medications} title={"Medications"} />
+      <DetailSection
+        data={prostheticsAndImplants}
+        title={"Prosthetics and Implants"}
       />
-      {features && features.length > 0 ? (
-        features.map((feature) => {
-          return <Typography key={feature}>{feature}</Typography>;
-        })
-      ) : (
-        <Typography sx={{ my: 2 }} color="GrayText">
-          {user && user.username === username
-            ? "Edit this report to add features"
-            : "No features added yet"}
-        </Typography>
-      )}
+      <DetailSection
+        data={clothingAndAccessories}
+        title={"Clothing and Accessories"}
+      />
+      <DetailSection data={bloodType} title={"Blood Type"} />
+      <Button size="small">View all</Button>
     </Paper>
   );
 }
@@ -252,29 +280,75 @@ export default function ReportInformation({ authorized, data, user }) {
                 This case is not yet verified
               </Typography>
             )}
+            <Paper sx={{ p: 2, mt: 2 }} variant="outlined">
+              <Stack direction="row" alignItems="flex-start" spacing={1}>
+                <InfoIcon color="primary" />
+                <Box>
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    Its been{" "}
+                    <span style={{ fontWeight: "bold" }}>{timeElapsed}</span>{" "}
+                    since{" "}
+                    <span style={{ fontWeight: "bold" }}>
+                      {data.firstName}{" "}
+                    </span>
+                    reportedly missing{" "}
+                  </Typography>
+                  <Typography variant="body2">
+                    Reportedly missing on:{" "}
+                    <span style={{ fontWeight: "bold" }}>
+                      {" "}
+                      {reportedAt.toDateString()}{" "}
+                      {reportedAt.toLocaleTimeString()}
+                    </span>
+                  </Typography>
+                </Box>
+              </Stack>
+            </Paper>
 
-            <Typography variant="body2" sx={{ mt: 2 }}>
-              Its been <span style={{ fontWeight: "bold" }}>{timeElapsed}</span>{" "}
-              since{" "}
-              <span style={{ fontWeight: "bold" }}>{data.firstName} </span>
-              reportedly missing{" "}
-            </Typography>
-            <Typography variant="body2">
-              Reportedly missing on:{" "}
-              <span style={{ fontWeight: "bold" }}>
-                {" "}
-                {reportedAt.toDateString()} {reportedAt.toLocaleTimeString()}
-              </span>
-            </Typography>
-          </Box>
-          <Box>
-            <Typography sx={{ mb: 2 }}>Reported by: </Typography>
-            <Reporter account={data.account} />
+            <Box sx={{ mt: 2 }}>
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <PlaceIcon fontSize="small" />
+                {data.reporter ? (
+                  <Typography variant="body2">
+                    {data.reporter.location}
+                  </Typography>
+                ) : (
+                  <Typography variant="body2">{data.lastSeen}</Typography>
+                )}
+              </Stack>
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <EmailIcon fontSize="small" />
+                {data.email ? (
+                  <Typography variant="body2">{data.email} </Typography>
+                ) : (
+                  <Typography variant="body2">
+                    {user && user.username === data.username
+                      ? "Edit this report to add an email"
+                      : "No email to show"}
+                  </Typography>
+                )}
+              </Stack>
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <PersonIcon fontSize="small" />
+                {data.age && data.gender ? (
+                  <Typography variant="body2">
+                    {data.age} years old, {data.gender}
+                  </Typography>
+                ) : (
+                  <Typography variant="body2" color="GrayText">
+                    Unknown age and gender.
+                  </Typography>
+                )}
+              </Stack>
+            </Box>
           </Box>
         </Stack>
       </Paper>
       <Grid container sx={{ mt: 3 }} spacing={1}>
         <Grid item xs={12} md={6}>
+          <Box sx={{ mb: 2 }}>
+            <Reporter account={data.account} />
+          </Box>
           {/*Reference photos*/}
           {/*******************************************/}
           <Paper sx={{ p: 3 }}>
@@ -283,52 +357,6 @@ export default function ReportInformation({ authorized, data, user }) {
 
           {/*Information*/}
           {/*******************************************/}
-          <Paper sx={{ p: 3, mt: 2 }}>
-            <Stack
-              sx={{ mb: 0.75 }}
-              direction="row"
-              alignItems="center"
-              spacing={1}
-            >
-              <PersonIcon />
-              {data.age && data.gender ? (
-                <Typography variant="body1">
-                  {data.age} years old, {data.gender}
-                </Typography>
-              ) : (
-                <Typography variant="body1" color="GrayText">
-                  Unknown age and gender.
-                </Typography>
-              )}
-            </Stack>
-            <Stack
-              sx={{ mb: 0.75 }}
-              direction="row"
-              alignItems="center"
-              spacing={1}
-            >
-              <PlaceIcon />
-              {data.reporter ? (
-                <Typography variant="body1">
-                  {data.reporter.location}
-                </Typography>
-              ) : (
-                <Typography variant="body1">{data.lastSeen}</Typography>
-              )}
-            </Stack>
-            <Stack direction="row" alignItems="center" spacing={1}>
-              <EmailIcon />
-              {data.email ? (
-                <Typography variant="body1">{data.email} </Typography>
-              ) : (
-                <Typography color="GrayText" variant="body1">
-                  {user && user.username === data.username
-                    ? "Edit this report to add an email"
-                    : "No email to show"}
-                </Typography>
-              )}
-            </Stack>
-          </Paper>
         </Grid>
         <Grid item xs={12} md={6}>
           {/*Social Media Share Buttons*/}
@@ -339,14 +367,14 @@ export default function ReportInformation({ authorized, data, user }) {
           {/*Report Details*/}
           {/*******************************************/}
 
-          <ReportDetails details={data.details} />
-
-          {/*Features*/}
-          {/*******************************************/}
-          <Features
-            features={data.features}
-            username={data.username}
-            user={user}
+          <ReportDetails
+            details={data.details}
+            aliases={data.aliases}
+            smt={data.smt}
+            prostheticsAndImplants={data.prostheticsAndImplants}
+            medications={data.medications}
+            clothingAndAccessories={data.clothingAndAccessories}
+            bloodType={data.bloodType}
           />
 
           {/*Social Media Accounts*/}

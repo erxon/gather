@@ -11,6 +11,7 @@ import {
   Radio,
   Box,
   Grid,
+  Paper,
 } from "@mui/material";
 
 import { getReports } from "@/lib/api-lib/api-reports";
@@ -42,26 +43,33 @@ export default function ReportPage({ data }) {
       </Box>
       <div>
         {user && user.status === "verified" && user.type === "authority" && (
-          <RadioGroup onChange={handleChange} name="filter">
-            <StackRowLayout>
-              <FormControlLabel
-                value="pending"
-                control={<Radio />}
-                label="Pending"
-              />
-              <FormControlLabel
-                value="active"
-                control={<Radio />}
-                label="Active"
-              />
-              <FormControlLabel
-                value="closed"
-                control={<Radio />}
-                label="Closed"
-              />
-              <FormControlLabel value="all" control={<Radio />} label="All" />
-            </StackRowLayout>
-          </RadioGroup>
+          <Paper sx={{ p: 3, mb: 2 }}>
+            <RadioGroup onChange={handleChange} name="filter">
+              <StackRowLayout>
+                <FormControlLabel
+                  value="pending"
+                  control={<Radio />}
+                  label="Pending"
+                />
+                <FormControlLabel
+                  value="under verification"
+                  control={<Radio />}
+                  label="Under verification"
+                />
+                <FormControlLabel
+                  value="active"
+                  control={<Radio />}
+                  label="Active"
+                />
+                <FormControlLabel
+                  value="close"
+                  control={<Radio />}
+                  label="Closed"
+                />
+                <FormControlLabel value="all" control={<Radio />} label="All" />
+              </StackRowLayout>
+            </RadioGroup>
+          </Paper>
         )}
         <Grid container spacing={2}>
           {displayData.length > 0 ? (

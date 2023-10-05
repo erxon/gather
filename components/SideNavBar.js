@@ -17,9 +17,10 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { Collapse, Divider, Typography } from "@mui/material";
 
-import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
+import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
 import UnverifedUsers from "./drawer/UnverifiedUsers";
-import MapIcon from '@mui/icons-material/Map';
+import MapIcon from "@mui/icons-material/Map";
+import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
 
 function ItemButtonReports() {
   const router = useRouter();
@@ -32,7 +33,7 @@ function ItemButtonReports() {
     <div>
       <ListItemButton onClick={handleClick}>
         <ListItemIcon>
-          <ArticleIcon />
+          <ArticleOutlinedIcon />
         </ListItemIcon>
         <ListItemText primary="Reports" />
         {open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -167,15 +168,15 @@ function ListItems(props) {
             )}
             {user.type === "authority" && user.status === "verified" && (
               <ListItemButton
-              onClick={() => {
-                router.push("/map");
-              }}
-            >
-              <ListItemIcon>
-                <MapIcon />
-              </ListItemIcon>
-              <ListItemText primary="Map" />
-            </ListItemButton>
+                onClick={() => {
+                  router.push("/map");
+                }}
+              >
+                <ListItemIcon>
+                  <MapIcon />
+                </ListItemIcon>
+                <ListItemText primary="Map" />
+              </ListItemButton>
             )}
           </List>
         )}

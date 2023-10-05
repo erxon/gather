@@ -20,6 +20,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
 
 import { useState } from "react";
+import ProfilePhotoAvatar from "../photo/ProfilePhotoAvatar";
 
 export default function User(props) {
   const router = useRouter();
@@ -47,40 +48,55 @@ export default function User(props) {
         <Card
           sx={{
             display: "flex",
+            flexDirection: { xs: "column", md: "row", sm: "column" },
+            alignItems: { xs: "center", md: "flex-start", sm: "center" },
+            p: 2,
           }}
-          variant="outlined"
         >
-          <CardMedia sx={{ p: 3 }}>
+          <CardMedia>
             {publicId ? (
-              <Avatar sx={{ width: 56, height: 56 }}>
-                <ProfilePhoto publicId={publicId} />
-              </Avatar>
+              <ProfilePhotoAvatar publicId={publicId} />
             ) : (
               <Avatar
-                sx={{ width: 56, height: 56 }}
+                sx={{ width: 42, height: 42 }}
                 src="/assets/placeholder.png"
               />
             )}
           </CardMedia>
-          <Box sx={{ width: "100%" }}>
-            <CardContent sx={{ height: 60 }}>
-              <Typography sx={{ fontWeight: "bold" }} variant="body1">
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: { xs: "center", md: "flex-start" },
+            }}
+          >
+            <CardContent
+              sx={{
+                textAlign: { xs: "center", md: "start" },
+                pl: 2,
+                pt: 0,
+                mb: 2,
+                height: 60,
+              }}
+            >
+              <Typography sx={{ fontWeight: "bold" }} variant="body2">
                 {firstName} {lastName}
               </Typography>
-              <StackRowLayout spacing={1}>
-                <Typography
-                  variant="body2"
-                  color="GrayText"
-                  sx={{ fontWeight: "bold" }}
-                >
-                  {username}
-                </Typography>
-                <Chip color="info" label={type} size="small" />
-                <Chip color="success" label={status} size="small" />
-              </StackRowLayout>
-              <Typography variant="subtitle2">{email}</Typography>
+              <Typography
+                variant="body2"
+              >
+                {username}
+              </Typography>
+              <Typography sx={{mb: 0.5}} variant="body2">{email}</Typography>
+              <Chip color="info" label={type} size="small" />
+              <Chip
+                sx={{ ml: 0.5 }}
+                color="success"
+                label={status}
+                size="small"
+              />
             </CardContent>
-            <CardActions sx={{ width: "100%" }}>
+            <CardActions>
               {button.inRequests ? (
                 <Button variant="contained" size="small" disabled>
                   Requested

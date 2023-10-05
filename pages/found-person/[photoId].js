@@ -27,7 +27,7 @@ import {
   CardContent,
   Chip,
 } from "@mui/material";
-import { useRouter } from "next/router";
+import { Router, useRouter } from "next/router";
 import useSWR from "swr";
 import PersonIcon from "@mui/icons-material/Person";
 import PhoneIcon from "@mui/icons-material/Phone";
@@ -130,7 +130,7 @@ function Report({ photo }) {
         borderRadius: "10px",
       }}
     >
-      <QueryPhotoLarge publicId={data.image} />
+      {data && <QueryPhotoLarge publicId={data.image} />}
     </Box>
   );
 }
@@ -202,27 +202,15 @@ function PossibleMatch({ possibleMatch }) {
   );
 }
 
-export default function Page() {
-  const router = useRouter();
-  const { photoId } = router.query;
-  const { data, error, isLoading } = useSWR(
-    `/api/reporters/uploaded-photo/${photoId}`,
-    fetcher
-  );
+export default function Page({ data }) {
   const [openShareDialog, setOpenShareDialog] = useState(false);
-
-  if (isLoading) return <CircularProgress />;
-  if (error) return <Typography>Something went wrong.</Typography>;
-
-  //match found
-  //no match found (added to DB)
 
   console.log(data);
 
   return (
     <div>
       <ShareDialog
-        photoId={photoId}
+        photoId={data._id}
         open={openShareDialog}
         setOpen={setOpenShareDialog}
       />
@@ -238,7 +226,7 @@ export default function Page() {
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
           <Paper sx={{ p: 2 }}>
-            <Report photo={photoId} />
+            <Report photo={data.photoUploaded} />
           </Paper>
           {data.possibleMatch && (
             <Paper sx={{ my: 2, p: 2 }}>
@@ -279,4 +267,18 @@ export default function Page() {
       </Grid>
     </div>
   );
+}
+
+export async function getServerSideProps({ params }) {
+  const { photoId } = params;
+  const url = process.env.API_URL || "http://localhost:3000";
+  const response = await fetch(
+    `${url}/api/reporters/uploaded-photo/${photoId}`
+  );
+  const data = await response.json();
+  console.log(data);
+
+  return {
+    props: { data: data },
+  };
 }

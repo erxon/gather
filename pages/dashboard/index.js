@@ -64,7 +64,6 @@ function DashboardMain({ user, mutate }) {
       <Grid container spacing={2} sx={{ mt: 3 }}>
         <Grid item xs={12} sm={12} md={7}>
           <ReportOverview username={user.username} />
-
           <Paper sx={{ p: 3 }}>
             <Typography sx={{ mb: 2 }} variant="h6">
               Active reports

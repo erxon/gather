@@ -7,6 +7,8 @@ import {
   Button,
   Stack,
   CircularProgress,
+  Divider,
+  Pagination,
 } from "@mui/material";
 import mapboxgl from "!mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -25,53 +27,91 @@ import Map from "@/components/map/Map";
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
 export default function Page({ data }) {
+  const [userLocation, setUserLocation] = useState({
+    lng: null,
+    lat: null,
+  });
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setUserLocation({
+          lng: position.coords.longitude,
+          lat: position.coords.latitude,
+        });
+      },
+      () => {},
+      { enableHighAccuracy: true }
+    );
+  }, []);
+
   return (
     <Authenticate>
-      <DisplayMap data={data} />
+      <DisplayMap userLocation={userLocation} data={data} />
     </Authenticate>
   );
 }
 
-function DisplayMap({ data }) {
+function DisplayMap({ data, userLocation }) {
   const [destination, setDestination] = useState(null);
+  const [page, setPage] = useState(1);
   const reporters = [...data.data];
+
+  const pageLength = reporters.length - 2;
+
+  const handlePage = (event, value) => {
+    setPage(value);
+  };
 
   return (
     <Grid container spacing={1}>
       <Grid item xs={12} md={4}>
         <Head icon={<PersonPinCircleOutlinedIcon />} title="Reports" />
-        {reporters.reverse().map((reporter) => {
-          return (
-            <Reporter
-              key={reporter._id}
-              reporter={reporter}
-              setDestination={setDestination}
-            />
-          );
-        })}
+        <Paper sx={{p: 3}}>
+          <Pagination page={page} onChange={handlePage} size="small" count={pageLength} />
+          {reporters
+            .slice(page - 1, page + 2)
+            .reverse()
+            .map((reporter) => {
+              return (
+                <Reporter
+                  userLocation={userLocation}
+                  key={reporter._id}
+                  reporter={reporter}
+                  setDestination={setDestination}
+                />
+              );
+            })}
+        </Paper>
       </Grid>
 
       <Grid item xs={12} md={8}>
-        <Map reporters={data.data} destination={destination} height={"100vh"} />
+        {/* <Map
+          userLocation={userLocation}
+          reporters={data.data}
+          destination={destination}
+          height={"100vh"}
+        /> */}
       </Grid>
     </Grid>
   );
 }
 
-function Reporter({ reporter, setDestination }) {
-  const { data, error, isLoading } = useSWRImmutable(
-    `https://api.mapbox.com/directions/v5/mapbox/driving/120.911,14.292;${reporter.position.longitude},${reporter.position.latitude}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
-    fetcher
-  );
+function Reporter({ reporter, setDestination, userLocation }) {
+  // const { data, error, isLoading } = useSWRImmutable(
+  //   `https://api.mapbox.com/directions/v5/mapbox/driving/${userLocation.lng},${userLocation.lat};${reporter.position.longitude},${reporter.position.latitude}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
+  //   fetcher
+  // );
 
-  if (error) return <Typography>Something went wrong.</Typography>;
-  if (isLoading) return <CircularProgress />;
+  // if (error) return <Typography>Something went wrong.</Typography>;
+  // if (isLoading) return <CircularProgress />;
 
   const handleViewRoute = async () => {
     setDestination([reporter.position.longitude, reporter.position.latitude]);
   };
+
   return (
-    <Paper sx={{ p: 2, mb: 2 }}>
+    <Box sx={{ p: 3 }}>
       <Stack direction="row" spacing={2}>
         <Photo photoUploaded={reporter.photoUploaded} />
         <Box sx={{ mb: 1 }}>
@@ -87,7 +127,7 @@ function Reporter({ reporter, setDestination }) {
             <DirectionsCarIcon color="primary" />
             <Typography variant="body2">Driving |</Typography>
             <Typography variant="body2">
-              {Math.round(data.routes[0].duration / 60)} mins
+              {/* {data && Math.round(data.routes[0].duration / 60)} mins */}
             </Typography>
           </StackRowLayout>
           <Button sx={{ mt: 1 }} onClick={handleViewRoute} size="small">
@@ -95,7 +135,8 @@ function Reporter({ reporter, setDestination }) {
           </Button>
         </Box>
       </Stack>
-    </Paper>
+      <Divider />
+    </Box>
   );
 }
 

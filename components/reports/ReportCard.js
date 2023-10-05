@@ -6,6 +6,7 @@ import {
   Typography,
   Chip,
   Button,
+  Box,
 } from "@mui/material";
 import { CloudinaryImage } from "@cloudinary/url-gen";
 import { AdvancedImage } from "@cloudinary/react";
@@ -15,16 +16,49 @@ import PersonIcon from "@mui/icons-material/Person";
 import PlaceIcon from "@mui/icons-material/Place";
 import StackRowLayout from "@/utils/StackRowLayout";
 
+const getStatusStyle = (status) => {
+  let style;
+
+  switch (status) {
+    case "pending":
+      style = {
+        bgcolor: "#c7c7c7",
+      };
+      break;
+    case "under verification":
+      style = {
+        bgcolor: "#1164bd",
+        color: "#fff",
+      };
+      break;
+    case "active":
+      style = {
+        bgcolor: "#5beb5e",
+      };
+      break;
+    case "close":
+      style = { bgcolor: "#141414", color: "#fff" };
+      break;
+    case "archive":
+      style = { bgcolor: "#c7c7c7" };
+      break;
+  }
+
+  return style;
+};
+
 export default function ReportCard(props) {
   const route = `/reports/${props.id}`;
+  let statusStyle = getStatusStyle(props.status);
   let image;
   if (props.photo) {
     image = new CloudinaryImage(props.photo, {
       cloudName: "dg0cwy8vx",
       apiKey: process.env.CLOUDINARY_KEY,
       apiSecret: process.env.CLOUDINARY_SECRET,
-    }).resize(fill().height(300));
+    }).resize(fill().width(300).height(200));
   }
+
   return (
     <Card>
       {image ? (
@@ -32,7 +66,7 @@ export default function ReportCard(props) {
           sx={{
             textAlign: "center",
             backgroundColor: "#F2F4F4",
-            height: 300
+            height: 200,
           }}
         >
           <AdvancedImage cldImg={image} />
@@ -43,7 +77,7 @@ export default function ReportCard(props) {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            height: 300,
+            height: 200,
             backgroundColor: "#F2F4F4",
           }}
         >
@@ -54,53 +88,44 @@ export default function ReportCard(props) {
         </CardMedia>
       )}
       <CardContent>
-        <StackRowLayout spacing={1.25}>
-          {props.lastName && props.firstName ? (
-            <Typography variant="h6" sx={{ fontWeight: "bold", mb: 0.5 }}>
-              {props.firstName} {props.lastName}
-            </Typography>
-          ) : (
-            <Typography variant="h6" sx={{ fontWeight: "bold", mb: 0.5 }}>
-              Unknown
-            </Typography>
-          )}
-          <Chip
-            sx={{ mt: 2 }}
-            variant="filled"
-            color="success"
-            label={props.status}
-            size="small"
-          />
-        </StackRowLayout>
+        <Box sx={{mb: 0.75}}>
+          <StackRowLayout spacing={1.25}>
+            {props.lastName && props.firstName ? (
+              <Typography sx={{ fontWeight: "bold" }}>
+                {props.firstName} {props.lastName}
+              </Typography>
+            ) : (
+              <Typography sx={{ fontWeight: "bold" }}>Unknown</Typography>
+            )}
+            <Chip
+              sx={{ ...statusStyle }}
+              variant="filled"
+              label={props.status}
+              size="small"
+            />
+          </StackRowLayout>
+        </Box>
         <StackRowLayout spacing={1}>
-          <PersonIcon color="disabled" />
+          <PersonIcon fontSize="small" />
           {props.age && props.gender ? (
-            <Typography color="GrayText" variant="body1">
+            <Typography variant="body2">
               {props.age}, {props.gender}
             </Typography>
           ) : (
-            <Typography color="GrayText" variant="body1">
-              Unknown
-            </Typography>
+            <Typography variant="body2">Unknown</Typography>
           )}
         </StackRowLayout>
         <StackRowLayout spacing={1}>
-          <PlaceIcon color="disabled" />
+          <PlaceIcon fontSize="small" />
           {props.location ? (
-            <Typography color="GrayText" variant="body1">
-              {props.location}
-            </Typography>
+            <Typography variant="body2">{props.location}</Typography>
           ) : (
-            <Typography color="GrayText" variant="body1">
-              {props.lastSeen}
-            </Typography>
+            <Typography variant="body2">{props.lastSeen}</Typography>
           )}
         </StackRowLayout>
 
         <CardActions sx={{ p: 0, mt: 2 }}>
-          <Button variant="contained" fullWidth href={route}>
-            View
-          </Button>
+          <Button href={route}>View</Button>
         </CardActions>
       </CardContent>
     </Card>
