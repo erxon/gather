@@ -19,6 +19,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { uploadReportPhoto } from "@/lib/api-lib/api-reports";
 import { useRouter } from "next/router";
 import DataPrivacyDialog from "@/components/reports/DataPrivacyDialog";
+import clientFileUpload from "@/utils/api-helpers/clientFileUpload";
 
 const steps = [
   { label: "Basic information", isComplete: false, isSubmitted: false },
@@ -116,6 +117,7 @@ export default function Page() {
     medications: [],
     accessories: [],
     smt: [],
+    birthDefects: [],
   });
   const [selectedImage, setSelectedImage] = useState(null);
   const [photo, setPhoto] = useState({
@@ -146,6 +148,7 @@ export default function Page() {
     },
   });
   const [uploaded, setUploaded] = useState(false);
+  const [dentalAndFingerprint, setDentalAndFingerprint] = useState(null);
 
   useEffect(() => {
     if (activeStep === 0) {
@@ -254,6 +257,19 @@ export default function Page() {
     }
   };
 
+  const dentalAndFingerprintUpload = async (reportId) => {
+    const url = `/api/reports/file-upload/dental-fingerprint-record/${reportId}`;
+    
+    const formData = new FormData();
+    formData.append("file", dentalAndFingerprint);
+
+    const upload = await clientFileUpload(url, formData);
+
+    if (upload.status === 200) {
+      console.log("Dental and Fingerprint records uploaded");
+    }
+  };
+
   const createReport = async () => {
     try {
       let uploadedPhoto;
@@ -277,6 +293,11 @@ export default function Page() {
 
       const result = await uploadReport.json();
       console.log("2. Report uploaded");
+
+      //upload dental and fingerprint records (if included)
+      if (dentalAndFingerprint) {
+        await dentalAndFingerprintUpload(result.data._id);
+      }
 
       //upload reference photos
       await uploadReferencePhotos(result.data._id);
@@ -315,7 +336,7 @@ export default function Page() {
       <Box
         sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
       >
-        <Paper sx={{ p: 3, maxWidth: 750 }}>
+        <Paper sx={{ p: 3, mb: 2 }}>
           <Typography sx={{ mb: 3 }} variant="h5">
             Create report
           </Typography>
@@ -326,6 +347,8 @@ export default function Page() {
             activeStep={activeStep}
             setActiveStep={setActiveStep}
           />
+        </Paper>
+        <Paper sx={{ p: 3, maxWidth: 750 }}>
           <Box sx={{ my: 3 }}>
             {activeStep === 0 && (
               <BasicInformation
@@ -349,6 +372,8 @@ export default function Page() {
                 setFormValues={setFormValues}
                 collections={collections}
                 setCollections={setCollections}
+                setDentalAndFingerprint={setDentalAndFingerprint}
+                dentalAndFingerprint={dentalAndFingerprint}
               />
             )}
             {activeStep === 2 && (

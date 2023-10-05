@@ -1,8 +1,19 @@
-import { TextField, Stack, Paper, Typography, Grid } from "@mui/material";
+import {
+  TextField,
+  Stack,
+  Paper,
+  Typography,
+  Grid,
+  Box,
+  Button,
+  IconButton,
+} from "@mui/material";
 import Layout from "./Layout";
 import MultipleItemField from "./MultipleItemField";
 import { useState } from "react";
 import TextFieldWithValidation from "@/components/forms/TextFieldWithValidation";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 function SocialMediaAccounts({ formValues, setFormValues }) {
   const { facebook, twitter, instagram } =
@@ -57,6 +68,8 @@ export default function Details({
   collections,
   setCollections,
   isSubmitted,
+  dentalAndFingerprint,
+  setDentalAndFingerprint,
 }) {
   const handleInput = (event) => {
     const { name, value } = event.target;
@@ -64,6 +77,19 @@ export default function Details({
       ...formValues,
       details: { ...formValues.details, [name]: value },
     });
+  };
+
+  const dentalAndFingerprintField = (event) => {
+    if (event.target.files[0].size < 500000) {
+      setDentalAndFingerprint(event.target.files[0]);
+    } else {
+      console.log("The file size exceeds 500 kilobytes");
+    }
+    console.log(dentalAndFingerprint);
+  };
+
+  const cancelFile = () => {
+    setDentalAndFingerprint(null);
   };
 
   return (
@@ -98,25 +124,35 @@ export default function Details({
             setCollections={setCollections}
             label={"Accessories"}
           />
+          <MultipleItemField
+            collectionName="birthDefects"
+            collection={collections.birthDefects}
+            collections={collections}
+            setCollections={setCollections}
+            label={"Birth Defects"}
+          />
         </Grid>
         <Grid item xs={12} md={6}>
           <Stack>
+            {/*Current Hair Color*/}
             <TextFieldWithValidation
               name="currentHairColor"
               isSubmitted={isSubmitted}
               value={formValues.details.currentHairColor}
               changeHandler={handleInput}
               style={{ mb: 2 }}
-              label="Current Hair Color"
+              label="Current Hair Color (Required)"
             />
+            {/*Eye Color*/}
             <TextFieldWithValidation
               name="eyeColor"
               isSubmitted={isSubmitted}
               value={formValues.details.eyeColor}
               changeHandler={handleInput}
               style={{ mb: 2 }}
-              label="Eye color"
+              label="Eye color (Required)"
             />
+            {/*Bloodtype*/}
             <TextField
               name="bloodType"
               value={formValues.details.bloodType}
@@ -124,16 +160,47 @@ export default function Details({
               sx={{ mb: 2 }}
               label="Blood type (if known)"
             />
+            {/*Last Known Clothing*/}
             <TextFieldWithValidation
               name="lastKnownClothing"
               isSubmitted={isSubmitted}
               value={formValues.details.lastKnownClothing}
               changeHandler={handleInput}
-              label="Last known clothing"
+              label="Last known clothing (Required)"
             />
+            <Paper variant="outlined" sx={{ mt: 2, mb: 2, p: 2 }}>
+              <Typography sx={{ fontWeight: "bold", mb: 1 }} variant="body2">
+                Dental and Fingerprint records
+              </Typography>
+              <Typography variant="body2">
+                Add a file that contains the dental and fingerprint records of
+                the missing or found person
+              </Typography>
+              {dentalAndFingerprint && (
+                <Stack direction="row" alignItems="center" spacing={0.75}>
+                  <Typography color="GrayText" variant="body2">
+                    {dentalAndFingerprint.name}
+                  </Typography>
+                  <IconButton onClick={cancelFile}>
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                </Stack>
+              )}
+              <Button startIcon={<AddIcon />} size="small" component="label">
+                Add
+                <input
+                  hidden
+                  name="file"
+                  type="file"
+                  onChange={dentalAndFingerprintField}
+                  accept=".jpg, .jpeg, .png, .pdf, .docx, .doc"
+                />
+              </Button>
+            </Paper>
           </Stack>
         </Grid>
       </Grid>
+      {/*Social Media Accounts*/}
       <SocialMediaAccounts
         formValues={formValues}
         setFormValues={setFormValues}

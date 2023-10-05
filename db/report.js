@@ -42,8 +42,11 @@ const reportSchema = new mongoose.Schema({
   bloodType: String,
   medications: [String],
   clothingAndAccessories: [String],
-  birthDefects: String,
-  dentalAndFingerprint: String,
+  birthDefects:[String],
+  dentalAndFingerprint: {
+    data: Buffer,
+    contentType: String,
+  },
   details: String,
   condition: String,
   reportedAt: Date,

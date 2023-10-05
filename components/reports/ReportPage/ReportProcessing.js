@@ -392,8 +392,8 @@ function ReportProcessingMain({ currentUser, report, users }) {
   );
 
   const handleFileChange = (event) => {
-    if (event.target.files[0].size > 5000000) {
-      console.log("file size exceeds 5mb");
+    if (event.target.files[0].size > 500000) {
+      console.log("file size exceeds 500 kilobytes");
       return;
     }
     setDocument(event.target.files[0]);
@@ -455,12 +455,14 @@ function ReportProcessingMain({ currentUser, report, users }) {
 
     //if there is a file attached
     if (document) {
+      //Initialize file
       const createLogResult = await createLog.json();
       const { _id } = createLogResult.log;
       const logData = new FormData();
 
       logData.append("file", document);
 
+      //Upload file
       const uploadFile = await fetch(`/api/reports/file-upload/${_id}`, {
         method: "POST",
         body: logData,

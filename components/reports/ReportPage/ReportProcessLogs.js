@@ -19,6 +19,7 @@ import ProfilePhotoAvatar from "@/components/photo/ProfilePhotoAvatar";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import AttachFileIcon from "@mui/icons-material/AttachFile";
 
 function Changes({ oldState, changes }) {
   const isChanged = {
@@ -162,7 +163,7 @@ function Log({
     const getFile = await fetch(
       `/api/reports/logs/report-logs/view-file/${logId}`
     );
-    window.open(getFile.url)
+    window.open(getFile.url);
   };
   return (
     <div>
@@ -179,20 +180,25 @@ function Log({
           </Typography>
         </Box>
         {isViewer && (
-          <Box sx={{ mb: 2 }}>
+          <Box sx={{ mb: 1 }}>
             <Typography variant="body2" sx={{ fontWeight: "bold" }}>
               {note.content}
             </Typography>
           </Box>
         )}
-        {attachedDocument && (
-          <Button size="small" onClick={handleViewFile}>
-            View attached file
-          </Button>
-        )}
         <Box sx={{ mb: 2 }}>
           <Changes oldState={oldState} changes={changes} />
         </Box>
+        {attachedDocument && (
+          <Button
+            sx={{ mb: 1 }}
+            size="small"
+            startIcon={<AttachFileIcon />}
+            onClick={handleViewFile}
+          >
+            View attached file
+          </Button>
+        )}
         {changes.assignedTo && <AssignedTo userId={changes.assignedTo} />}
       </Box>
       <Divider />
