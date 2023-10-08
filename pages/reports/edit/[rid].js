@@ -12,6 +12,10 @@ import {
   Grid,
   Breadcrumbs,
   Link,
+  Select,
+  FormControl,
+  InputLabel,
+  MenuItem,
 } from "@mui/material";
 
 import FacebookIcon from "@mui/icons-material/Facebook";
@@ -19,8 +23,7 @@ import TwitterIcon from "@mui/icons-material/Twitter";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
-import PlaceIcon from "@mui/icons-material/Place";
-
+import InstagramIcon from "@mui/icons-material/Instagram";
 import React, { useState, useEffect } from "react";
 import { useUser } from "@/lib/hooks";
 import ReportPhoto from "@/components/photo/ReportPhoto";
@@ -31,10 +34,549 @@ import {
 } from "@/lib/api-lib/api-reports";
 import Image from "next/image";
 import ReferencePhotos from "@/components/myreports/ReferencePhotos";
+import Sections from "@/components/reports/Edit/Sections";
+import TextFieldWithValidation from "@/components/forms/TextFieldWithValidation";
+import MultipleItemField from "@/components/reports/CreateReport/MultipleItemField";
+import clientFileUpload from "@/utils/api-helpers/clientFileUpload";
+
+function ChangePhoto({ data, setSnackbarValues }) {
+  const [image, setImage] = useState({ renderImage: "", file: null });
+
+  const handleChange = (event) => {
+    setImage({
+      renderImage: URL.createObjectURL(event.target.files[0]),
+      file: event.target.files[0],
+    });
+  };
+
+  const handleSave = async () => {
+    const formData = new FormData();
+    formData.append("file", image.file);
+    formData.append("upload_preset", "report-photos");
+    //Upload photo
+    const photoUpload = await uploadReportPhoto(formData);
+
+    const response = await updateReport(data._id, {
+      photo: photoUpload.public_id,
+    });
+
+    setSnackbarValues({
+      open: true,
+      message: response.message,
+    });
+  };
+
+  return (
+    <Box>
+      <Box>
+        {data.photo ? (
+          <ReportPhoto publicId={data.photo} />
+        ) : (
+          <Image
+            width="150"
+            height="150"
+            alt="placeholder"
+            src={
+              image.renderImage === ""
+                ? "/assets/placeholder.png"
+                : image.renderImage
+            }
+          />
+        )}
+      </Box>
+      {/*Image file name*/}
+      {image.file && (
+        <Stack direction="row" alignItems="center" spacing={0.75}>
+          <Typography sx={{ color: "GrayText" }} variant="body2">
+            {image.file.name}
+          </Typography>
+          <IconButton onClick={() => setImage({ renderImage: "", file: null })}>
+            <DeleteIcon fontSize="small" />
+          </IconButton>
+        </Stack>
+      )}
+      <Box>
+        {!image.file ? (
+          <Button component="label">
+            Choose File
+            <input
+              hidden
+              type="file"
+              onChange={handleChange}
+              accept=".jpg, .jpeg, .png"
+            />
+          </Button>
+        ) : (
+          <Button size="small" onClick={handleSave}>
+            Save
+          </Button>
+        )}
+      </Box>
+    </Box>
+  );
+}
+
+function BasicInformation({ data, setSnackbarValues }) {
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [values, setValues] = useState({
+    firstName: data.firstName,
+    lastName: data.lastName,
+    middleName: data.middleName,
+    qualifier: data.qualifier,
+    age: data.age,
+    gender: data.gender,
+  });
+  const [aliases, setAliases] = useState({
+    aliases: [...data.aliases],
+  });
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setValues((prev) => {
+      return { ...prev, [name]: value };
+    });
+  };
+
+  const handleSave = async () => {
+    if (
+      values.firstName !== "" &&
+      values.lastName !== "" &&
+      values.middleName !== ""
+    ) {
+      setIsSubmitted(true);
+
+      const response = await updateReport(data._id, {
+        ...values,
+        aliases: aliases.aliases,
+      });
+
+      setSnackbarValues({ open: true, message: response.message });
+    } else {
+      setIsSubmitted(true);
+    }
+  };
+
+  return (
+    <Paper sx={{ p: 3 }}>
+      <Grid container spacing={1}>
+        <Grid item xs={12} md={6} sm={6}>
+          <TextFieldWithValidation
+            isSubmitted={isSubmitted}
+            style={{ mb: 2 }}
+            isFullWidth={true}
+            label="First name"
+            changeHandler={handleChange}
+            value={values.firstName}
+            name="firstName"
+            variant="outlined"
+          />
+          <TextFieldWithValidation
+            isSubmitted={isSubmitted}
+            style={{ mb: 2 }}
+            isFullWidth={true}
+            label="Middle name"
+            changeHandler={handleChange}
+            value={values.middleName}
+            name="middleName"
+            variant="outlined"
+          />
+          <TextFieldWithValidation
+            isSubmitted={isSubmitted}
+            style={{ mb: 2 }}
+            isFullWidth={true}
+            label="Last name"
+            changeHandler={handleChange}
+            value={values.lastName}
+            name="lastName"
+            variant="outlined"
+          />
+          <TextField
+            sx={{ maxWidth: 100, mb: 2 }}
+            label="Qualifier"
+            onChange={handleChange}
+            value={values.qualifier}
+            name="qualifier"
+            variant="outlined"
+          />
+          <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
+            <TextField
+              label="Age"
+              onChange={handleChange}
+              value={values.age}
+              name="age"
+              variant="outlined"
+            />
+            <FormControl fullWidth>
+              <InputLabel id="demo-simple-select-label">Gender</InputLabel>
+              <Select
+                value={values.gender}
+                label="Gender"
+                name="gender"
+                onChange={handleChange}
+              >
+                <MenuItem value={"male"}>Male</MenuItem>
+                <MenuItem value={"female"}>Female</MenuItem>
+              </Select>
+            </FormControl>
+          </Stack>
+        </Grid>
+        <Grid item xs={12} md={6} sm={6}>
+          <MultipleItemField
+            collection={aliases.aliases}
+            collectionName={"aliases"}
+            collections={aliases}
+            setCollections={setAliases}
+            label={"Known Aliases"}
+          />
+        </Grid>
+      </Grid>
+      <Button onClick={handleSave} sx={{ mt: 2 }}>
+        Save
+      </Button>
+    </Paper>
+  );
+}
+
+function ContactInformation({ data, setSnackbarValues }) {
+  const [values, setValues] = useState({
+    email: data.email,
+    contactNumber: data.contactNumber,
+    socialMediaAccounts: {
+      facebook: data.socialMediaAccounts.facebook,
+      twitter: data.socialMediaAccounts.twitter,
+      instagram: data.socialMediaAccounts.twitter,
+    },
+  });
+
+  const handleSingleValueField = (event) => {
+    const { name, value } = event.target;
+    setValues((prev) => {
+      return { ...prev, [name]: value };
+    });
+  };
+
+  const handleMultiValueField = (event) => {
+    const { name, value } = event.target;
+    setValues((prev) => {
+      return {
+        ...prev,
+        socialMediaAccounts: { ...prev.socialMediaAccounts, [name]: value },
+      };
+    });
+  };
+
+  const handleSave = async () => {
+    const response = await updateReport(data._id, { ...values });
+    setSnackbarValues({ open: true, message: response.message });
+  };
+
+  return (
+    <Paper sx={{ p: 3 }}>
+      <Box>
+        <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
+          <TextField
+            fullWidth
+            label="Email"
+            onChange={handleSingleValueField}
+            value={values.email}
+            id="email"
+            name="email"
+            type="age"
+            variant="outlined"
+          />
+          <TextField
+            fullWidth
+            label="Contact Number"
+            onChange={handleSingleValueField}
+            value={values.contactNumber}
+            id="contactNumber"
+            name="contactNumber"
+            type="text"
+            variant="outlined"
+          />
+        </Stack>
+      </Box>
+      <Box sx={{ mt: 3 }}>
+        <Typography sx={{ mb: 3, fontWeight: "bold" }}>
+          Social Media Accounts
+        </Typography>
+        <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
+          <TextField
+            fullWidth
+            label="Facebook"
+            variant="outlined"
+            name="facebook"
+            value={values.socialMediaAccounts.facebook}
+            onChange={handleMultiValueField}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <FacebookIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
+          <TextField
+            fullWidth
+            label="Twitter"
+            name="twitter"
+            variant="outlined"
+            value={values.socialMediaAccounts.twitter}
+            onChange={handleMultiValueField}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <TwitterIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
+          <TextField
+            fullWidth
+            label="Instagram"
+            name="instagram"
+            variant="outlined"
+            value={values.socialMediaAccounts.instagram}
+            onChange={handleMultiValueField}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <InstagramIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Stack>
+      </Box>
+      <Button sx={{ mt: 2 }} onClick={handleSave}>
+        Save
+      </Button>
+    </Paper>
+  );
+}
+
+function Details({ data, setSnackbarValues }) {
+  const [isSubmitted, setSubmitted] = useState(false);
+  const [singleValueField, setSingleValueField] = useState({
+    details: data.details,
+    lastKnownClothing: data.lastKnownClothing,
+    bloodType: data.bloodType,
+    eyeColor: data.eyeColor,
+    currentHairColor: data.currentHairColor,
+  });
+  const [collections, setCollections] = useState({
+    smt: [...data.smt],
+    prostheticsAndImplants: [...data.prostheticsAndImplants],
+    medications: [...data.medications],
+    accessories: data.accessories ? [...data.accessories] : [],
+    birthDefects: [...data.birthDefects],
+  });
+
+  const handleSingleValueInput = (event) => {
+    const { name, value } = event.target;
+    setSingleValueField((prev) => {
+      return { ...prev, [name]: value };
+    });
+  };
+
+  const handleSave = async () => {
+    setSubmitted(true);
+    if (
+      singleValueField.lastKnownClothing !== "" &&
+      singleValueField.eyeColor !== "" &&
+      singleValueField.currentHairColor !== ""
+    ) {
+      const response = await updateReport(data._id, {
+        ...singleValueField,
+        ...collections,
+      });
+
+      setSnackbarValues({ open: true, message: response.message });
+    } else {
+      setSnackbarValues({
+        open: true,
+        message: "Please fill all required details",
+      });
+    }
+  };
+
+  return (
+    <Paper sx={{ p: 3 }}>
+      <Grid container spacing={1}>
+        <Grid item xs={12} md={6} sm={6}>
+          <TextFieldWithValidation
+            style={{ mb: 2 }}
+            isFullWidth={true}
+            isSubmitted={isSubmitted}
+            label="Current Hair Color (note if dyed or natural)"
+            name="currentHairColor"
+            value={singleValueField.currentHairColor}
+            changeHandler={handleSingleValueInput}
+          />
+          <TextFieldWithValidation
+            style={{ mb: 2 }}
+            isFullWidth={true}
+            isSubmitted={isSubmitted}
+            label="Eye color"
+            name="eyeColor"
+            value={singleValueField.eyeColor}
+            changeHandler={handleSingleValueInput}
+          />
+          <TextFieldWithValidation
+            style={{ mb: 2 }}
+            isFullWidth={true}
+            isSubmitted={isSubmitted}
+            label="Last Known Clothing"
+            name="lastKnownClothing"
+            value={singleValueField.lastKnownClothing}
+            changeHandler={handleSingleValueInput}
+          />
+          <TextField
+            fullWidth
+            sx={{ mb: 2 }}
+            label="Blood type"
+            name="bloodType"
+            value={singleValueField.bloodType}
+            onChange={handleSingleValueInput}
+          />
+        </Grid>
+        <Grid item xs={12} md={6} sm={6}>
+          <MultipleItemField
+            label="Scars, marks and tattoos"
+            collection={collections.smt}
+            collections={collections}
+            collectionName={"smt"}
+            setCollections={setCollections}
+          />
+          <MultipleItemField
+            label="Prosthetics and Implants"
+            collection={collections.prostheticsAndImplants}
+            collections={collections}
+            collectionName={"prostheticsAndImplants"}
+            setCollections={setCollections}
+          />
+          <MultipleItemField
+            label="Medications"
+            collection={collections.medications}
+            collections={collections}
+            collectionName={"medications"}
+            setCollections={setCollections}
+          />
+          <MultipleItemField
+            label="Accessories"
+            collection={collections.accessories}
+            collections={collections}
+            collectionName={"accessories"}
+            setCollections={setCollections}
+          />
+          <MultipleItemField
+            label="Birth defects"
+            collection={collections.birthDefects}
+            collections={collections}
+            collectionName={"birthDefects"}
+            setCollections={setCollections}
+          />
+        </Grid>
+      </Grid>
+      <TextField
+        fullWidth
+        sx={{ mb: 2 }}
+        multiline
+        rows={3}
+        label="Additional"
+        name="details"
+        value={singleValueField.details}
+        onChange={handleSingleValueInput}
+      />
+      <Button onClick={handleSave}>Save</Button>
+    </Paper>
+  );
+}
+
+function DentalAndFingerprint({ data, setSnackbarValues }) {
+  const [dentalAndFingerprint, setDentalAndFingerprint] = useState(
+    data.dentalAndFingerprint ? data.dentalAndFingerprint : null
+  );
+  const [isChanged, setIsChanged] = useState(false);
+
+  const handleChangeFile = (event) => {
+    if (event.target.files[0].size < 500000) {
+      setDentalAndFingerprint(event.target.files[0]);
+      setIsChanged(true);
+    } else {
+      console.log("file exceeds 500 kilobytes");
+    }
+  };
+
+  const handleOpenFile = async (reportId) => {
+    const getFile = await fetch(
+      `/api/reports/view-dental-and-fingerprint/${reportId}`
+    );
+    window.open(getFile.url);
+  };
+
+  const handleSave = async () => {
+    const formData = new FormData();
+    formData.append("file", dentalAndFingerprint);
+
+    const response = clientFileUpload(
+      `/api/reports/file-upload/dental-fingerprint-record/${data._id}`,
+      formData
+    );
+
+    if (response.status === 200) {
+      setSnackbarValues({
+        open: true,
+        message: "Dental and Fingerprint records changed",
+      });
+    }
+  };
+
+  return (
+    <Paper sx={{ p: 3 }}>
+      <Typography sx={{ mb: 1 }} variant="body2">
+        Add dental and fingerprint records
+      </Typography>
+      {dentalAndFingerprint ? (
+        <Stack sx={{mb: 1}} direction="row" alignItems="center" spacing={1}>
+          <Button
+            disabled={isChanged}
+            onClick={() => handleOpenFile(data._id)}
+            size="small"
+          >
+            Open file
+          </Button>
+          <Button component="label" size="small">
+            Change file
+            <input
+              hidden
+              onChange={handleChangeFile}
+              type="file"
+              accept=".jpg, .jpeg, .png, .pdf, .docx"
+            />
+          </Button>
+        </Stack>
+      ) : (
+        <Button sx={{ mr: 1 }} component="label" size="small">
+          Add
+          <input
+            hidden
+            onChange={handleChangeFile}
+            type="file"
+            accept=".jpg, .jpeg, .png, .pdf, .docx"
+          />
+        </Button>
+      )}
+      <Button size="small" disabled={!isChanged} onClick={handleSave}>
+        Save
+      </Button>
+    </Paper>
+  );
+}
 
 export default function EditReport({ data }) {
   const [user, { loading }] = useUser();
-  const [image, setImage] = useState({ renderImage: "", file: null });
+
   const [status, setStatus] = useState(data.status);
   const [isStatusChange, setStatusChange] = useState(false);
   const [photoId, setPhotoId] = useState(null);
@@ -64,6 +606,7 @@ export default function EditReport({ data }) {
       : "",
     feature: "",
   });
+  const [currentSection, setCurrentSection] = useState("Photo");
 
   if (!user) {
     return <CircularProgress />;
@@ -77,12 +620,6 @@ export default function EditReport({ data }) {
   };
 
   //Image
-  const handleChange = (event) => {
-    setImage({
-      renderImage: URL.createObjectURL(event.target.files[0]),
-      file: event.target.files[0],
-    });
-  };
 
   //Features
   const handleDeleteFeatures = (feature) => {
@@ -132,15 +669,7 @@ export default function EditReport({ data }) {
     e.preventDefault();
     //Upload photo to cloud
     //Add the public id to photo property in update
-    if (image.file) {
-      const formData = new FormData();
-      formData.append("file", image.file);
-      formData.append("upload_preset", "report-photos");
-      //Upload photo
-      const photoUpload = await uploadReportPhoto(formData);
 
-      body.photo = photoUpload.public_id;
-    }
     //if status set to active trigger a notification
     const update = {
       ...body,
@@ -193,296 +722,148 @@ export default function EditReport({ data }) {
           message={snackbarValues.message}
           action={actions}
         />
-        <form onSubmit={handleFormSubmit}>
-          <Breadcrumbs>
-            <Link underline="hover" color="inherit" href={`/reports/${data._id}`}>
-              My report
-            </Link>
-            <Typography color="text.primary">
-              Edit Report
-            </Typography>
-          </Breadcrumbs>
-
-          <Box sx={{ my: 2 }}>
-            <Typography variant="body2">
-              Reported missing on <strong>{reportedDateAndTime}</strong>
-            </Typography>
-            {updatedDateAndTime && (
-              <Typography variant="body2">
-                Report updated on <strong>{updatedDateAndTime}</strong>
-              </Typography>
-            )}
-          </Box>
-          {/*Save button*/}
-          <Button
-            sx={{ mb: 3 }}
-            size="small"
-            variant="contained"
-            onClick={handleFormSubmit}
-          >
-            Save
-          </Button>
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={4}>
-              <Paper sx={{ p: 3 }}>
-                <Typography sx={{ mb: 2 }} variant="h6">
-                  Photo
-                </Typography>
-                {data.photo ? (
-                  <ReportPhoto publicId={data.photo} />
-                ) : (
-                  <Image
-                    width="150"
-                    height="150"
-                    alt="placeholder"
-                    src={
-                      image.renderImage === ""
-                        ? "/assets/placeholder.png"
-                        : image.renderImage
-                    }
-                  />
-                )}
-                <br />
-                <br />
-                <Stack direction="row" spacing={1}>
-                  <Button component="label" size="small" variant="outlined">
-                    Choose File
-                    <input hidden type="file" onChange={handleChange} />
-                  </Button>
-                </Stack>
-                {/*Image file name*/}
-                {image.file && <Typography>{image.file.name}</Typography>}
-              </Paper>
-            </Grid>
-            <Grid item xs={12} md={8}>
-              <Paper sx={{ p: 3 }}>
-                <Typography sx={{ mb: 2 }} variant="h6">
-                  Basic Information
-                </Typography>
-                <Stack
-                  sx={{ mb: 2 }}
-                  direction={{ xs: "column", md: "row" }}
-                  spacing={2}
-                >
-                  <TextField
-                    fullWidth
-                    label="First name"
-                    onChange={handleFormChange}
-                    value={body.firstName}
-                    id="firstName"
-                    name="firstName"
-                    type="text"
-                    variant="outlined"
-                  />
-                  <TextField
-                    fullWidth
-                    label="Last name"
-                    onChange={handleFormChange}
-                    value={body.lastName}
-                    id="lastName"
-                    name="lastName"
-                    type="text"
-                    variant="outlined"
-                  />
-                </Stack>
-                <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
-                  <TextField
-                    fullWidth
-                    label="Age"
-                    onChange={handleFormChange}
-                    value={body.age}
-                    id="age"
-                    name="age"
-                    type="age"
-                    variant="outlined"
-                  />
-                  <TextField
-                    fullWidth
-                    label="Gender"
-                    onChange={handleFormChange}
-                    value={body.gender}
-                    id="gender"
-                    name="gender"
-                    type="text"
-                    variant="outlined"
-                  />
-                </Stack>
-                <TextField
-                  sx={{ mt: 2 }}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <PlaceIcon />
-                      </InputAdornment>
-                    ),
-                  }}
-                  fullWidth
-                  label="Last seen"
-                  onChange={handleFormChange}
-                  value={body.lastSeen}
-                  id="lastSeen"
-                  name="lastSeen"
-                  type="text"
-                  variant="outlined"
-                />
-                <TextField
-                  sx={{ mt: 2 }}
-                  fullWidth
-                  multiline
-                  label="Details"
-                  onChange={handleFormChange}
-                  value={body.details}
-                  id="details"
-                  name="details"
-                  type="text"
-                  variant="outlined"
-                />
-              </Paper>
-              {/*Contact info */}
-              <Paper sx={{ p: 3, mt: 3 }}>
-                <Box>
-                  <Typography sx={{ mb: 3 }} variant="h6">
-                    Contact Information
-                  </Typography>
-                  <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
-                    <TextField
-                      fullWidth
-                      label="Email"
-                      onChange={handleFormChange}
-                      value={body.email}
-                      id="email"
-                      name="email"
-                      type="age"
-                      variant="outlined"
-                    />
-
-                    <TextField
-                      fullWidth
-                      label="Contact Number"
-                      onChange={handleFormChange}
-                      value={body.contactNumber}
-                      id="contactNumber"
-                      name="contactNumber"
-                      type="text"
-                      variant="outlined"
-                    />
-                  </Stack>
-                </Box>
-                <Box sx={{ mt: 3 }}>
-                  <Typography sx={{ mb: 3 }} variant="h6">
-                    Social Media Accounts
-                  </Typography>
-
-                  <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
-                    <TextField
-                      fullWidth
-                      label="Facebook"
-                      variant="outlined"
-                      name="facebook"
-                      value={value.facebook}
-                      onChange={handleInputChange}
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <FacebookIcon />
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
-
-                    <TextField
-                      fullWidth
-                      label="Twitter"
-                      name="twitter"
-                      variant="outlined"
-                      value={value.twitter}
-                      onChange={handleInputChange}
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <TwitterIcon />
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
-                  </Stack>
-                </Box>
-              </Paper>
-              <Paper sx={{ p: 3, my: 3 }}>
-                <Typography sx={{ mb: 3 }} variant="h6">
-                  Features
-                </Typography>
-                <Stack spacing={2}>
-                  {features && features.length > 0 ? (
-                    features.map((feature) => {
-                      return (
-                        <Box key={feature}>
-                          <Paper elevation={1} sx={{ maxWidth: "300px", p: 2 }}>
-                            <Stack
-                              direction="row"
-                              spacing={5}
-                              alignItems="center"
-                            >
-                              <Box sx={{ maxWidth: "200px" }}>
-                                <Typography
-                                  variant="body1"
-                                  sx={{
-                                    inlineSize: "200px",
-                                    overflowWrap: "break-word",
-                                  }}
-                                >
-                                  {feature}
-                                </Typography>
-                              </Box>
-                              <IconButton
-                                onClick={() => {
-                                  handleDeleteFeatures(feature);
-                                }}
-                              >
-                                <DeleteIcon />
-                              </IconButton>
-                            </Stack>
-                          </Paper>
-                        </Box>
-                      );
-                    })
-                  ) : (
-                    <Typography color="GrayText">
-                      Added features will show here
-                    </Typography>
-                  )}
-                </Stack>
-                <Stack
-                  sx={{ mt: 2 }}
-                  direction="row"
-                  spacing={1}
-                  alignItems="center"
-                >
-                  <TextField
-                    fullWidth
-                    label="feature"
-                    variant="outlined"
-                    name="feature"
-                    value={value.feature}
-                    onChange={handleInputChange}
-                  />
-                  <IconButton
-                    size="small"
-                    onClick={() => {
-                      handleInputSubmit("features");
-                    }}
-                  >
-                    <AddIcon />
-                  </IconButton>
-                </Stack>
-              </Paper>
-              <ReferencePhotos
-                reportId={data._id}
-                mpName={`${data.firstName} ${data.lastName}`}
-              />
-            </Grid>
+        <Breadcrumbs>
+          <Link underline="hover" color="inherit" href={`/reports/${data._id}`}>
+            My report
+          </Link>
+          <Typography color="text.primary">Edit Report</Typography>
+        </Breadcrumbs>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={3}>
+            <Sections
+              currentSection={currentSection}
+              setCurrentSection={setCurrentSection}
+            />
           </Grid>
-        </form>
+          <Grid item xs={12} md={9}>
+            <Typography variant="h6">{currentSection}</Typography>
+            {currentSection === "Photo" && (
+              <ChangePhoto setSnackbarValues={setSnackbarValues} data={data} />
+            )}
+            {currentSection === "Basic information" && (
+              <BasicInformation
+                setSnackbarValues={setSnackbarValues}
+                data={data}
+              />
+            )}
+            {currentSection === "Contact information" && (
+              <ContactInformation
+                setSnackbarValues={setSnackbarValues}
+                data={data}
+              />
+            )}
+            {currentSection === "Details" && (
+              <Details setSnackbarValues={setSnackbarValues} data={data} />
+            )}
+            {currentSection === "Dental and Fingerprint Records" && (
+              <DentalAndFingerprint
+                setSnackbarValues={setSnackbarValues}
+                data={data}
+              />
+            )}
+            <form onSubmit={handleFormSubmit}>
+              <Box sx={{ my: 2 }}>
+                <Typography variant="body2">
+                  Reported missing on <strong>{reportedDateAndTime}</strong>
+                </Typography>
+                {updatedDateAndTime && (
+                  <Typography variant="body2">
+                    Report updated on <strong>{updatedDateAndTime}</strong>
+                  </Typography>
+                )}
+              </Box>
+              {/*Save button*/}
+              <Button
+                sx={{ mb: 3 }}
+                size="small"
+                variant="contained"
+                onClick={handleFormSubmit}
+              >
+                Save
+              </Button>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={4}></Grid>
+                <Grid item xs={12} md={8}>
+                  <Paper sx={{ p: 3, my: 3 }}>
+                    <Typography sx={{ mb: 3 }} variant="h6">
+                      Features
+                    </Typography>
+                    <Stack spacing={2}>
+                      {features && features.length > 0 ? (
+                        features.map((feature) => {
+                          return (
+                            <Box key={feature}>
+                              <Paper
+                                elevation={1}
+                                sx={{ maxWidth: "300px", p: 2 }}
+                              >
+                                <Stack
+                                  direction="row"
+                                  spacing={5}
+                                  alignItems="center"
+                                >
+                                  <Box sx={{ maxWidth: "200px" }}>
+                                    <Typography
+                                      variant="body1"
+                                      sx={{
+                                        inlineSize: "200px",
+                                        overflowWrap: "break-word",
+                                      }}
+                                    >
+                                      {feature}
+                                    </Typography>
+                                  </Box>
+                                  <IconButton
+                                    onClick={() => {
+                                      handleDeleteFeatures(feature);
+                                    }}
+                                  >
+                                    <DeleteIcon />
+                                  </IconButton>
+                                </Stack>
+                              </Paper>
+                            </Box>
+                          );
+                        })
+                      ) : (
+                        <Typography color="GrayText">
+                          Added features will show here
+                        </Typography>
+                      )}
+                    </Stack>
+                    <Stack
+                      sx={{ mt: 2 }}
+                      direction="row"
+                      spacing={1}
+                      alignItems="center"
+                    >
+                      <TextField
+                        fullWidth
+                        label="feature"
+                        variant="outlined"
+                        name="feature"
+                        value={value.feature}
+                        onChange={handleInputChange}
+                      />
+                      <IconButton
+                        size="small"
+                        onClick={() => {
+                          handleInputSubmit("features");
+                        }}
+                      >
+                        <AddIcon />
+                      </IconButton>
+                    </Stack>
+                  </Paper>
+                  <ReferencePhotos
+                    reportId={data._id}
+                    mpName={`${data.firstName} ${data.lastName}`}
+                  />
+                </Grid>
+              </Grid>
+            </form>
+          </Grid>
+        </Grid>
       </div>
     </>
   );
