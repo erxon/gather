@@ -5,23 +5,30 @@ import {
   Box,
   Snackbar,
   CircularProgress,
+  Paper,
+  IconButton,
+  DialogActions,
+  Avatar,
 } from "@mui/material";
 import { useState } from "react";
 import { uploadReportPhoto } from "@/lib/api-lib/api-reports";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import { mutate } from "swr";
+import Image from "next/image";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 
 export default function UploadReferencePhotos({
   mpName,
   reportId,
   handleClose,
+  setIsLoading,
 }) {
-  const [isDisable, setDisable] = useState(false);
-  const uploadToDatabase = async (photoData) => {
-    const uploadedPhoto = await fetch("/api/photos", {
-      method: "POST",
+  const uploadToDatabase = async (images) => {
+    const uploadedPhoto = await fetch(`/api/photos/report/${reportId}`, {
+      method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(photoData),
+      body: JSON.stringify({ images: images }),
     });
     return uploadedPhoto;
   };
@@ -43,11 +50,7 @@ export default function UploadReferencePhotos({
   };
 
   const [photos, setPhotos] = useState([]);
-  const [isDisabled, disableButton] = useState({
-    photo1: false,
-    photo2: false,
-    photo3: false,
-  });
+  const [currentPhoto, setCurrentPhoto] = useState({ src: "", file: null });
 
   //Snackbar, for feedback
   const [snackbar, setSnackbar] = useState({
@@ -65,10 +68,11 @@ export default function UploadReferencePhotos({
   //Display Photo
   const handleChange = (event) => {
     console.log(event.target.files[0]);
+    if (!event.target.files[0]) return;
 
     //Include validation
     //if the size of the photo exceeds 100000, return a message
-    if (event.target.files[0].size > 10000000) {
+    if (event.target.files[0].size > 500000) {
       setSnackbar({
         open: true,
         severity: "error",
@@ -79,15 +83,11 @@ export default function UploadReferencePhotos({
       const reader = new FileReader();
 
       reader.onload = function (onLoadEvent) {
-        setPhotos([
-          ...photos,
-          {
-            [event.target.name]: onLoadEvent.target.result,
-            fileName: event.target.files[0].name,
-          },
-        ]);
+        setCurrentPhoto({
+          src: onLoadEvent.target.result,
+          file: event.target.files[0],
+        });
       };
-      disableButton({ ...isDisabled, [event.target.name]: true });
 
       reader.readAsDataURL(event.target.files[0]);
     }
@@ -96,35 +96,24 @@ export default function UploadReferencePhotos({
   const handleSubmit = async (event) => {
     event.preventDefault();
     handleClose();
+    setIsLoading(true);
     let snackbarContent = {};
     let uploadedPhotos = [];
 
-    //Upload photo to Cloudinary
-    const form = event.currentTarget;
-
-    for (let i = 0; i < 3; i++) {
-      for (const file of form.elements[i].files) {
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("upload_preset", "report-photos");
-        const data = await uploadReportPhoto(formData);
-        uploadedPhotos.push({
-          publicId: data.public_id.substring(14, 34),
-          fileName: file.name,
-        });
-      }
+    for (let i = 0; i < photos.length; i++) {
+      const file = photos[i].file;
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", "report-photos");
+      const data = await uploadReportPhoto(formData);
+      uploadedPhotos.push({
+        publicId: data.public_id.substring(14, 34),
+        fileName: file.name,
+      });
     }
 
-    //Save photo to Photo database
-    const photosData = {
-      images: [...uploadedPhotos],
-      type: "reference",
-      reportId: reportId,
-      missingPerson: mpName,
-    };
-
     // //Store response message
-    const upload = await uploadToDatabase(photosData);
+    const upload = await uploadToDatabase(uploadedPhotos);
     const newPhotos = await upload.json();
     const response = await fetch(
       `/api/imagga-face-recognition/${newPhotos.data._id}`
@@ -146,7 +135,19 @@ export default function UploadReferencePhotos({
 
     // Link the photo to report
     setSnackbar(snackbarContent);
-    mutate(`/api/photos/report/${reportId}`);
+    setIsLoading(false);
+  };
+
+  const handleAdd = () => {
+    setPhotos((prev) => {
+      return [...prev, currentPhoto];
+    });
+    setCurrentPhoto({ src: "", file: null });
+    console.log(photos);
+  };
+
+  const handleCancel = () => {
+    setCurrentPhoto({ src: "", file: null });
   };
 
   return (
@@ -160,66 +161,65 @@ export default function UploadReferencePhotos({
         {snackbar.message}
       </Snackbar>
       {/* If the photo is already uploaded, remove the form */}
+      {currentPhoto.file && (
+        <Paper
+          sx={{ p: 0.5, display: "flex", alignItems: "center" }}
+          variant="outlined"
+        >
+          <Image
+            src={currentPhoto.src}
+            width={75}
+            height={75}
+            style={{ objectFit: "contain" }}
+          />
+          <Typography sx={{ ml: 1 }} variant="body2" color="GrayText">
+            {currentPhoto.file.name}
+          </Typography>
+          <IconButton onClick={handleAdd} sx={{ ml: 1 }} color="primary">
+            <AddCircleIcon />
+          </IconButton>
+          <IconButton onClick={handleCancel} sx={{ ml: 1 }}>
+            <CloseOutlinedIcon />
+          </IconButton>
+        </Paper>
+      )}
+
       {!uploaded ? (
-        <form onChange={handleChange} onSubmit={handleSubmit}>
-          <Stack direction="column" alignItems="left" spacing={1}>
-            <Button
-              disabled={isDisabled.photo1}
-              startIcon={<AttachFileIcon />}
-              component="label"
-              size="small"
-              variant="contained"
-            >
-              Select Image 1
-              <input
-                hidden
-                type="file"
-                name="photo1"
-                accept="image/png, image/jpeg"
-              />
-            </Button>
-            <Button
-              disabled={isDisabled.photo2}
-              startIcon={<AttachFileIcon />}
-              component="label"
-              size="small"
-              variant="contained"
-            >
-              Select Image 2
-              <input
-                hidden
-                type="file"
-                name="photo2"
-                accept="image/png, image/jpeg"
-              />
-            </Button>
-            <Button
-              disabled={isDisabled.photo3}
-              startIcon={<AttachFileIcon />}
-              component="label"
-              size="small"
-              variant="contained"
-            >
-              Select Image 3
-              <input
-                hidden
-                type="file"
-                name="photo3"
-                accept="image/png, image/jpeg"
-              />
-            </Button>
-            {photos.length === 3 && (
-              <Button
-                disabled={isDisable}
-                type="submit"
-                size="small"
-                variant="contained"
-              >
-                Upload
-              </Button>
-            )}
-          </Stack>
-        </form>
+        <Stack direction="column" alignItems="left" spacing={2}>
+          <Button startIcon={<AttachFileIcon />} component="label" size="small">
+            Select Image
+            <input
+              onChange={handleChange}
+              hidden
+              type="file"
+              name="file"
+              accept="image/png, image/jpeg"
+            />
+          </Button>
+          {photos.length > 0 &&
+            photos.map((photo, index) => {
+              return (
+                <Stack
+                  sx={{ mb: 1 }}
+                  key={index}
+                  direction="row"
+                  alignItems="center"
+                  spacing={1}
+                >
+                  <Avatar src={photo.src} />
+                  <Typography variant="body2">{photo.file.name}</Typography>
+                </Stack>
+              );
+            })}
+          <Button
+            disabled={!photos.length > 0}
+            onClick={handleSubmit}
+            size="small"
+            variant="contained"
+          >
+            Upload
+          </Button>
+        </Stack>
       ) : (
         <Typography variant="body1" sx={{ mt: 2.5 }} color="secondary">
           Photo is already uploaded

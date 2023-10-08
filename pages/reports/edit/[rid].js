@@ -42,6 +42,7 @@ import Sections from "@/components/reports/Edit/Sections";
 import TextFieldWithValidation from "@/components/forms/TextFieldWithValidation";
 import MultipleItemField from "@/components/reports/CreateReport/MultipleItemField";
 import clientFileUpload from "@/utils/api-helpers/clientFileUpload";
+import MapWithSearchBox from "@/components/map/MapWithSearchBox";
 
 function ChangePhoto({ data, setSnackbarValues }) {
   const [image, setImage] = useState({ renderImage: "", file: null });
@@ -626,6 +627,67 @@ function DentalAndFingerprint({ data, setSnackbarValues }) {
   );
 }
 
+function UpdateLocation({ data, setSnackbarValues }) {
+  const [lastSeen, setLastSeen] = useState(data.lastSeen);
+  const [location, setLocation] = useState(
+    data.location ? data.location : null
+  );
+  const [isLocationChanged, setIsLocationChanged] = useState(false);
+
+  const handleChange = (event) => {
+    setLastSeen(event.target.value);
+  };
+
+  const handleSetLocation = (coordinates) => {
+    setLocation({
+      longitude: coordinates.longitude,
+      latitude: coordinates.latitude,
+    });
+    setIsLocationChanged(true);
+  };
+
+  const handleSave = async () => {
+    const response = await updateReport(data._id, {
+      lastSeen: lastSeen,
+      location: {
+        longitude: location.longitude,
+        latitude: location.latitude,
+      },
+    });
+
+    setSnackbarValues({ open: true, message: response.message });
+    setIsLocationChanged(false);
+  };
+
+  return (
+    <div>
+      <Paper sx={{ p: 3 }}>
+        <TextField
+          value={lastSeen}
+          onChange={handleChange}
+          placeholder="Last Seen"
+          sx={{ mb: 2 }}
+          label="Last Seen"
+        />
+        {location && (
+          <MapWithSearchBox
+            setNewPosition={handleSetLocation}
+            lng={location.longitude}
+            lat={location.latitude}
+          />
+        )}
+        <Button
+          disabled={!isLocationChanged}
+          onClick={handleSave}
+          sx={{ mt: 3 }}
+        >
+          Save
+        </Button>
+      </Paper>
+    </div>
+  );
+}
+
 export default function EditReport({ data }) {
   const [user, { loading }] = useUser();
 
@@ -813,6 +875,19 @@ export default function EditReport({ data }) {
                 data={data}
               />
             )}
+            {currentSection === "Location" && (
+              <UpdateLocation
+                data={data}
+                setSnackbarValues={setSnackbarValues}
+              />
+            )}
+            {currentSection === "Reference Photos" && (
+              <ReferencePhotos
+                reportId={data._id}
+                mpName={`${data.firstName} ${data.lastName}`}
+              />
+            )}
+
             <form onSubmit={handleFormSubmit}>
               <Box sx={{ my: 2 }}>
                 <Typography variant="body2">
@@ -907,10 +982,6 @@ export default function EditReport({ data }) {
                       </IconButton>
                     </Stack>
                   </Paper>
-                  <ReferencePhotos
-                    reportId={data._id}
-                    mpName={`${data.firstName} ${data.lastName}`}
-                  />
                 </Grid>
               </Grid>
             </form>
