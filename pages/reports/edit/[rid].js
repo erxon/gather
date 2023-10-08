@@ -16,6 +16,10 @@ import {
   FormControl,
   InputLabel,
   MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 
 import FacebookIcon from "@mui/icons-material/Facebook";
@@ -498,6 +502,7 @@ function DentalAndFingerprint({ data, setSnackbarValues }) {
     data.dentalAndFingerprint ? data.dentalAndFingerprint : null
   );
   const [isChanged, setIsChanged] = useState(false);
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 
   const handleChangeFile = (event) => {
     if (event.target.files[0].size < 500000) {
@@ -519,7 +524,7 @@ function DentalAndFingerprint({ data, setSnackbarValues }) {
     const formData = new FormData();
     formData.append("file", dentalAndFingerprint);
 
-    const response = clientFileUpload(
+    const response = await clientFileUpload(
       `/api/reports/file-upload/dental-fingerprint-record/${data._id}`,
       formData
     );
@@ -532,22 +537,74 @@ function DentalAndFingerprint({ data, setSnackbarValues }) {
     }
   };
 
+  const handleDelete = async () => {
+    if (data.dentalAndFingerprint) {
+      //Delete data in database
+      setOpenConfirmDialog(false);
+      const response = await updateReport(data._id, {
+        dentalAndFingerprint: null,
+      });
+      setSnackbarValues({
+        open: true,
+        message: "The record has been deleted.",
+      });
+    } else {
+      //Delete current dental and fingerprint file
+      setDentalAndFingerprint();
+      setIsChanged(false);
+    }
+  };
+
+  const handleConfirmDialog = () => {
+    if (data.dentalAndFingerprint) {
+      setOpenConfirmDialog(true);
+    } else {
+      setDentalAndFingerprint(null);
+      setIsChanged(false);
+    }
+  };
+
   return (
-    <Paper sx={{ p: 3 }}>
-      <Typography sx={{ mb: 1 }} variant="body2">
-        Add dental and fingerprint records
-      </Typography>
-      {dentalAndFingerprint ? (
-        <Stack sx={{mb: 1}} direction="row" alignItems="center" spacing={1}>
-          <Button
-            disabled={isChanged}
-            onClick={() => handleOpenFile(data._id)}
-            size="small"
-          >
-            Open file
-          </Button>
-          <Button component="label" size="small">
-            Change file
+    <div>
+      <Dialog
+        open={openConfirmDialog}
+        onClose={() => setOpenConfirmDialog(false)}
+      >
+        <DialogTitle>Delete file</DialogTitle>
+        <DialogContent>
+          <Typography>Are you sure you want to delete this file?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDelete}>Yes</Button>
+          <Button onClick={() => setOpenConfirmDialog(false)}>No</Button>
+        </DialogActions>
+      </Dialog>
+      <Paper sx={{ p: 3 }}>
+        <Typography sx={{ mb: 1 }} variant="body2">
+          Add dental and fingerprint records
+        </Typography>
+        {dentalAndFingerprint ? (
+          <Stack sx={{ mb: 1 }} direction="row" alignItems="center" spacing={1}>
+            <Button
+              disabled={isChanged}
+              onClick={() => handleOpenFile(data._id)}
+              size="small"
+            >
+              Open file
+            </Button>
+            <Button component="label" size="small">
+              Change file
+              <input
+                hidden
+                onChange={handleChangeFile}
+                type="file"
+                accept=".jpg, .jpeg, .png, .pdf, .docx"
+              />
+            </Button>
+          </Stack>
+        ) : (
+          <Button sx={{ mr: 1 }} component="label" size="small">
+            Add
             <input
               hidden
               onChange={handleChangeFile}
@@ -555,22 +612,17 @@ function DentalAndFingerprint({ data, setSnackbarValues }) {
               accept=".jpg, .jpeg, .png, .pdf, .docx"
             />
           </Button>
-        </Stack>
-      ) : (
-        <Button sx={{ mr: 1 }} component="label" size="small">
-          Add
-          <input
-            hidden
-            onChange={handleChangeFile}
-            type="file"
-            accept=".jpg, .jpeg, .png, .pdf, .docx"
-          />
+        )}
+        <Button size="small" disabled={!isChanged} onClick={handleSave}>
+          Save
         </Button>
-      )}
-      <Button size="small" disabled={!isChanged} onClick={handleSave}>
-        Save
-      </Button>
-    </Paper>
+        {dentalAndFingerprint && (
+          <Button onClick={handleConfirmDialog} size="small" sx={{ ml: 1 }}>
+            Delete
+          </Button>
+        )}
+      </Paper>
+    </div>
   );
 }
 
