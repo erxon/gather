@@ -185,7 +185,7 @@ export default function ReportInformation({ authorized, data, user }) {
   const timeElapsed = calculateTimeElapsed(reportedAt);
 
   return (
-    <Box sx={{ mt: 3 }}>
+    <Box>
       <Paper sx={{ p: 3 }}>
         <Stack direction="row" spacing={3}>
           <Box>
@@ -229,7 +229,7 @@ export default function ReportInformation({ authorized, data, user }) {
             <Paper sx={{ p: 2, mt: 2 }} variant="outlined">
               <Stack direction="row" alignItems="flex-start" spacing={1}>
                 <InfoIcon color="primary" />
-                {data.status === "archive" || data.status === "closed" ? (
+                {data.status === "archive" || data.status === "close" ? (
                   <Box>
                     <Typography variant="body2">
                       This report is now closed

@@ -307,11 +307,13 @@ export default function ReportPage({ data }) {
             <Grid container spacing={2} sx={{ mt: 2 }}>
               <Grid item xs={12} md={8}>
                 {data.match && <Match photo={data.match} />}
-                <ReportInformation
-                  authorized={authorized}
-                  data={data}
-                  user={user}
-                />
+                <Box sx={{mt: 1}}>
+                  <ReportInformation
+                    authorized={authorized}
+                    data={data}
+                    user={user}
+                  />
+                </Box>
               </Grid>
               <Grid item xs={12} md={4}>
                 <Box sx={{ mb: 3 }}>
@@ -335,11 +337,26 @@ export default function ReportPage({ data }) {
               </Grid>
             </Grid>
           ) : (
-            <ReportInformation
-              authorized={authorized}
-              data={data}
-              user={user}
-            />
+            <Grid container sx={{ mt: 3 }} spacing={1}>
+              <Grid item xs={12} md={8}>
+                <ReportInformation
+                  authorized={authorized}
+                  data={data}
+                  user={user}
+                />
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <ReportDetails
+                  details={data.details}
+                  aliases={data.aliases}
+                  smt={data.smt}
+                  prostheticsAndImplants={data.prostheticsAndImplants}
+                  medications={data.medications}
+                  clothingAndAccessories={data.clothingAndAccessories}
+                  bloodType={data.bloodType}
+                />
+              </Grid>
+            </Grid>
           )}
         </Box>
       </TabLayout>
