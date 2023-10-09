@@ -48,6 +48,7 @@ function TypeSelection({ error, type, setType }) {
 }
 
 export default function Signup() {
+  const router = useRouter();
   const [user, { mutate }] = useUser();
 
   const [values, setValues] = useState({
@@ -238,6 +239,16 @@ export default function Signup() {
           >
             Signup
           </Button>
+          <Box sx={{mt: 2, textAlign: "center"}}>
+            <Typography variant="body2">Already have an account?</Typography>
+            <Button
+              onClick={() => router.push("/login")}
+              fullWidth
+              size="small"
+            >
+              Login
+            </Button>
+          </Box>
         </Paper>
       </Box>
     </>

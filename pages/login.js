@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Router from "next/router";
+import Router, { useRouter } from "next/router";
 import { useUser } from "@/lib/hooks";
 import TextField from "@mui/material/TextField";
 import {
@@ -9,14 +9,17 @@ import {
   Alert,
   Collapse,
   IconButton,
+  Box,
 } from "@mui/material";
 import Button from "@mui/material/Button";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import CloseIcon from "@mui/icons-material/Close";
 import TextFieldWithValidation from "@/components/forms/TextFieldWithValidation";
 import PasswordField from "@/components/forms/PasswordField";
+import Link from "next/link";
 
 export default function Login() {
+  const router = useRouter();
   const [user, { mutate }] = useUser();
   const [values, setValues] = useState({
     username: "",
@@ -56,6 +59,14 @@ export default function Login() {
     }
   };
 
+  const handleForgotPassword = () => {
+    if (values.username === "") {
+      setError({ show: true, message: "username is empty" });
+      return;
+    }
+    router.push(`/authentication/forgot-password/${values.username}`);
+  };
+
   useEffect(() => {
     // redirect to home if user is authenticated
     if (user) Router.push("/dashboard");
@@ -76,12 +87,14 @@ export default function Login() {
           justifyContent="center"
           direction="row"
           spacing={1}
-          sx={{ mb: 3 }}
+          sx={{ mb: 1 }}
         >
           <AccountCircleIcon color="primary" />
-          <Typography variant="h5" color="primary">Login</Typography>
+          <Typography variant="h5" color="primary">
+            Login
+          </Typography>
         </Stack>
-        <Stack justifyContent="center" spacing={3} useFlexGap sx={{ mb: 3 }}>
+        <Stack justifyContent="center" spacing={3} useFlexGap sx={{ mb: 1 }}>
           <TextFieldWithValidation
             variant="outlined"
             name="username"
@@ -123,7 +136,14 @@ export default function Login() {
             </Collapse>
           }
         </Stack>
-
+        <Box sx={{ mb: 1 }}>
+          <Button sx={{ mr: 1 }} size="small" href="/signup">
+            Signup
+          </Button>
+          <Button onClick={handleForgotPassword} size="small">
+            Forgot password?
+          </Button>
+        </Box>
         <Button
           onClick={handleSubmit}
           fullWidth
