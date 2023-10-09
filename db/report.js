@@ -5,7 +5,7 @@ const reportSchema = new mongoose.Schema({
   status: {
     type: String,
     default: "pending",
-    enum: ["pending", "under verification", "active", "close", "archived"],
+    enum: ["pending", "under verification", "active", "close", "archive"],
   },
   result: {
     type: String,

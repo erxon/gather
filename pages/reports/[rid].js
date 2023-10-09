@@ -23,7 +23,7 @@ import { getSingleReport, deleteReport } from "@/lib/api-lib/api-reports";
 import EditIcon from "@mui/icons-material/Edit";
 import { useRouter } from "next/router";
 import TabLayout from "@/components/reports/TabLayout";
-
+import SectionHeader from "@/utils/SectionHeader";
 //Components
 import ReportInformation from "@/components/reports/ReportPage/ReportInformation";
 import ReportProcessing from "@/components/reports/ReportPage/ReportProcessing";
@@ -42,6 +42,7 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import StackRowLayout from "@/utils/StackRowLayout";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import SmallMap from "@/components/map/SmallMap";
 
 function UpdatedBy({ updatedBy, updatedAt }) {
   const dateUpdated = new Date(updatedAt);
@@ -124,7 +125,7 @@ function Match({ photo }) {
   };
 
   return (
-    <Paper sx={{ px: 3, pt: 2, pb: 2, mt: 2 }}>
+    <Paper sx={{ px: 3, pt: 2, pb: 2 }}>
       {" "}
       <Typography variant="h6">Match found</Typography>
       <Paper variant="outlined" sx={{ p: 2, mt: 2 }}>
@@ -155,6 +156,62 @@ function Match({ photo }) {
       >
         View
       </Button>
+    </Paper>
+  );
+}
+
+function DetailSection({ data, title }) {
+  console.log(typeof data);
+  return (
+    <Box sx={{ mb: 2 }}>
+      <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
+        {title}
+      </Typography>
+      {typeof data === "object" ? (
+        data.length > 0 ? (
+          data.map((item, index) => {
+            return <Chip key={index} label={item} />;
+          })
+        ) : (
+          <Typography variant="body2" color="GrayText">
+            None
+          </Typography>
+        )
+      ) : (
+        <Typography variant="body2">{data}</Typography>
+      )}
+    </Box>
+  );
+}
+
+function ReportDetails({
+  details,
+  aliases,
+  smt,
+  medications,
+  prostheticsAndImplants,
+  clothingAndAccessories,
+  bloodType,
+}) {
+  return (
+    <Paper sx={{ p: 3, mb: 1 }}>
+      <SectionHeader title="Details" />
+      <Typography variant="body1" sx={{ my: 2 }}>
+        {details}
+      </Typography>
+      <DetailSection data={aliases} title={"Aliases"} />
+      <DetailSection data={smt} title={"Scars, Marks, and Tattoos"} />
+      <DetailSection data={medications} title={"Medications"} />
+      <DetailSection
+        data={prostheticsAndImplants}
+        title={"Prosthetics and Implants"}
+      />
+      <DetailSection
+        data={clothingAndAccessories}
+        title={"Clothing and Accessories"}
+      />
+      <DetailSection data={bloodType} title={"Blood Type"} />
+      <Button size="small">View all</Button>
     </Paper>
   );
 }
@@ -242,13 +299,12 @@ export default function ReportPage({ data }) {
                 </Box>
               )}
           </Box>
-
           {/*Basic Information */}
           {user &&
           (user._id === data.account ||
             user.role === "reports administrator" ||
             user.type === "authority") ? (
-            <Grid container spacing={2}>
+            <Grid container spacing={2} sx={{ mt: 2 }}>
               <Grid item xs={12} md={8}>
                 {data.match && <Match photo={data.match} />}
                 <ReportInformation
@@ -258,13 +314,24 @@ export default function ReportPage({ data }) {
                 />
               </Grid>
               <Grid item xs={12} md={4}>
-                <Box sx={{ mt: 3 }}>
+                <Box sx={{ mb: 3 }}>
                   <ReportProcessLogs
                     report={data}
                     user={user}
                     reportId={data._id}
                   />
                 </Box>
+                {/*Report Details*/}
+                {/*******************************************/}
+                <ReportDetails
+                  details={data.details}
+                  aliases={data.aliases}
+                  smt={data.smt}
+                  prostheticsAndImplants={data.prostheticsAndImplants}
+                  medications={data.medications}
+                  clothingAndAccessories={data.clothingAndAccessories}
+                  bloodType={data.bloodType}
+                />
               </Grid>
             </Grid>
           ) : (

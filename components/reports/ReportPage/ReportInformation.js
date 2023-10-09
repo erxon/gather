@@ -33,6 +33,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import useSWR from "swr";
 import { fetcher } from "@/lib/hooks";
+import SmallMap from "@/components/map/SmallMap";
 
 function ReferencePhotos({ reportId }) {
   const { data, error, isLoading } = useSWR(
@@ -48,16 +49,17 @@ function ReferencePhotos({ reportId }) {
         Reference Photos
       </Typography>
       {data ? (
-        <Stack direction="row" alignItems="center">
+        <Grid container spacing={0.5}>
           {data.images.map((image) => {
             return (
-              <ReportPhotoSmall
-                key={image._id}
-                publicId={`report-photos/${image.publicId}`}
-              />
+              <Grid item key={image._id}>
+                <ReportPhotoSmall
+                  publicId={`report-photos/${image.publicId}`}
+                />
+              </Grid>
             );
           })}
-        </Stack>
+        </Grid>
       ) : (
         <Typography color="GrayText">
           Please add reference photos. This will help our system to accurately
@@ -129,62 +131,6 @@ function SocialMediaShareButtons({ firstName, id }) {
           url={`https://gather-plum.vercel.app/reports/${id}`}
         />
       </Box>
-    </Paper>
-  );
-}
-
-function DetailSection({ data, title }) {
-  console.log(typeof data);
-  return (
-    <Box sx={{ mb: 2 }}>
-      <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
-        {title}
-      </Typography>
-      {typeof data === "object" ? (
-        data.length > 0 ? (
-          data.map((item, index) => {
-            return <Chip key={index} label={item} />;
-          })
-        ) : (
-          <Typography variant="body2" color="GrayText">
-            None
-          </Typography>
-        )
-      ) : (
-        <Typography variant="body2">{data}</Typography>
-      )}
-    </Box>
-  );
-}
-
-function ReportDetails({
-  details,
-  aliases,
-  smt,
-  medications,
-  prostheticsAndImplants,
-  clothingAndAccessories,
-  bloodType,
-}) {
-  return (
-    <Paper sx={{ p: 3, mb: 1 }}>
-      <SectionHeader title="Details" />
-      <Typography variant="body1" sx={{ my: 2 }}>
-        {details}
-      </Typography>
-      <DetailSection data={aliases} title={"Aliases"} />
-      <DetailSection data={smt} title={"Scars, Marks, and Tattoos"} />
-      <DetailSection data={medications} title={"Medications"} />
-      <DetailSection
-        data={prostheticsAndImplants}
-        title={"Prosthetics and Implants"}
-      />
-      <DetailSection
-        data={clothingAndAccessories}
-        title={"Clothing and Accessories"}
-      />
-      <DetailSection data={bloodType} title={"Blood Type"} />
-      <Button size="small">View all</Button>
     </Paper>
   );
 }
@@ -283,28 +229,51 @@ export default function ReportInformation({ authorized, data, user }) {
             <Paper sx={{ p: 2, mt: 2 }} variant="outlined">
               <Stack direction="row" alignItems="flex-start" spacing={1}>
                 <InfoIcon color="primary" />
-                <Box>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    Its been{" "}
-                    <span style={{ fontWeight: "bold" }}>{timeElapsed}</span>{" "}
-                    since{" "}
-                    <span style={{ fontWeight: "bold" }}>
-                      {data.firstName}{" "}
-                    </span>
-                    reportedly missing{" "}
-                  </Typography>
-                  <Typography variant="body2">
-                    Reportedly missing on:{" "}
-                    <span style={{ fontWeight: "bold" }}>
-                      {" "}
-                      {reportedAt.toDateString()}{" "}
-                      {reportedAt.toLocaleTimeString()}
-                    </span>
-                  </Typography>
-                </Box>
+                {data.status === "archive" || data.status === "closed" ? (
+                  <Box>
+                    <Typography variant="body2">
+                      This report is now closed
+                    </Typography>
+                    <Typography variant="body2" sx={{ fontWeight: "bold", mt: 1 }}>
+                      Summary
+                    </Typography>
+                    <Typography variant="body2">
+                      The report was created on{" "}
+                      <span style={{ fontWeight: "bold" }}>
+                        {new Date(data.reportedAt).toDateString()}
+                      </span>{" "}
+                      and was closed on{" "}
+                      <span style={{ fontWeight: "bold" }}>
+                        {new Date(data.updatedAt).toDateString()}
+                      </span>
+                    </Typography>
+                    <Typography variant="body2">
+                      The person was {data.result} {data.state}
+                    </Typography>
+                  </Box>
+                ) : (
+                  <Box>
+                    <Typography variant="body2" sx={{ mb: 1 }}>
+                      Its been{" "}
+                      <span style={{ fontWeight: "bold" }}>{timeElapsed}</span>{" "}
+                      since{" "}
+                      <span style={{ fontWeight: "bold" }}>
+                        {data.firstName}{" "}
+                      </span>
+                      reportedly missing{" "}
+                    </Typography>
+                    <Typography variant="body2">
+                      Reportedly missing on:{" "}
+                      <span style={{ fontWeight: "bold" }}>
+                        {" "}
+                        {reportedAt.toDateString()}{" "}
+                        {reportedAt.toLocaleTimeString()}
+                      </span>
+                    </Typography>
+                  </Box>
+                )}
               </Stack>
             </Paper>
-
             <Box sx={{ mt: 2 }}>
               <Stack direction="row" alignItems="center" spacing={1}>
                 <PlaceIcon fontSize="small" />
@@ -344,17 +313,26 @@ export default function ReportInformation({ authorized, data, user }) {
           </Box>
         </Stack>
       </Paper>
+      {/*Current location of the person in the report*/}
+      {data.location && (
+        <Paper sx={{ p: 3, mt: 2 }}>
+          <Typography variant="h6">Current Location</Typography>
+          <SmallMap
+            lng={data.location.longitude}
+            lat={data.location.latitude}
+          />
+        </Paper>
+      )}
+      {/*Reference photos*/}
+      {/*******************************************/}
+      <Paper sx={{ p: 3, mt: 2 }}>
+        <ReferencePhotos reportId={data._id} />
+      </Paper>
       <Grid container sx={{ mt: 3 }} spacing={1}>
         <Grid item xs={12} md={6}>
           <Box sx={{ mb: 2 }}>
             <Reporter account={data.account} />
           </Box>
-          {/*Reference photos*/}
-          {/*******************************************/}
-          <Paper sx={{ p: 3 }}>
-            <ReferencePhotos reportId={data._id} />
-          </Paper>
-
           {/*Information*/}
           {/*******************************************/}
         </Grid>
@@ -364,19 +342,6 @@ export default function ReportInformation({ authorized, data, user }) {
           {data.status === "active" && authorized && (
             <SocialMediaShareButtons firstName={data.firstName} id={data.id} />
           )}
-          {/*Report Details*/}
-          {/*******************************************/}
-
-          <ReportDetails
-            details={data.details}
-            aliases={data.aliases}
-            smt={data.smt}
-            prostheticsAndImplants={data.prostheticsAndImplants}
-            medications={data.medications}
-            clothingAndAccessories={data.clothingAndAccessories}
-            bloodType={data.bloodType}
-          />
-
           {/*Social Media Accounts*/}
           {/*******************************************/}
           <SocialMediaAccounts

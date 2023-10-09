@@ -4,41 +4,36 @@ import FolderIcon from "@mui/icons-material/Folder";
 
 import useSWR from "swr";
 import { fetcher } from "@/lib/hooks";
-import { Button, CircularProgress, Paper, Typography } from "@mui/material";
+import {
+  Button,
+  CircularProgress,
+  Paper,
+  Typography,
+  Grid,
+} from "@mui/material";
 import { useRouter } from "next/router";
 
 function Report({ report }) {
-  const router = useRouter();
-  const { data, error, isLoading } = useSWR(
-    `/api/reports/${report.report}`,
-    fetcher
-  );
-
-  if (error)
-    return <Typography>Something went wrong fetching report.</Typography>;
-  if (isLoading) return <CircularProgress />;
-
-  console.log(data);
+  const router = useRouter()
   return (
     <div>
-      <Paper variant="outlined" sx={{ width: 300, p: 3 }}>
+      <Paper variant="outlined" sx={{ p: 3 }}>
         <FolderIcon color="primary" />
         <Typography sx={{ fontWeight: "bold" }}>
-          {data.firstName} {data.lastName}
+          {report.firstName} {report.lastName}
         </Typography>
         {/*Put resolution here, found or not found */}
         <Typography sx={{ mb: 1 }} variant="body2">
-          Found
+          Result: {report.result}
         </Typography>
         <Typography variant="body2">
-          Last known location {data.lastSeen}
+          State when found: {report.state}
         </Typography>
 
         <Button
-          onClick={() => router.push(`/reports/${data._id}`)}
+          onClick={() => router.push(`/reports/${report._id}`)}
           sx={{ mt: 2 }}
           size="small"
-          variant="outlined"
         >
           View
         </Button>
@@ -49,7 +44,7 @@ function Report({ report }) {
 
 function ArchivedReports() {
   //fetch all archived reports
-  const { data, error, isLoading } = useSWR("/api/archives", fetcher);
+  const { data, error, isLoading } = useSWR("/api/reports/archives", fetcher);
 
   if (error)
     return (
@@ -59,13 +54,21 @@ function ArchivedReports() {
 
   return (
     <div>
-      {data.length > 0 ? (
-        data.map((report) => {
-          return <Report key={report._id} report={report} />;
-        })
-      ) : (
-        <Typography color="GrayText">There were no archived reports.</Typography>
-      )}
+      <Grid container spacing={0.5}>
+        {data.length > 0 ? (
+          data.map((report) => {
+            return (
+              <Grid item xs={12} md={4} sm={6}>
+                <Report key={report._id} report={report} />
+              </Grid>
+            );
+          })
+        ) : (
+          <Typography color="GrayText">
+            There were no archived reports.
+          </Typography>
+        )}
+      </Grid>
     </div>
   );
 }
