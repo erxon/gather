@@ -63,7 +63,7 @@ export default function DataPrivacyDialog({ open, setOpen, onConfirm }) {
           <Typography variant="body2" sx={{ mb: 1 }}>
             {" "}
             4.2. Data accuracy, relevance, and confidentiality shall be
-            maintained throughout the processing of missing persons' reports.{" "}
+            maintained throughout the processing of missing persons&apos; reports.{" "}
           </Typography>
           <Typography sx={{ fontWeight: "bold", mb: 1 }}>
             5. Data Security{" "}
@@ -98,7 +98,7 @@ export default function DataPrivacyDialog({ open, setOpen, onConfirm }) {
             procedural constraints.{" "}
           </Typography>
           <Typography variant="body2" sx={{ mb: 1 }}>
-            7.2. Requests from data subjects related to missing persons' reports
+            7.2. Requests from data subjects related to missing persons&apos; reports
             shall be handled promptly and in compliance with the law.{" "}
           </Typography>
           <Typography sx={{ fontWeight: "bold", mb: 1 }}>
@@ -137,7 +137,7 @@ export default function DataPrivacyDialog({ open, setOpen, onConfirm }) {
           </Typography>
           <Typography variant="body2" sx={{ mb: 1 }}>
             For inquiries or concerns regarding data privacy matters associated
-            with missing persons' reports within the PNP, please contact the
+            with missing persons&apos; reports within the PNP, please contact the
             Data Protection Officer (02) 8234 222, info@privacy.gov.ph.
           </Typography>
         </DialogContent>
@@ -178,7 +178,7 @@ export default function DataPrivacyDialog({ open, setOpen, onConfirm }) {
             4. Confidentiality
           </Typography>
           <Typography variant="body2" sx={{ mb: 1 }}>
-            4.1. The information provided in missing persons' reports will be
+            4.1. The information provided in missing persons&apos; reports will be
             handled with confidentiality and used solely for the purpose of
             locating the missing person.
           </Typography>
@@ -195,7 +195,7 @@ export default function DataPrivacyDialog({ open, setOpen, onConfirm }) {
           </Typography>
           <Typography variant="body2" sx={{ mb: 1 }}>
             6.1. The PNP is not liable for the accuracy of the information
-            provided in the missing persons' reports.
+            provided in the missing persons&apos; reports.
           </Typography>
           <Typography variant="body2" sx={{ mb: 1 }}>
             6.2. The PNP is not responsible for any actions or consequences

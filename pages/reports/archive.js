@@ -58,8 +58,8 @@ function ArchivedReports() {
         {data.length > 0 ? (
           data.map((report) => {
             return (
-              <Grid item xs={12} md={4} sm={6}>
-                <Report key={report._id} report={report} />
+              <Grid key={report._id} item xs={12} md={4} sm={6}>
+                <Report report={report} />
               </Grid>
             );
           })
