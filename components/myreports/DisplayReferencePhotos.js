@@ -1,4 +1,4 @@
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Grid, Stack, Typography } from "@mui/material";
 import { AdvancedImage, responsive } from "@cloudinary/react";
 import { CloudinaryImage } from "@cloudinary/url-gen";
 import { limitFit, fill } from "@cloudinary/url-gen/actions/resize";
@@ -20,17 +20,18 @@ function Image({ image }) {
 export default function DisplayReferencePhotos({ images }) {
   return (
     <Box>
-      <Stack direction="row" spacing={1}>
+      <Grid container spacing={0.5}>
         {images.map((image) => {
           return (
-            <Image
-              alt="Reference images of the missing person"
-              key={image._id}
-              image={image}
-            />
+            <Grid key={image._id} item>
+              <Image
+                alt="Reference images of the missing person"
+                image={image}
+              />
+            </Grid>
           );
         })}
-      </Stack>
+      </Grid>
     </Box>
   );
 }
