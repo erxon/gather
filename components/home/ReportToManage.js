@@ -35,6 +35,7 @@ function CreateReportForm({
   setSubmissionState,
   isSubmitted,
 }) {
+  const router = useRouter()
   const handleChange = (event) => {
     const { value, name } = event.target;
     setValues({ ...values, [name]: value });
@@ -66,7 +67,6 @@ function CreateReportForm({
 
     //Create new report
     const data = await createReport(body);
-    console.log(data);
 
     if (data) {
       router.push(`/reports/create-account/${data.data._id}`);
