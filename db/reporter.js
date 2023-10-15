@@ -30,6 +30,7 @@ const reporterSchema = new mongoose.Schema({
   reportMatchFound: Boolean,
   match: { type: mongoose.Schema.Types.ObjectId, ref: "Report" },
   possibleMatch: { type: mongoose.Schema.Types.ObjectId, ref: "Report" },
+  code: String,
   createdAt: Date,
   updatedAt: Date,
 });

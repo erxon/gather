@@ -21,6 +21,7 @@ import ReportWithPhoto from "@/components/home/ReportWithPhoto";
 import ReportToManage from "@/components/home/ReportToManage";
 import ReportPhotoSmall from "@/components/photo/ReportPhotoSmall";
 import Signup from "@/components/authentication/Signup";
+import SearchFoundPersonReportByCode from "@/components/home/SearchFoundPersonByCode";
 
 function Report({ reportId, photo, name, lastSeen, gender, age }) {
   const router = useRouter();
@@ -131,7 +132,12 @@ export default function HomePage() {
           </Typography>
         </Box>
 
+        {/*list of recently verified reports*/}
         <Reports />
+
+        {/*search a found person report using code*/}
+        <SearchFoundPersonReportByCode />
+
         {/*ReportWithPhoto*/}
         <Grid sx={{ my: 3 }} container spacing={1}>
           <Grid item xs={12} md={6}>

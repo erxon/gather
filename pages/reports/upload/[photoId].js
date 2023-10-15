@@ -29,18 +29,34 @@ import InfoIcon from "@mui/icons-material/Info";
 import SearchFoundPerson from "@/components/reports/SearchFoundPerson";
 import ReportPhotoSmall from "@/components/photo/ReportPhotoSmall";
 
-export default function Upload() {
+export default function Upload({ reporters }) {
   const router = useRouter();
   const { photoId } = router.query;
   const { data, error, isLoading } = useSWR(`/api/photos/${photoId}`, fetcher);
   if (isLoading) return <CircularProgress />;
   if (error) return <Typography>Something went wrong</Typography>;
-  if (data) return <Form publicId={data.image} photoId={photoId} />;
+  if (data)
+    return (
+      <Form reporters={reporters} publicId={data.image} photoId={photoId} />
+    );
+}
+
+export async function getServerSideProps() {
+  const url = process.env.API_URL || "http://localhost:3000";
+  const response = await fetch(`${url}/api/reporters`);
+  const data = await response.json();
+
+  return {
+    props: { reporters: data.data },
+  };
 }
 
 function PossibleMatch({ name, status, reportedAt, score, photo }) {
   return (
-    <Card variant="outlined" sx={{ display: "flex", alignItems: "flex-start", height: 100 }}>
+    <Card
+      variant="outlined"
+      sx={{ display: "flex", alignItems: "flex-start", height: 100 }}
+    >
       <CardMedia>
         <ReportPhotoSmall publicId={photo} />
       </CardMedia>
@@ -59,7 +75,17 @@ function PossibleMatch({ name, status, reportedAt, score, photo }) {
   );
 }
 
-function Form({ publicId, photoId }) {
+function generateFoundPersonReportCode(numberOfReports) {
+  //numberOfReports is a string
+  const numberOfReportsToString = numberOfReports.toString();
+  const numberOfZeros = 3 - numberOfReportsToString.length;
+  const zeros = "000";
+  const reportCode = zeros.substring(0, numberOfZeros).concat(numberOfReports);
+
+  return reportCode;
+}
+
+function Form({ reporters, publicId, photoId }) {
   const [currentPosition, setCurrentPosition] = useState(null);
   const [possibleMatch, setPossibleMatch] = useState({
     _id: null,
@@ -71,7 +97,9 @@ function Form({ publicId, photoId }) {
   });
 
   const [submitted, isSubmitted] = useState(false);
-  const url = process.env.API_URL || "http://localhost:3000";
+  const generatedCode =
+    "found-" + generateFoundPersonReportCode(reporters.length);
+  const url = "http://localhost:3000";
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
@@ -106,6 +134,7 @@ function Form({ publicId, photoId }) {
       latitude: currentPosition.latitude,
       email: e.target.email.value,
       possibleMatch: possibleMatch._id,
+      code: generatedCode,
     };
 
     await fetch("/api/reports/upload", {
@@ -116,8 +145,6 @@ function Form({ publicId, photoId }) {
 
     isSubmitted(true);
   };
-
-  console.log(possibleMatch);
 
   return (
     <div>
@@ -137,10 +164,14 @@ function Form({ publicId, photoId }) {
               Thank you for informing us about this missing person. Authorities
               will contact you at any given moment to verify this report.
             </Typography>
+            <Typography sx={{ mb: 1 }} variant="body2">
+              Found Person Code: <span style={{fontWeight: "bold"}}>{generatedCode}</span>
+            </Typography>
             <StackRowLayout spacing={0.5}>
               <Typography variant="body2">
                 Save this link for updates:{" "}
               </Typography>
+
               <Link href={`${url}/found-person/${photoId}`}>
                 <Typography variant="body2">
                   {url}/found-person/{photoId}
@@ -197,15 +228,6 @@ function Form({ publicId, photoId }) {
               )}
             </Box>
             <form onSubmit={handleSubmit}>
-              <Button
-                size="small"
-                disableElevation
-                variant="contained"
-                type="submit"
-                sx={{ my: 2 }}
-              >
-                Submit
-              </Button>
               <Typography sx={{ mb: 3 }}>
                 Please provide some of your information
               </Typography>
@@ -252,9 +274,17 @@ function Form({ publicId, photoId }) {
                   label="Email"
                   type="text"
                   name="email"
-                  required
                 />
               </Stack>
+              <Button
+                size="small"
+                disableElevation
+                variant="contained"
+                type="submit"
+                sx={{ my: 2 }}
+              >
+                Submit
+              </Button>
             </form>
           </Paper>
         </Box>

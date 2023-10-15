@@ -173,6 +173,14 @@ function ShareDialog({ open, setOpen, photoId }) {
 }
 
 function PossibleMatch({ possibleMatch }) {
+  const { data, error, isLoading } = useSWR(
+    `/api/reports/${possibleMatch}`,
+    fetcher
+  );
+
+  if (error) return <Typography>Something went wrong</Typography>;
+  if (isLoading) return <CircularProgress />;
+
   const {
     firstName,
     middleName,
@@ -181,7 +189,7 @@ function PossibleMatch({ possibleMatch }) {
     reportedAt,
     status,
     photo,
-  } = possibleMatch;
+  } = data;
 
   const date = new Date(reportedAt);
   const elapsedTime = computeElapsedTime(date);
@@ -204,8 +212,6 @@ function PossibleMatch({ possibleMatch }) {
 
 export default function Page({ data }) {
   const [openShareDialog, setOpenShareDialog] = useState(false);
-
-  console.log(data);
 
   return (
     <div>
@@ -257,6 +263,9 @@ export default function Page({ data }) {
             <Typography variant="h6" sx={{ mb: 1 }}>
               Updates
             </Typography>
+            <Typography variant="body2" sx={{mb: 2}}>
+              Found Person Code: <span style={{fontWeight: "bold"}}>{data.code}</span>
+            </Typography>
             {data.match ? (
               <ReportMatched reportId={data.match} />
             ) : (
@@ -275,8 +284,8 @@ export async function getServerSideProps({ params }) {
   const response = await fetch(
     `${url}/api/reporters/uploaded-photo/${photoId}`
   );
+
   const data = await response.json();
-  console.log(data);
 
   return {
     props: { data: data },

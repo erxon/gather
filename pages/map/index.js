@@ -86,12 +86,12 @@ function DisplayMap({ data, userLocation }) {
       </Grid>
 
       <Grid item xs={12} md={8}>
-        {/* <Map
+        <Map
           userLocation={userLocation}
           reporters={data.data}
           destination={destination}
           height={"100vh"}
-        /> */}
+        />
       </Grid>
     </Grid>
   );
