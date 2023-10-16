@@ -256,6 +256,22 @@ export default function ReportPage({ data }) {
         index={0}
       >
         <Box>
+          {!data.completed && (
+            <Box sx={{ p: 1 }}>
+              <Typography sx={{ fontWeight: "bold" }}>
+                Finish your report
+              </Typography>
+              <Typography sx={{ mt: 0.5, mb: 1 }} variant="body2">
+                Your Report still needs required information
+              </Typography>
+              <Button
+                href={`/reports/complete-report/${data._id}`}
+                size="small"
+              >
+                Finish report
+              </Button>
+            </Box>
+          )}
           {data.updatedBy && (
             <Box sx={{ mb: 3 }}>
               <UpdatedBy
@@ -307,7 +323,7 @@ export default function ReportPage({ data }) {
             <Grid container spacing={2} sx={{ mt: 2 }}>
               <Grid item xs={12} md={8}>
                 {data.match && <Match photo={data.match} />}
-                <Box sx={{mt: 1}}>
+                <Box sx={{ mt: 1 }}>
                   <ReportInformation
                     authorized={authorized}
                     data={data}

@@ -24,6 +24,7 @@ const reportSchema = new mongoose.Schema({
     type: String,
   },
   photoId: { type: mongoose.Schema.Types.ObjectId, ref: "Photo" },
+  referencePhotos: { type: mongoose.Schema.Types.ObjectId, ref: "Photo" },
   firstName: {
     type: String,
     required: true,
@@ -77,6 +78,7 @@ const reportSchema = new mongoose.Schema({
     type: Map,
     of: Number,
   },
+  completed: { type: Boolean, default: false },
 });
 
 const Report = mongoose.models.Report || mongoose.model("Report", reportSchema);

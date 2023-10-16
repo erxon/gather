@@ -13,19 +13,30 @@ import {
   DialogActions,
   DialogTitle,
   DialogContent,
+  DialogContentText,
+  Box,
+  Collapse,
+  Alert,
+  AlertTitle,
+  IconButton,
+  Grid,
 } from "@mui/material";
-
+import CloseIcon from "@mui/icons-material/Close";
 import { useState } from "react";
 import ArticleIcon from "@mui/icons-material/Article";
 import TextFieldWithValidation from "../forms/TextFieldWithValidation";
+import PasswordField from "../forms/PasswordField";
 import ErrorAlert from "../ErrorAlert";
 import { createReport } from "@/lib/api-lib/api-reports";
-import { useRouter } from "next/router";
+import { Router, useRouter } from "next/router";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
+import Signup from "../authentication/Signup";
+import { signup } from "@/lib/api-lib/api-auth";
 
 function CreateReportForm({
   open,
   setOpen,
+  setOpenSignupDialog,
   values,
   setValues,
   alert,
@@ -35,7 +46,7 @@ function CreateReportForm({
   setSubmissionState,
   isSubmitted,
 }) {
-  const router = useRouter()
+  const router = useRouter();
   const handleChange = (event) => {
     const { value, name } = event.target;
     setValues({ ...values, [name]: value });
@@ -66,11 +77,13 @@ function CreateReportForm({
     };
 
     //Create new report
-    const data = await createReport(body);
+    // const data = await createReport(body);
+    setOpen(false);
+    setOpenSignupDialog(true);
 
-    if (data) {
-      router.push(`/reports/create-account/${data.data._id}`);
-    }
+    // if (data) {
+    //   router.push(`/reports/create-account/${data.data._id}`);
+    // }
   };
 
   return (
@@ -202,8 +215,253 @@ function CreateReportForm({
   );
 }
 
-export default function ReportToManage() {
+function SignupForm({ values, setValues, error, isFormSubmitted }) {
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setValues({ ...values, [name]: value });
+  };
+
+  return (
+    <>
+      <Box>
+        <Typography variant="h6" color="primary">
+          Sign up
+        </Typography>
+        <Stack sx={{ mb: 2, mt: 2 }}>
+          <Stack direction="row" spacing={1}>
+            <TextFieldWithValidation
+              changeHandler={handleChange}
+              name="firstName"
+              isSubmitted={isFormSubmitted}
+              value={values.firstName}
+              label="First name"
+            />
+            <TextFieldWithValidation
+              changeHandler={handleChange}
+              name="lastName"
+              isSubmitted={isFormSubmitted}
+              value={values.lastName}
+              label="Last name"
+            />
+          </Stack>
+          <TextFieldWithValidation
+            isSubmitted={isFormSubmitted}
+            style={{ mt: 1 }}
+            label="username"
+            variant="outlined"
+            type="text"
+            name="username"
+            changeHandler={handleChange}
+            value={values.username}
+            required
+          />
+          <TextFieldWithValidation
+            isSubmitted={isFormSubmitted}
+            style={{ mt: 1 }}
+            label="Email"
+            variant="outlined"
+            type="email"
+            name="email"
+            changeHandler={handleChange}
+            value={values.email}
+            required
+          />
+          <PasswordField
+            styles={{ mt: 1 }}
+            isSubmitted={isFormSubmitted}
+            name="password"
+            label="Password"
+            value={values.password}
+            handleChange={handleChange}
+          />
+          <PasswordField
+            styles={{ mt: 1 }}
+            isSubmitted={isFormSubmitted}
+            name="rpassword"
+            label="Repeat Password"
+            value={values.rpassword}
+            handleChange={handleChange}
+          />
+        </Stack>
+      </Box>
+    </>
+  );
+}
+
+function SignupDialog({ open, setOpen, report }) {
   const router = useRouter();
+
+  const [values, setValues] = useState({
+    firstName: "",
+    lastName: "",
+    username: "",
+    email: "",
+    password: "",
+    rpassword: "",
+  });
+
+  const [error, setError] = useState({
+    title: "",
+    show: false,
+    message: "",
+  });
+
+  const [isFormSubmitted, setFormSubmissionState] = useState(false);
+
+  const handleSubmit = async () => {
+    setFormSubmissionState(true);
+
+    if (
+      values.firstName === "" ||
+      values.lastName === "" ||
+      values.username === "" ||
+      values.email === "" ||
+      values.password === "" ||
+      values.rpassword === ""
+    ) {
+      setError({
+        title: "Missing Fields",
+        show: true,
+        message: "Please fill all required fields.",
+      });
+      return;
+    }
+
+    if (values.password.length < 8) {
+      setError({
+        title: "Password Error",
+        show: true,
+        message: "Password should have at least 8 characters.",
+      });
+
+      return;
+    }
+
+    const body = {
+      firstName: values.firstName,
+      lastName: values.lastName,
+      username: values.username,
+      password: values.password,
+      email: values.email,
+      type: "citizen",
+      status: "unverified",
+    };
+
+    if (body.password !== values.rpassword) {
+      setError({
+        title: "Password don't match",
+        show: true,
+        message: "Please check your passwords.",
+      });
+      return;
+    }
+
+    //Signup user
+    const signupResponse = await signup(body);
+
+    if (signupResponse.status === 201) {
+      //update the report and save
+      const user = await signupResponse.json()
+
+      const reportRequestBody = {
+        ...report,
+        username: user.username,
+        account: user.userId
+      };
+
+      const reportResponseData = await createReport(reportRequestBody);
+      window.location.replace(`/reports/complete-report/${reportResponseData.data._id}`);
+
+      setOpen(false);
+    } else {
+      res.text().then((text) => {
+        setError({ show: true, message: text });
+      });
+    }
+  };
+
+  return (
+    <Dialog open={open} onClose={() => setOpen(false)}>
+      <DialogTitle>Finish your report</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          <Typography sx={{ mb: 2 }}>
+            Finish your report by signing up
+          </Typography>
+        </DialogContentText>
+        <Grid container spacing={1}>
+          <Grid
+            sx={{
+              border: "0.5px solid #ebedec",
+              borderBottom: 0,
+              borderTop: 0,
+              borderLeft: 0,
+              pr: 1,
+            }}
+            item
+            xs={12}
+            md={6}
+          >
+            <Typography sx={{ mb: 1 }} variant="h6">
+              Your report
+            </Typography>
+            <Box sx={{ mb: 1 }}>
+              <Typography sx={{ fontWeight: "bold" }}>
+                {report.firstName} {report.middleName} {report.lastName}{" "}
+                {report.qualifier}
+              </Typography>
+              <Typography>
+                {report.age} years old, {report.gender}
+              </Typography>
+            </Box>
+            <Box sx={{ mb: 1 }}>
+              <Typography>Last seen</Typography>
+              <Typography variant="body2">{report.lastSeen}</Typography>
+            </Box>
+            <Box>
+              <Typography>Details</Typography>
+              <Typography variant="body2">{report.details}</Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <SignupForm
+              values={values}
+              setValues={setValues}
+              isFormSubmitted={isFormSubmitted}
+            />
+          </Grid>
+        </Grid>
+        <Collapse sx={{ mt: 1 }} in={error.show}>
+          <Alert
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  setError({ show: false });
+                }}
+              >
+                <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
+            severity="error"
+            sx={{ mb: 1 }}
+          >
+            <AlertTitle>{error.title}</AlertTitle>
+            {error.message}
+          </Alert>
+        </Collapse>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleSubmit}>Proceed</Button>
+        <Button onClick={() => setOpen(false)}>Cancel</Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
+
+export default function ReportToManage() {
   const [gender, setGender] = useState("");
   const [isSubmitted, setSubmissionState] = useState(false);
   const [alert, setAlert] = useState({
@@ -220,9 +478,15 @@ export default function ReportToManage() {
     age: "",
   });
   const [openDialog, setOpenDialog] = useState(false);
+  const [signupDialog, setOpenSignupDialog] = useState(false);
 
   return (
     <>
+      <SignupDialog
+        open={signupDialog}
+        setOpen={setOpenSignupDialog}
+        report={{ ...values, gender: gender }}
+      />
       <CreateReportForm
         open={openDialog}
         setOpen={setOpenDialog}
@@ -234,6 +498,7 @@ export default function ReportToManage() {
         setAlert={setAlert}
         isSubmitted={isSubmitted}
         setSubmissionState={setSubmissionState}
+        setOpenSignupDialog={setOpenSignupDialog}
       />
       <Paper sx={{ p: 3 }}>
         <Stack sx={{ height: 140 }} alignItems="flex-start">
