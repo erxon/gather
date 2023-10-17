@@ -6,9 +6,9 @@ import { useEffect, useState } from "react";
 import { Typography, Box, Button, Snackbar } from "@mui/material";
 
 //Components
-import Report from "./Report";
-import UploadReferencePhotos from "./UploadReferencePhotos";
-import MissingPersonMainPhoto from "./MissingPersonMainPhoto";
+import Report from "../../../components/reports/CompleteReport/Report";
+import UploadReferencePhotos from "../../../components/reports/CompleteReport/UploadReferencePhotos";
+import MissingPersonMainPhoto from "../../../components/reports/CompleteReport/MissingPersonMainPhoto";
 
 //APIs
 import { getSingleReport, updateReport } from "@/lib/api-lib/api-reports";
