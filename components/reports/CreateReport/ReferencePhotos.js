@@ -16,31 +16,40 @@ import StackRowLayout from "@/utils/StackRowLayout";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import CancelIcon from "@mui/icons-material/Cancel";
 import DeleteIcon from "@mui/icons-material/Delete";
+import fileProcessing from "@/utils/file-upload/fileProcessing";
+import ErrorAlert from "@/components/ErrorAlert";
+import ReferencePhotoUploadGuidelines from "../ReferencePhotoUploadGuidelines";
 
 export default function ReferencePhotos({
   setReferencePhotos,
   referencePhotos,
   isSubmitted,
 }) {
-  //Upload photo
-  //Train face-recognition API
-
   const [photo, setPhoto] = useState({
     src: "",
     file: null,
   });
+  const [error, setError] = useState({
+    open: false,
+    message: "",
+  });
 
   const selectFileHandler = (event) => {
-    const reader = new FileReader();
-
-    reader.onload = function (onLoadEvent) {
-      setPhoto({
-        src: onLoadEvent.target.result,
-        file: event.target.files[0],
-      });
-    };
-
-    reader.readAsDataURL(event.target.files[0]);
+    fileProcessing(
+      event.target.files[0],
+      (onLoadEvent, file) => {
+        setPhoto({
+          src: onLoadEvent.target.result,
+          file: file,
+        });
+      },
+      (message) => {
+        setError({
+          open: true,
+          message: message,
+        });
+      }
+    );
   };
 
   const cancelSelectedFile = () => {
@@ -69,15 +78,20 @@ export default function ReferencePhotos({
     );
   };
 
-  const uploadReferencePhotos = () => {
-    console.log(referencePhotos);
+  const closeError = () => {
+    setError({
+      open: false,
+      message: "",
+    });
   };
 
   return (
     <Layout
       head="Reference Photos"
-      subheading="Please add at least 3 photos for more accurate matching"
     >
+      <Box sx={{maxWidth: 400, mb: 2}}>
+        <ReferencePhotoUploadGuidelines />
+      </Box>
       <Box>
         <Paper
           variant="outlined"
@@ -112,6 +126,11 @@ export default function ReferencePhotos({
             </Box>
           )}
         </Paper>
+        <ErrorAlert
+          open={error.open}
+          message={error.message}
+          close={closeError}
+        />
         <Collapse in={isSubmitted && referencePhotos.length < 3}>
           <Alert severity="error">Insufficient number of images</Alert>
         </Collapse>

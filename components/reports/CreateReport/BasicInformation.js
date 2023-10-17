@@ -34,6 +34,9 @@ import QueryPhoto from "@/components/photo/QueryPhoto";
 import calculateTimeElapsed from "@/utils/calculateTimeElapsed";
 import computeElapsedTime from "@/utils/helpers/computeElapsedTime";
 import QueryPhotoLarge from "@/components/photo/QueryPhotoLarge";
+import fileProcessing from "@/utils/file-upload/fileProcessing";
+import ErrorAlert from "@/components/ErrorAlert";
+import FileUploadGuidelines from "@/components/FileUploadGuidelines";
 
 function ImageDetails({ photoId }) {
   const { data, error, isLoading } = useSWR(
@@ -123,21 +126,30 @@ function SelectExistingImageDialog({
 }
 
 function NewImageDialog({ open, setOpen, setPhoto, photo, setPhotoAdded }) {
+  const [error, setError] = useState({
+    open: false,
+    message: "",
+  });
   const handleClose = () => {
     setOpen(false);
   };
 
   const handleChange = (event) => {
-    const reader = new FileReader();
-
-    reader.onload = function (onLoadEvent) {
-      setPhoto({
-        src: onLoadEvent.target.result,
-        file: event.target.files[0],
-      });
-    };
-
-    reader.readAsDataURL(event.target.files[0]);
+    fileProcessing(
+      event.target.files[0],
+      (onLoadEvent, file) => {
+        setPhoto({
+          src: onLoadEvent.target.result,
+          file: file,
+        });
+      },
+      (message) => {
+        setError({
+          open: true,
+          message: message,
+        });
+      }
+    );
   };
 
   const handleProceed = () => {
@@ -145,10 +157,21 @@ function NewImageDialog({ open, setOpen, setPhoto, photo, setPhotoAdded }) {
     setOpen(false);
   };
 
+  const errorAlertClose = () => {
+    setError({
+      open: false,
+      message: "",
+    });
+  };
+
   return (
-    <Dialog open={open} onClose={handleClose}>
+    <Dialog fullWidth open={open} onClose={handleClose}>
       <DialogTitle>Add new image</DialogTitle>
+
       <DialogContent>
+        <Box sx={{mb: 1.5}}>
+          <FileUploadGuidelines content="File should be less than 5 MB" />
+        </Box>
         {!photo.file && (
           <Button component="label" size="small">
             Select Image
@@ -161,6 +184,11 @@ function NewImageDialog({ open, setOpen, setPhoto, photo, setPhotoAdded }) {
           </Button>
         )}
         {photo.file && <Typography>{photo.file.name}</Typography>}
+        <ErrorAlert
+          open={error.open}
+          message={error.message}
+          close={errorAlertClose}
+        />
       </DialogContent>
       <DialogActions>
         <Button onClick={handleProceed}>Proceed</Button>
