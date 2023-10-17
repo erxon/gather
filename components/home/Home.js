@@ -1,5 +1,5 @@
 import ReportToManage from "./ReportToManage/ReportToManage";
-import ReportWithPhoto from "./ReportWithPhoto";
+import ReportWithPhoto from "./ReportWithPhoto/ReportWithPhoto";
 
 export default function Home(){
     return (

@@ -17,7 +17,7 @@ import useSWR from "swr";
 import { fetcher } from "@/lib/hooks";
 
 import Image from "next/image";
-import ReportWithPhoto from "@/components/home/ReportWithPhoto";
+import ReportWithPhoto from "@/components/home/ReportWithPhoto/ReportWithPhoto";
 import ReportToManage from "@/components/home/ReportToManage/ReportToManage";
 import ReportPhotoSmall from "@/components/photo/ReportPhotoSmall";
 import Signup from "@/components/authentication/Signup";
