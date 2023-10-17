@@ -43,24 +43,36 @@ import TextFieldWithValidation from "@/components/forms/TextFieldWithValidation"
 import MultipleItemField from "@/components/reports/CreateReport/MultipleItemField";
 import clientFileUpload from "@/utils/api-helpers/clientFileUpload";
 import MapWithSearchBox from "@/components/map/MapWithSearchBox";
+import fileProcessing from "@/utils/file-upload/fileProcessing";
+import uploadReportToCloudinary from "@/utils/file-upload/uploadReportToCloudinary";
 
 function ChangePhoto({ data, setSnackbarValues }) {
   const [image, setImage] = useState({ renderImage: "", file: null });
 
   const handleChange = (event) => {
-    setImage({
-      renderImage: URL.createObjectURL(event.target.files[0]),
-      file: event.target.files[0],
-    });
+    fileProcessing(
+      event.target.files[0],
+      (onLoadEvent, file) => {
+        setImage({
+          renderImage: onLoadEvent.target.result,
+          file: file,
+        });
+      },
+      (message) => {
+        setSnackbarValues({
+          open: true,
+          message: message,
+        });
+      }
+    );
   };
 
   const handleSave = async () => {
-    const formData = new FormData();
-    formData.append("file", image.file);
-    formData.append("upload_preset", "report-photos");
     //Upload photo
-    const photoUpload = await uploadReportPhoto(formData);
+    const file = image.file;
+    const uploadPreset = "report-photos";
 
+    const photoUpload = await uploadReportToCloudinary(file, uploadPreset);
     const response = await updateReport(data._id, {
       photo: photoUpload.public_id,
     });

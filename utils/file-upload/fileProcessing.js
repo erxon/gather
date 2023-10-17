@@ -11,6 +11,7 @@ function readFile(file, callback) {
 }
 
 export default function fileProcessing(file, successCallback, errorCallback) {
+  if (!file) return;
   const validatePhoto = isPhotoValid(file);
 
   if (validatePhoto.valid) {

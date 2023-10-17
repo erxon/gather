@@ -17,6 +17,7 @@ import { mutate } from "swr";
 import Image from "next/image";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
+import fileProcessing from "@/utils/file-upload/fileProcessing";
 
 export default function UploadReferencePhotos({
   mpName,
@@ -67,30 +68,22 @@ export default function UploadReferencePhotos({
 
   //Display Photo
   const handleChange = (event) => {
-    console.log(event.target.files[0]);
-    if (!event.target.files[0]) return;
-
-    //Include validation
-    //if the size of the photo exceeds 100000, return a message
-    if (event.target.files[0].size > 500000) {
-      setSnackbar({
-        open: true,
-        severity: "error",
-        message: "The file exceeds 100mb",
-      });
-      return;
-    } else {
-      const reader = new FileReader();
-
-      reader.onload = function (onLoadEvent) {
+    fileProcessing(
+      event.target.files[0],
+      (onLoadEvent, file) => {
         setCurrentPhoto({
           src: onLoadEvent.target.result,
-          file: event.target.files[0],
+          file: file,
         });
-      };
-
-      reader.readAsDataURL(event.target.files[0]);
-    }
+      },
+      (message) => {
+        setSnackbar({
+          open: true,
+          severity: "error",
+          message: message,
+        });
+      }
+    );
   };
 
   const handleSubmit = async (event) => {
@@ -157,9 +150,8 @@ export default function UploadReferencePhotos({
         open={snackbar.open}
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
-      >
-        {snackbar.message}
-      </Snackbar>
+        message={snackbar.message}
+      />
       {/* If the photo is already uploaded, remove the form */}
       {currentPhoto.file && (
         <Paper
