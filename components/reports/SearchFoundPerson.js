@@ -224,6 +224,7 @@ export default function SearchFoundPerson({ setPossibleMatch }) {
             </Box>
           )}
           {results &&
+            results.result &&
             results.result.map((result) => {
               if (result.id === "undefined") return;
               return (

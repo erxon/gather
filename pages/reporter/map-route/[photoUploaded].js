@@ -17,6 +17,7 @@ import computeElapsedTime from "@/utils/helpers/computeElapsedTime";
 import StackRowLayout from "@/utils/StackRowLayout";
 import RouteOutlinedIcon from "@mui/icons-material/RouteOutlined";
 import EditIcon from "@mui/icons-material/Edit";
+import { useRouter } from "next/router";
 
 function DisplayPhoto({ photoUploaded }) {
   const { data, isLoading, error } = useSWR(
@@ -31,8 +32,14 @@ function DisplayPhoto({ photoUploaded }) {
 }
 
 function DisplayMap({ data, position, reporterLocation }) {
+  const router = useRouter();
   const date = new Date(data.createdAt);
   const elapsedTime = computeElapsedTime(date);
+
+  const routeHandler = () => {
+    router.push("/reports/create-report");
+  };
+
   return (
     <Box
       sx={{
@@ -67,7 +74,12 @@ function DisplayMap({ data, position, reporterLocation }) {
                 </Typography>
                 <Typography color="GrayText">{elapsedTime}</Typography>
               </StackRowLayout>
-              <Button fullWidth startIcon={<EditIcon />} sx={{ mt: 1 }}>
+              <Button
+                fullWidth
+                onClick={routeHandler}
+                startIcon={<EditIcon />}
+                sx={{ mt: 1 }}
+              >
                 Update
               </Button>
             </Box>
