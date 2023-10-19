@@ -30,6 +30,7 @@ export default function Page({ data }) {
     if (completed) {
       router.push(`/reports/${data._id}`);
     }
+    
   }, [completed]);
 
   //Handle submit for signup and report update.

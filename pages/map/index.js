@@ -67,21 +67,34 @@ function DisplayMap({ data, userLocation }) {
     <Grid container spacing={1}>
       <Grid item xs={12} md={4}>
         <Head icon={<PersonPinCircleOutlinedIcon />} title="Reports" />
-        <Paper sx={{p: 3}}>
-          <Pagination page={page} onChange={handlePage} size="small" count={pageLength} />
-          {reporters
-            .slice(page - 1, page + 2)
-            .reverse()
-            .map((reporter) => {
-              return (
-                <Reporter
-                  userLocation={userLocation}
-                  key={reporter._id}
-                  reporter={reporter}
-                  setDestination={setDestination}
-                />
-              );
-            })}
+        <Paper sx={{ p: 2 }}>
+          {reporters.length > 0 ? (
+            <Box>
+              <Pagination
+                page={page}
+                onChange={handlePage}
+                size="small"
+                count={pageLength}
+              />
+              {reporters
+                .slice(page - 1, page + 2)
+                .reverse()
+                .map((reporter) => {
+                  return (
+                    <Reporter
+                      userLocation={userLocation}
+                      key={reporter._id}
+                      reporter={reporter}
+                      setDestination={setDestination}
+                    />
+                  );
+                })}
+            </Box>
+          ) : (
+            <Box>
+              <Typography color="GrayText">There we're no reports yet</Typography>
+            </Box>
+          )}
         </Paper>
       </Grid>
 
@@ -98,13 +111,13 @@ function DisplayMap({ data, userLocation }) {
 }
 
 function Reporter({ reporter, setDestination, userLocation }) {
-  // const { data, error, isLoading } = useSWRImmutable(
-  //   `https://api.mapbox.com/directions/v5/mapbox/driving/${userLocation.lng},${userLocation.lat};${reporter.position.longitude},${reporter.position.latitude}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
-  //   fetcher
-  // );
+  const { data, error, isLoading } = useSWRImmutable(
+    `https://api.mapbox.com/directions/v5/mapbox/driving/${userLocation.lng},${userLocation.lat};${reporter.position.longitude},${reporter.position.latitude}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
+    fetcher
+  );
 
-  // if (error) return <Typography>Something went wrong.</Typography>;
-  // if (isLoading) return <CircularProgress />;
+  if (error) return <Typography>Something went wrong.</Typography>;
+  if (isLoading) return <CircularProgress />;
 
   const handleViewRoute = async () => {
     setDestination([reporter.position.longitude, reporter.position.latitude]);
@@ -115,10 +128,10 @@ function Reporter({ reporter, setDestination, userLocation }) {
       <Stack direction="row" spacing={2}>
         <Photo photoUploaded={reporter.photoUploaded} />
         <Box sx={{ mb: 1 }}>
-          <Typography variant="body1" sx={{ fontWeight: "bold", mb: 0.5 }}>
+          <Typography variant="body2" sx={{ fontWeight: "bold", mb: 0.5 }}>
             {reporter.firstName} {reporter.lastName}
             <span>
-              <Typography color="GrayText" variant="subtitle2" sx={{ m: 0 }}>
+              <Typography color="GrayText" variant="body2" sx={{ m: 0 }}>
                 Reporter
               </Typography>
             </span>
@@ -127,7 +140,7 @@ function Reporter({ reporter, setDestination, userLocation }) {
             <DirectionsCarIcon color="primary" />
             <Typography variant="body2">Driving |</Typography>
             <Typography variant="body2">
-              {/* {data && Math.round(data.routes[0].duration / 60)} mins */}
+              {data && Math.round(data.routes[0].duration / 60)} mins
             </Typography>
           </StackRowLayout>
           <Button sx={{ mt: 1 }} onClick={handleViewRoute} size="small">
