@@ -92,7 +92,7 @@ function DisplayMap({ data, userLocation }) {
             </Box>
           ) : (
             <Box>
-              <Typography color="GrayText">There we're no reports yet</Typography>
+              <Typography color="GrayText">There we&apos;re no reports yet</Typography>
             </Box>
           )}
         </Paper>
