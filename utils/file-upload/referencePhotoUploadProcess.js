@@ -1,4 +1,5 @@
 import { uploadReportPhoto, updateReport } from "@/lib/api-lib/api-reports";
+import Compressor from "compressorjs";
 
 const uploadToCloudinary = async (form, numberOfFiles) => {
   let uploadedPhotos = [];
@@ -38,8 +39,10 @@ const uploadToDatabase = async (uploadedPhotos, reportId, mpName) => {
 };
 
 const getFaceIDs = async (newPhotos) => {
+  console.log(newPhotos)
   const response = await fetch(`/api/imagga-face-recognition/${newPhotos._id}`);
   const faceIDs = await response.json();
+  console.log(faceIDs)
 
   return faceIDs;
 };
@@ -60,6 +63,7 @@ export default async function referencePhotoUploadProcess(form, reportId, mpName
   const newPhotos = await uploadToDatabase(uploadedPhotos,reportId, mpName);
   //create face ids
   const faceIDs = await getFaceIDs(newPhotos.data);
+  console.log(faceIDs)
   //Index face ids
   await indexGeneratedFaceIds(faceIDs);
   const updateReportResponseData = await updateReport(reportId, {

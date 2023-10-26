@@ -14,11 +14,19 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ReportPhoto from "@/components/photo/ReportPhoto";
 
 //Material UI Components
-import { Paper, Button, Stack, Typography, IconButton, Box } from "@mui/material";
+import {
+  Paper,
+  Button,
+  Stack,
+  Typography,
+  IconButton,
+  Box,
+} from "@mui/material";
 
 //Components
 import Image from "next/image";
 import FileUploadGuidelines from "@/components/FileUploadGuidelines";
+import fileProcessing from "@/utils/file-upload/fileProcessing";
 
 export default function MissingPersonMainPhoto({
   reportId,
@@ -31,23 +39,19 @@ export default function MissingPersonMainPhoto({
 
   const handleChange = (event) => {
     if (!event.target.files[0]) return;
-
-    const validatePhoto = isPhotoValid(event.target.files[0]);
-
-    if (validatePhoto.valid) {
-      const reader = new FileReader();
-
-      reader.onload = (onLoadEvent) => {
+    setUploaded(false)
+    fileProcessing(
+      event.target.files[0],
+      (onLoadEvent, file) => {
         setPhoto({
           src: onLoadEvent.target.result,
-          file: event.target.files[0],
+          file: file,
         });
-      };
-
-      reader.readAsDataURL(event.target.files[0]);
-    } else {
-      setSnackbar({ open: true, message: validatePhoto.message });
-    }
+      },
+      (message) => {
+        setSnackbar({ open: true, message: message });
+      }
+    );
   };
 
   const handleUpload = async () => {

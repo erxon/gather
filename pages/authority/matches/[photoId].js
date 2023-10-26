@@ -196,6 +196,10 @@ function UpdateReportDialog({
     setNote(event.target.value);
   };
 
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   return (
     <Dialog open={open} onClose={() => setOpen(false)}>
       <DialogTitle>Update this report</DialogTitle>
@@ -299,7 +303,7 @@ function UpdateReportDialog({
       </DialogContent>
       <DialogActions>
         <Button onClick={handleConfirm}>Confirm</Button>
-        <Button>Cancel</Button>
+        <Button onClick={handleClose}>Cancel</Button>
       </DialogActions>
     </Dialog>
   );
@@ -456,9 +460,6 @@ function DisplayReportDetails({
               </CardActions>
             </Box>
           </Card>
-          {/* <Paper sx={{ mt: 1, p: 3 }}>
-            <DisplayReferencePhotos style={{ mb: 2 }} reportId={reportId} />
-          </Paper> */}
         </Box>
       </div>
     );
@@ -554,7 +555,7 @@ function FindMatches({ photoUploadedId, queryPhotoId }) {
         </Box>
       )}
       {isReset && <LinearProgress sx={{ mb: 1 }} />}
-      {data && data.result.length > 0 ? (
+      {data && data.result && data.result.length > 0 ? (
         <div>
           {data.result.map((result) => {
             return (
@@ -595,11 +596,19 @@ function FindMatches({ photoUploadedId, queryPhotoId }) {
 }
 
 function PossibleMatch({ possibleMatch, photoId, queryPhoto }) {
+  const { data, isLoading, error } = useSWR(
+    `/api/reports/${possibleMatch}`,
+    fetcher
+  );
   const [showDialog, setShowDialog] = useState(false);
   const [showSnackbar, setShowSnackbar] = useState({
     open: false,
     message: "",
   });
+
+  if (isLoading) return <CircularProgress />;
+  if (error) return <Typography>Something went wrong.</Typography>;
+
   const {
     _id,
     firstName,
@@ -609,10 +618,11 @@ function PossibleMatch({ possibleMatch, photoId, queryPhoto }) {
     status,
     reportedAt,
     photo,
-  } = possibleMatch;
+  } = data;
 
   const date = new Date(reportedAt);
   const elapsedTime = computeElapsedTime(date);
+
   const handleSnackbarClose = () => {
     setShowSnackbar({
       open: false,
@@ -623,7 +633,7 @@ function PossibleMatch({ possibleMatch, photoId, queryPhoto }) {
   return (
     <div>
       <UpdateReportDialog
-        report={possibleMatch}
+        report={data}
         queryPhoto={queryPhoto}
         photoUploadedId={photoId}
         setOpen={setShowDialog}

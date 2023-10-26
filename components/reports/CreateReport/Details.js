@@ -80,12 +80,12 @@ export default function Details({
   };
 
   const dentalAndFingerprintField = (event) => {
+    if (!event.target.files[0]) return;
     if (event.target.files[0].size < 500000) {
       setDentalAndFingerprint(event.target.files[0]);
     } else {
       console.log("The file size exceeds 500 kilobytes");
     }
-    console.log(dentalAndFingerprint);
   };
 
   const cancelFile = () => {
@@ -187,7 +187,7 @@ export default function Details({
                 </Stack>
               )}
               <Button startIcon={<AddIcon />} size="small" component="label">
-                Add
+                {dentalAndFingerprint ? "Change" : "Add"}
                 <input
                   hidden
                   name="file"

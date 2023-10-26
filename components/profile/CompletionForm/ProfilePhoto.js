@@ -4,6 +4,7 @@ import { useState } from "react";
 import DisplaySnackbar from "@/components/DisplaySnackbar";
 import ProfilePhotoAvatar from "@/components/photo/ProfilePhotoAvatar";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import fileProcessing from "@/utils/file-upload/fileProcessing";
 
 export default function ProfilePhoto({ photo, setAccomplished }) {
   const [image, setImage] = useState(null);
@@ -22,30 +23,29 @@ export default function ProfilePhoto({ photo, setAccomplished }) {
   };
 
   const handleChange = (event) => {
-    if (event.target.files[0]) {
-      setUploaded(false)
-      setImage({
-        file: event.target.files[0],
-        fileName: URL.createObjectURL(event.target.files[0]),
-      });
-    }
-    
+    if (!event.target.files[0]) return;
+    fileProcessing(
+      event.target.files[0],
+      (onLoadEvent, file) => {
+        setUploaded(false);
+        setImage({
+          file: file,
+          fileName: URL.createObjectURL(event.target.files[0]),
+        });
+      },
+      (message) => {
+        setOpenSnackbar({
+          open: true,
+          message: message,
+        });
+      }
+    );
   };
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
-    const form = event.currentTarget;
-
-    const fileInput = Array.from(form.elements).find(
-      ({ name }) => name === "file"
-    );
-
     const formData = new FormData();
 
-    for (const file of fileInput.files) {
-      formData.append("file", file);
-    }
-
+    formData.append("file", image.file);
     formData.append("upload_preset", "profile");
 
     const data = await fetch(
@@ -66,7 +66,7 @@ export default function ProfilePhoto({ photo, setAccomplished }) {
       setAccomplished((prev) => {
         return { ...prev, photo: true };
       });
-      setPhotoState(data.public_id)
+      setPhotoState(data.public_id);
       setUploaded(true);
       setOpenSnackbar({
         open: true,
@@ -103,27 +103,23 @@ export default function ProfilePhoto({ photo, setAccomplished }) {
           ) : (
             <Avatar sx={{ width: 56, height: 56 }} src={image.fileName} />
           )}
-
-          <form onSubmit={handleSubmit}>
-            <StackRowLayout spacing={0.5}>
-              <Button component="label" variant="contained">
-                Select file
-                <input
-                  onChange={handleChange}
-                  hidden
-                  name="file"
-                  type="file"
-                  accept="image/png image/jpeg"
-                  required
-                />
+          <StackRowLayout spacing={0.5}>
+            <Button component="label">
+              Select file
+              <input
+                onChange={handleChange}
+                hidden
+                type="file"
+                accept=".png, .jpeg, .jpg"
+                required
+              />
+            </Button>
+            {image && !uploaded && (
+              <Button onClick={handleSubmit} type="submit" variant="contained">
+                Upload
               </Button>
-              {(image && !uploaded) && (
-                <Button type="submit" variant="contained">
-                  Upload
-                </Button>
-              )}
-            </StackRowLayout>
-          </form>
+            )}
+          </StackRowLayout>
         </StackRowLayout>
       </Paper>
     </div>

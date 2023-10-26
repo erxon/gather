@@ -98,16 +98,6 @@ function Report({ report }) {
           >
             View
           </Button>
-          <Button
-            onClick={() => {
-              router.push(`/reports/edit/${report._id}`);
-            }}
-            size="small"
-            sx={{ mr: 1 }}
-            startIcon={<EditIcon />}
-          >
-            Edit
-          </Button>
         </CardActions>
       </Card>
     </Box>

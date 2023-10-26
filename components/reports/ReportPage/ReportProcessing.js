@@ -493,6 +493,8 @@ function ReportProcessingMain({ currentUser, report, users }) {
         message: "Something went wrong",
       });
     }
+
+    window.location.reload();
   };
 
   return (

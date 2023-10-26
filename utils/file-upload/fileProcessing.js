@@ -1,6 +1,8 @@
 import isPhotoValid from "@/utils/photo/isPhotoValid";
 
+
 function readFile(file, callback) {
+
   const reader = new FileReader();
 
   reader.onload = function (onLoadEvent) {

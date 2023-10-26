@@ -6,6 +6,7 @@ import { useState } from "react";
 import ValidPhoto from "./ValidPhoto";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import Image from "next/image";
+import fileProcessing from "@/utils/file-upload/fileProcessing";
 
 export default function Attachment({ validPhoto, setAccomplished }) {
   const [image, setImage] = useState(null);
@@ -24,29 +25,29 @@ export default function Attachment({ validPhoto, setAccomplished }) {
   };
 
   const handleChange = (event) => {
-    if (event.target.files[0]) {
-      setUploaded(false);
-      setImage({
-        file: event.target.files[0],
-        fileName: URL.createObjectURL(event.target.files[0]),
-      });
-    }
+    if (!event.target.files[0]) return;
+    fileProcessing(
+      event.target.files[0],
+      (onLoadEvent, file) => {
+        setUploaded(false);
+        setImage({
+          file: file,
+          fileName: URL.createObjectURL(file),
+        });
+      },
+      (message) => {
+        setOpenSnackbar({
+          open: true,
+          message: message,
+        });
+      }
+    );
   };
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
-    const form = event.currentTarget;
-
-    const fileInput = Array.from(form.elements).find(
-      ({ name }) => name === "file"
-    );
-
     const formData = new FormData();
 
-    for (const file of fileInput.files) {
-      formData.append("file", file);
-    }
-
+    formData.append("file", image.file);
     formData.append("upload_preset", "valid-photo");
 
     const data = await fetch(
@@ -86,12 +87,16 @@ export default function Attachment({ validPhoto, setAccomplished }) {
         handleClose={handleSnackbarClose}
       />
       <Paper sx={{ p: 3, mt: 1 }} variant="outlined">
-        <Box sx={{ mb: 2 }}>
+        <Box sx={{ mb: 1 }}>
           <StackRowLayout spacing={1}>
             <Typography variant="h6">Valid ID</Typography>
             {isValidPhotoExist && <CheckCircleIcon color="success" />}
           </StackRowLayout>
         </Box>
+        <Typography sx={{ mb: 1 }} variant="body2">
+          Please attach a valid ID of yours (i.e National ID, Voter's ID, School
+          ID, Employee ID, etc.) as a proof of your identity
+        </Typography>
         {/*If user have valid ID, render the image with cloudinary. 
         Else, jsut render the preview of the image to upload*/}
         {!image ? (
@@ -108,30 +113,30 @@ export default function Attachment({ validPhoto, setAccomplished }) {
           />
         )}
         <Box sx={{ mt: 1 }}>
-          <form onSubmit={handleSubmit}>
+          <Button
+            startIcon={<AttachFileIcon />}
+            size="small"
+            component="label"
+            sx={{ mr: 1 }}
+          >
+            Attach File
+            <input
+              hidden
+              type="file"
+              accept=".png, .jpeg, .jpg"
+              onChange={handleChange}
+            />
+          </Button>
+          {image && !uploaded && (
             <Button
-              startIcon={<AttachFileIcon />}
+              onClick={handleSubmit}
               size="small"
-              variant="outlined"
-              component="label"
-              sx={{ mr: 1 }}
-              disabled={!!image}
+              type="submit"
+              variant="contained"
             >
-              Attach File
-              <input
-                hidden
-                name="file"
-                type="file"
-                accept="image/jpeg image/png"
-                onChange={handleChange}
-              />
+              Upload
             </Button>
-            {image && !uploaded && (
-              <Button size="small" type="submit" variant="contained">
-                Upload
-              </Button>
-            )}
-          </form>
+          )}
         </Box>
       </Paper>
     </div>

@@ -107,6 +107,7 @@ export default function ReferencePhotos({
           {photo.file ? (
             <Image
               src={photo.src}
+              style={{objectFit: "cover"}}
               alt="reference photo"
               width="200"
               height="200"
@@ -161,7 +162,7 @@ export default function ReferencePhotos({
               <Grid key={photo.file.name} item xs={12} md={6}>
                 <Box sx={{ px: 2 }}>
                   <StackRowLayout spacing={1}>
-                    <Image src={photo.src} width="60" height="60" />
+                    <Image src={photo.src} style={{objectFit: "cover"}} width="60" height="60" />
                     <Box sx={{ width: "100%" }}>
                       <Typography variant="body2">{photo.file.name}</Typography>
                     </Box>

@@ -1,6 +1,6 @@
 export default function isPhotoValid(file) {
   if (
-    file.size < 500000 &&
+    file.size < 5000000 &&
     (file.type === "image/jpeg" ||
       file.type === "image/jpg" ||
       file.type === "image/png")

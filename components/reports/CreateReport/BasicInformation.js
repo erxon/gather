@@ -19,6 +19,7 @@ import {
   ListItemText,
   Paper,
   Popover,
+  Stack,
   TextField,
   Typography,
 } from "@mui/material";
@@ -37,6 +38,7 @@ import QueryPhotoLarge from "@/components/photo/QueryPhotoLarge";
 import fileProcessing from "@/utils/file-upload/fileProcessing";
 import ErrorAlert from "@/components/ErrorAlert";
 import FileUploadGuidelines from "@/components/FileUploadGuidelines";
+import GenderSelection from "@/components/forms/GenderSelection";
 
 function ImageDetails({ photoId }) {
   const { data, error, isLoading } = useSWR(
@@ -153,6 +155,10 @@ function NewImageDialog({ open, setOpen, setPhoto, photo, setPhotoAdded }) {
   };
 
   const handleProceed = () => {
+    if (!photo.file) {
+      setOpen(false);
+      return;
+    }
     setPhotoAdded({ added: true, new: true });
     setOpen(false);
   };
@@ -169,20 +175,18 @@ function NewImageDialog({ open, setOpen, setPhoto, photo, setPhotoAdded }) {
       <DialogTitle>Add new image</DialogTitle>
 
       <DialogContent>
-        <Box sx={{mb: 1.5}}>
+        <Box sx={{ mb: 1.5 }}>
           <FileUploadGuidelines content="File should be less than 5 MB" />
         </Box>
-        {!photo.file && (
-          <Button component="label" size="small">
-            Select Image
-            <input
-              onChange={handleChange}
-              hidden
-              type="file"
-              accept=".jpg, .jpeg, .png"
-            />
-          </Button>
-        )}
+        <Button component="label" size="small">
+          {photo.file ? "Change Image" : "Select Image"}
+          <input
+            onChange={handleChange}
+            hidden
+            type="file"
+            accept=".jpg, .jpeg, .png"
+          />
+        </Button>
         {photo.file && <Typography>{photo.file.name}</Typography>}
         <ErrorAlert
           open={error.open}
@@ -251,53 +255,57 @@ function UploadNewImage({
       <Paper
         variant="outlined"
         sx={{
-          height: 200,
+          height: 300,
           display: "flex",
+          flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
           mb: 2,
         }}
       >
-        {!photoAdded.added ? (
-          <Box sx={{ textAlign: "center" }}>
-            <IconButton onClick={handleClick} component="label" color="primary">
-              <AddPhotoAlternateIcon />
-            </IconButton>
-            <Popover
-              id={id}
-              open={open}
-              anchorEl={anchorEl}
-              onClose={handleClose}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left",
-              }}
-            >
-              <List>
-                <ListItem disablePadding>
-                  <ListItemButton onClick={selectNewImage}>
-                    <Typography variant="body2">New image</Typography>
-                  </ListItemButton>
-                </ListItem>
-                <ListItem disablePadding>
-                  <ListItemButton onClick={selectExistingImage}>
-                    <Typography variant="body2">Existing image</Typography>
-                  </ListItemButton>
-                </ListItem>
-              </List>
-            </Popover>
-            <Typography variant="body2">Add image</Typography>
-          </Box>
-        ) : photoAdded.new ? (
-          <Image
-            alt="missing person report photo"
-            src={photo.src}
-            width={200}
-            height={200}
-          />
-        ) : (
-          <QueryPhoto publicId={selectedImage.image} />
-        )}
+        {photoAdded.added &&
+          (photoAdded.new ? (
+            <Image
+              alt="missing person report photo"
+              style={{ objectFit: "cover" }}
+              src={photo.src}
+              width={200}
+              height={200}
+            />
+          ) : (
+            <QueryPhotoLarge publicId={selectedImage.image} />
+          ))}
+        <Box sx={{ display: "flex", direction: "row", alignItems: "center" }}>
+          <IconButton onClick={handleClick} component="label" color="primary">
+            <AddPhotoAlternateIcon />
+          </IconButton>
+          <Popover
+            id={id}
+            open={open}
+            anchorEl={anchorEl}
+            onClose={handleClose}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "left",
+            }}
+          >
+            <List>
+              <ListItem disablePadding>
+                <ListItemButton onClick={selectNewImage}>
+                  <Typography variant="body2">New image</Typography>
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton onClick={selectExistingImage}>
+                  <Typography variant="body2">Existing image</Typography>
+                </ListItemButton>
+              </ListItem>
+            </List>
+          </Popover>
+          <Typography variant="body2">
+            {!photoAdded.added ? "Add image" : "Change"}
+          </Typography>
+        </Box>
       </Paper>
     </div>
   );
@@ -354,22 +362,22 @@ export default function BasicInformation({
           <TextFieldWithValidation
             isSubmitted={isSubmitted}
             style={{ mb: 2 }}
-            value={formValues.basicInformation.lastName}
-            changeHandler={handleInput}
-            isFullWidth={true}
-            name="lastName"
-            variant="standard"
-            label="Last Name"
-          />
-          <TextFieldWithValidation
-            isSubmitted={isSubmitted}
-            style={{ mb: 2 }}
             value={formValues.basicInformation.middleName}
             changeHandler={handleInput}
             isFullWidth={true}
             name="middleName"
             variant="standard"
             label="Middle Name"
+          />
+          <TextFieldWithValidation
+            isSubmitted={isSubmitted}
+            style={{ mb: 2 }}
+            value={formValues.basicInformation.lastName}
+            changeHandler={handleInput}
+            isFullWidth={true}
+            name="lastName"
+            variant="standard"
+            label="Last Name"
           />
           <TextField
             sx={{ mb: 2, maxWidth: 100 }}
@@ -380,6 +388,22 @@ export default function BasicInformation({
           />
         </Grid>
         <Grid item xs={12} md={6}>
+          <Stack direction="row" sx={{ mb: 1 }} spacing={1}>
+            <TextFieldWithValidation
+              isSubmitted={isSubmitted}
+              changeHandler={handleInput}
+              value={formValues.basicInformation.age}
+              style={{ mb: 2 }}
+              name="age"
+              variant="standard"
+              label="Age (Required)"
+            />
+            <GenderSelection
+              isSubmitted={isSubmitted}
+              gender={formValues.basicInformation.gender}
+              handleChange={handleInput}
+            />
+          </Stack>
           <MultipleItemField
             collectionName={"aliases"}
             collection={collections.aliases}

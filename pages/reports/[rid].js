@@ -256,7 +256,8 @@ export default function ReportPage({ data }) {
         index={0}
       >
         <Box>
-          {!data.completed && (
+          {/*If the user is the owner of the report, and not yet completed*/}
+          {!data.completed && user._id === data.account && (
             <Box sx={{ p: 1 }}>
               <Typography sx={{ fontWeight: "bold" }}>
                 Finish your report
@@ -293,15 +294,20 @@ export default function ReportPage({ data }) {
                 >
                   Edit
                 </Button>
-                <Button
-                  endIcon={
-                    !updateReport ? <ArrowDropDownIcon /> : <ArrowDropUpIcon />
-                  }
-                  onClick={() => setUpdateReport(!updateReport)}
-                >
-                  Update Report
-                </Button>
               </Paper>
+            )}
+
+          {user &&
+            (data.assignedTo === user._id ||
+              user.role === "reports administrator") && (
+              <Button
+                endIcon={
+                  !updateReport ? <ArrowDropDownIcon /> : <ArrowDropUpIcon />
+                }
+                onClick={() => setUpdateReport(!updateReport)}
+              >
+                Update Report
+              </Button>
             )}
           <Box>
             {user &&

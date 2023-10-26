@@ -8,6 +8,7 @@ import {
   Button,
   CircularProgress,
   Stack,
+  Snackbar,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import BasicInformation from "@/components/reports/CreateReport/BasicInformation";
@@ -134,6 +135,8 @@ export default function Page() {
       lastName: "",
       middleName: "",
       qualifier: "",
+      age: "",
+      gender: "",
     },
     details: {
       currentHairColor: "",
@@ -149,6 +152,10 @@ export default function Page() {
   });
   const [uploaded, setUploaded] = useState(false);
   const [dentalAndFingerprint, setDentalAndFingerprint] = useState(null);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+  });
 
   useEffect(() => {
     if (activeStep === 0) {
@@ -195,7 +202,7 @@ export default function Page() {
       formData.append("upload_preset", "report-photos");
 
       const upload = await uploadReportPhoto(formData);
-      console.log("1. photo succesfully uploaded");
+      setSnackbar({ open: true, message: "Missing Person Photo Uploaded" });
       return upload;
     } catch (error) {
       return error;
@@ -250,8 +257,10 @@ export default function Page() {
           person: { [faceIDs.result.reportId]: faceIDs.result.faceIDs },
         }),
       });
-
-      console.log("3. Reference Photos successfully uploaded");
+      setSnackbar({
+        open: true,
+        message: "Reference Photos successfully uploaded",
+      });
     } catch (error) {
       return error;
     }
@@ -259,14 +268,17 @@ export default function Page() {
 
   const dentalAndFingerprintUpload = async (reportId) => {
     const url = `/api/reports/file-upload/dental-fingerprint-record/${reportId}`;
-    
+
     const formData = new FormData();
     formData.append("file", dentalAndFingerprint);
 
     const upload = await clientFileUpload(url, formData);
 
     if (upload.status === 200) {
-      console.log("Dental and Fingerprint records uploaded");
+      setSnackbar({
+        open: true,
+        message: "Dental and Fingerprint records uploaded",
+      });
     }
   };
 
@@ -280,6 +292,7 @@ export default function Page() {
         photo: photoAdded.new ? uploadedPhoto.public_id : null,
         photoId: photoAdded.new ? null : selectedImage._id,
         location: updatedPosition,
+        completed: true,
         ...formValues.basicInformation,
         ...formValues.details,
         ...collections,
@@ -292,7 +305,10 @@ export default function Page() {
       });
 
       const result = await uploadReport.json();
-      console.log("2. Report uploaded");
+      setSnackbar({
+        open: true,
+        message: "Report successfully created",
+      });
 
       //upload dental and fingerprint records (if included)
       if (dentalAndFingerprint) {
@@ -326,8 +342,18 @@ export default function Page() {
     setOpenDataPrivacyDialog(true);
   };
 
+  const handleSnackbarClose = () => {
+    setSnackbar({ open: false, message: "" });
+  };
+
   return (
     <div>
+      <Snackbar
+        open={snackbar.open}
+        onClose={handleSnackbarClose}
+        message={snackbar.message}
+        autoHideDuration={6000}
+      />
       <DataPrivacyDialog
         open={openDataPrivacyDialog}
         setOpen={setOpenDataPrivacyDialog}
@@ -338,7 +364,7 @@ export default function Page() {
       >
         <Paper sx={{ p: 3, mb: 2 }}>
           <Typography sx={{ mb: 3 }} variant="h5">
-            Create report
+            Report profile
           </Typography>
           <HorizontalLinearStepper
             handleCreateReport={handleFinish}
