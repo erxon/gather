@@ -58,7 +58,7 @@ const reportSchema = new mongoose.Schema({
     type: String,
   },
   age: {
-    type: String,
+    type: Number,
   },
   gender: {
     type: String,
@@ -69,6 +69,7 @@ const reportSchema = new mongoose.Schema({
   socialMediaAccounts: {
     facebook: String,
     twitter: String,
+    instagram: String,
   },
   match: { type: mongoose.Schema.Types.ObjectId, ref: "Photo" },
   assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: "User" },

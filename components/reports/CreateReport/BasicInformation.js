@@ -39,6 +39,7 @@ import fileProcessing from "@/utils/file-upload/fileProcessing";
 import ErrorAlert from "@/components/ErrorAlert";
 import FileUploadGuidelines from "@/components/FileUploadGuidelines";
 import GenderSelection from "@/components/forms/GenderSelection";
+import AgeField from "@/components/forms/AgeField";
 
 function ImageDetails({ photoId }) {
   const { data, error, isLoading } = useSWR(
@@ -328,7 +329,10 @@ export default function BasicInformation({
     const { name, value } = event.target;
     setFormValues({
       ...formValues,
-      basicInformation: { ...formValues.basicInformation, [name]: value },
+      basicInformation: {
+        ...formValues.basicInformation,
+        [name]: value,
+      },
     });
   };
 
@@ -389,13 +393,12 @@ export default function BasicInformation({
         </Grid>
         <Grid item xs={12} md={6}>
           <Stack direction="row" sx={{ mb: 1 }} spacing={1}>
-            <TextFieldWithValidation
+            <AgeField
               isSubmitted={isSubmitted}
               changeHandler={handleInput}
               value={formValues.basicInformation.age}
               style={{ mb: 2 }}
               name="age"
-              variant="standard"
               label="Age (Required)"
             />
             <GenderSelection

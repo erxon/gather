@@ -12,15 +12,22 @@ export default function TextFieldWithValidation({
   rows,
   style,
   inputProps,
-  size
+  size,
+  customError,
 }) {
-  const isError = value === "" && isSubmitted;
+  const isEmpty = value === "" && isSubmitted;
+  let message = isEmpty && "This field is required.";
+
+  if (customError && customError.error){
+    message = customError.message;
+  }
+
   return (
     <TextField
       fullWidth={isFullWidth}
       size={size}
-      error={isError}
-      helperText={isError && "This field is required."}
+      error={isEmpty || (customError && customError.error)}
+      helperText={message}
       type={type}
       label={label}
       name={name}

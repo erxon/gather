@@ -135,7 +135,7 @@ export default function Page() {
       lastName: "",
       middleName: "",
       qualifier: "",
-      age: "",
+      age: 0,
       gender: "",
     },
     details: {
@@ -157,14 +157,17 @@ export default function Page() {
     message: "",
   });
 
+  //Validation
   useEffect(() => {
     if (activeStep === 0) {
-      const { firstName, lastName, middleName, qualifier } =
+      const { firstName, lastName, middleName, age, gender } =
         formValues.basicInformation;
       const completed =
         firstName.length > 0 &&
         lastName.length > 0 &&
         middleName.length > 0 &&
+        gender.length > 0 &&
+        !isNaN(Number(age)) &&
         photoAdded.added;
 
       steps[0].isComplete = completed;
