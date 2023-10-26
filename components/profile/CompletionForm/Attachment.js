@@ -94,7 +94,7 @@ export default function Attachment({ validPhoto, setAccomplished }) {
           </StackRowLayout>
         </Box>
         <Typography sx={{ mb: 1 }} variant="body2">
-          Please attach a valid ID of yours (i.e National ID, Voter's ID, School
+          Please attach a valid ID of yours (i.e National ID, Voter&apos;s ID, School
           ID, Employee ID, etc.) as a proof of your identity
         </Typography>
         {/*If user have valid ID, render the image with cloudinary. 

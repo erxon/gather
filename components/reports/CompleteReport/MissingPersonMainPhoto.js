@@ -101,6 +101,7 @@ export default function MissingPersonMainPhoto({
             {photo.file ? (
               <Image
                 src={photo.src}
+                alt="missing person photo"
                 height={250}
                 width={200}
                 style={{ objectFit: "cover" }}

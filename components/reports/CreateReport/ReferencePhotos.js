@@ -162,7 +162,7 @@ export default function ReferencePhotos({
               <Grid key={photo.file.name} item xs={12} md={6}>
                 <Box sx={{ px: 2 }}>
                   <StackRowLayout spacing={1}>
-                    <Image src={photo.src} style={{objectFit: "cover"}} width="60" height="60" />
+                    <Image alt="reference photo" src={photo.src} style={{objectFit: "cover"}} width="60" height="60" />
                     <Box sx={{ width: "100%" }}>
                       <Typography variant="body2">{photo.file.name}</Typography>
                     </Box>
