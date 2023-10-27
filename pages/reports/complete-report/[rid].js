@@ -3,7 +3,18 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 //Material UI Components
-import { Typography, Box, Button, Snackbar } from "@mui/material";
+import {
+  Typography,
+  Box,
+  Button,
+  Snackbar,
+  Paper,
+  Stack,
+  CircularProgress,
+} from "@mui/material";
+
+//Material UI Icons
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 //Components
 import Report from "../../../components/reports/CompleteReport/Report";
@@ -12,10 +23,77 @@ import MissingPersonMainPhoto from "../../../components/reports/CompleteReport/M
 
 //APIs
 import { getSingleReport, updateReport } from "@/lib/api-lib/api-reports";
+import ReferencePhotos from "@/components/reports/CreateReport/ReferencePhotos";
+import referencePhotoUploadProcess from "@/utils/file-upload/referencePhotoUploadProcess";
+
+const ReferencePhotosUpload = ({
+  formsToComplete,
+  setFormsToComplete,
+  setSnackbarValues,
+  report,
+}) => {
+  const [referencePhotos, setReferencePhotos] = useState([]);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  const handleReferencePhotoUpload = async () => {
+    if (referencePhotos.length < 3) {
+      setIsSubmitted(true);
+      return;
+    }
+    try {
+      setIsSubmitted(true);
+      setUploading(true);
+      const missingPersonName = `${report.firstName} ${report.middleName} ${report.lastName}`;
+      const result = await referencePhotoUploadProcess(
+        referencePhotos,
+        report._id,
+        missingPersonName
+      );
+      console.log(result);
+      setFormsToComplete((prev) => {
+        return { ...prev, isReferencePhotosUploaded: true };
+      });
+    } catch (error) {
+      setSnackbarValues({ open: true, message: "Something went wrong." });
+    }
+  };
+
+  return (
+    <Paper sx={{ p: 3, mb: 3 }}>
+      <Stack direction="row" alignItems="center" spacing={1}>
+        {formsToComplete.isReferencePhotosUploaded && (
+          <CheckCircleIcon color="primary" />
+        )}
+        <Typography variant="body1" fontWeight={500}>
+          Reference Photos
+        </Typography>
+      </Stack>
+      {!formsToComplete.isReferencePhotosUploaded ? (
+        <ReferencePhotos
+          referencePhotos={referencePhotos}
+          setReferencePhotos={setReferencePhotos}
+          isSubmitted={isSubmitted}
+        />
+      ) : (
+        <Typography sx={{ mt: 2 }} variant="body2">
+          Reference photos are uploaded
+        </Typography>
+      )}
+      {!formsToComplete.isReferencePhotosUploaded && (
+        <Stack direction="row" alignItems="center" spacing={1}>
+          {uploading && <CircularProgress size={24} />}
+          <Button onClick={handleReferencePhotoUpload} disabled={uploading}>
+            Upload
+          </Button>
+        </Stack>
+      )}
+    </Paper>
+  );
+};
 
 export default function Page({ data }) {
   const router = useRouter();
-  const [completed, setCompleted] = useState(data.completed);
   const [formsToComplete, setFormsToComplete] = useState({
     isReportProfilePhotoUploaded: !!data.photo,
     isReferencePhotosUploaded: !!data.referencePhotos,
@@ -27,19 +105,16 @@ export default function Page({ data }) {
 
   //if report is already completed, redirect to the report page
   useEffect(() => {
-    if (completed) {
+    if (
+      formsToComplete.isReferencePhotosUploaded &&
+      formsToComplete.isReportProfilePhotoUploaded
+    ) {
       router.push(`/reports/${data._id}`);
     }
-    
-  }, [completed]);
-
-  //Handle submit for signup and report update.
-  const handleFinish = async () => {
-    await updateReport(data._id, {
-      completed: true,
-    });
-    setCompleted(true);
-  };
+  }, [
+    formsToComplete.isReferencePhotosUploaded,
+    formsToComplete.isReportProfilePhotoUploaded,
+  ]);
 
   return (
     <>
@@ -49,7 +124,7 @@ export default function Page({ data }) {
         onClose={() => setSnackbarValues({ open: false })}
         message={snackbarValues.message}
       />
-      <Box sx={{ margin: "auto", width: { xs: "100%", md: "50%" } }}>
+      <Box sx={{ margin: "auto" }}>
         <Box sx={{ mb: 4 }}>
           <Typography variant="h5">Finish-up your report</Typography>
         </Box>
@@ -63,26 +138,12 @@ export default function Page({ data }) {
           uploaded={formsToComplete.isReportProfilePhotoUploaded}
           currentPhoto={data.photo}
         />
-        {/*Upload photo*/}
-        <UploadReferencePhotos
-          mpName={`${data.firstName} ${data.lastName}`}
-          reportId={data._id}
-          uploaded={formsToComplete.isReferencePhotosUploaded}
-          setUploaded={setFormsToComplete}
-          setSnackbar={setSnackbarValues}
+        <ReferencePhotosUpload
+          setSnackbarValues={setSnackbarValues}
+          formsToComplete={formsToComplete}
+          setFormsToComplete={setFormsToComplete}
+          report={data}
         />
-        <Button
-          disabled={
-            !(
-              formsToComplete.isReferencePhotosUploaded &&
-              formsToComplete.isReportProfilePhotoUploaded
-            )
-          }
-          variant="contained"
-          onClick={handleFinish}
-        >
-          Finish
-        </Button>
       </Box>
     </>
   );

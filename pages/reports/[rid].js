@@ -257,22 +257,24 @@ export default function ReportPage({ data }) {
       >
         <Box>
           {/*If the user is the owner of the report, and not yet completed*/}
-          {!data.completed && user._id === data.account && (
-            <Box sx={{ p: 1 }}>
-              <Typography sx={{ fontWeight: "bold" }}>
-                Finish your report
-              </Typography>
-              <Typography sx={{ mt: 0.5, mb: 1 }} variant="body2">
-                Your Report still needs required information
-              </Typography>
-              <Button
-                href={`/reports/complete-report/${data._id}`}
-                size="small"
-              >
-                Finish report
-              </Button>
-            </Box>
-          )}
+          {!data.referencePhotos &&
+            (!data.photo || !data.photoId) &&
+            user._id === data.account && (
+              <Box sx={{ p: 1 }}>
+                <Typography sx={{ fontWeight: "bold" }}>
+                  Finish your report
+                </Typography>
+                <Typography sx={{ mt: 0.5, mb: 1 }} variant="body2">
+                  Your Report still needs required information
+                </Typography>
+                <Button
+                  href={`/reports/complete-report/${data._id}`}
+                  size="small"
+                >
+                  Finish report
+                </Button>
+              </Box>
+            )}
           {data.updatedBy && (
             <Box sx={{ mb: 3 }}>
               <UpdatedBy

@@ -1,74 +1,110 @@
 import { uploadReportPhoto, updateReport } from "@/lib/api-lib/api-reports";
 
+const uploadPhotosToCloudinary = async (referencePhotos) => {
+  const uploadedReferencePhotos = [];
 
-const uploadToCloudinary = async (form, numberOfFiles) => {
-  let uploadedPhotos = [];
-  for (let i = 0; i < numberOfFiles; i++) {
-    for (const file of form.elements[i].files) {
+  try {
+    for (let i = 0; i < referencePhotos.length; i++) {
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", referencePhotos[i].file);
       formData.append("upload_preset", "report-photos");
       const data = await uploadReportPhoto(formData);
-      uploadedPhotos.push({
+      uploadedReferencePhotos.push({
         publicId: data.public_id.substring(14, 34),
-        fileName: file.name,
+        createdAt: new Date(),
+        fileName: referencePhotos[i].file.name,
       });
     }
-  }
 
-  return uploadedPhotos;
+    return uploadedReferencePhotos;
+  } catch (error) {
+    return error;
+  }
 };
 
-const uploadToDatabase = async (uploadedPhotos, reportId, mpName) => {
-  const reqBody = {
-    images: [...uploadedPhotos],
-    type: "reference",
-    reportId: reportId,
-    missingPerson: mpName,
-  };
+const uploadToDatabase = async (
+  uploadedReferencePhotos,
+  reportId,
+  missingPersonName
+) => {
+  try {
+    const body = {
+      images: [...uploadedReferencePhotos],
+      type: "reference",
+      reportId: reportId,
+      missingPerson: missingPersonName,
+    };
 
-  const response = await fetch("/api/photos", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(reqBody),
-  });
+    const uploadResult = await fetch("/api/photos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
 
-  const uploadedPhoto = await response.json();
+    const newPhotos = await uploadResult.json();
 
-  return uploadedPhoto;
+    return newPhotos;
+  } catch (error) {
+    return error;
+  }
 };
 
 const getFaceIDs = async (newPhotos) => {
-  console.log(newPhotos)
-  const response = await fetch(`/api/imagga-face-recognition/${newPhotos._id}`);
-  const faceIDs = await response.json();
-  console.log(faceIDs)
+  try {
+    const response = await fetch(
+      `/api/imagga-face-recognition/${newPhotos.data._id}`
+    );
 
-  return faceIDs;
+    const faceIDs = await response.json();
+
+    return faceIDs;
+  } catch (error) {
+    return error;
+  }
 };
 
-const indexGeneratedFaceIds = async (faceIDs) => {
-  await fetch("/api/imagga-face-recognition/save", {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      person: { [faceIDs.result.reportId]: faceIDs.result.faceIDs },
-    }),
-  });
+const saveFaceIDs = async (faceIDs) => {
+  try {
+    const response = await fetch("/api/imagga-face-recognition/save", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        person: { [faceIDs.result.reportId]: faceIDs.result.faceIDs },
+      }),
+    });
+
+    const result = await response.json();
+
+    return result;
+  } catch (error) {
+    return error;
+  }
 };
 
-export default async function referencePhotoUploadProcess(form, reportId, mpName, numberOfFiles ) {
-  const uploadedPhotos = await uploadToCloudinary(form, numberOfFiles);
-  //Save photo to Photo database
-  const newPhotos = await uploadToDatabase(uploadedPhotos,reportId, mpName);
-  //create face ids
-  const faceIDs = await getFaceIDs(newPhotos.data);
-  console.log(faceIDs)
-  //Index face ids
-  await indexGeneratedFaceIds(faceIDs);
-  const updateReportResponseData = await updateReport(reportId, {
-    referencePhotos: newPhotos.data._id,
-  });
+export default async function referencePhotoUploadProcess(
+  referencePhotos,
+  reportId,
+  missingPersonName
+) {
+  try {
+    const uploadedReferencePhotos = await uploadPhotosToCloudinary(
+      referencePhotos
+    );
+    const newPhotos = await uploadToDatabase(
+      uploadedReferencePhotos,
+      reportId,
+      missingPersonName
+    );
 
-  return updateReportResponseData;
+    const faceIDs = await getFaceIDs(newPhotos);
+    await saveFaceIDs(faceIDs);
+
+    const result = await updateReport(reportId, {
+      referencePhotos: newPhotos.data._id,
+    });
+
+    return result;
+  } catch (error) {
+    return error;
+  }
 }

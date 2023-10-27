@@ -5,6 +5,7 @@ const photoSchema = new mongoose.Schema({
   image: String,
   images: [{
     publicId: String,
+    createdAt: Date,
     fileName: String
   }],
   reportId: { type: mongoose.Schema.Types.ObjectId, ref: "Report" },
