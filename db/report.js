@@ -62,6 +62,7 @@ const reportSchema = new mongoose.Schema({
   },
   gender: {
     type: String,
+    enum: ["Male", "Female"]
   },
   features: [String],
   email: String,

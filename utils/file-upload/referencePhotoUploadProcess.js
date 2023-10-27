@@ -1,5 +1,5 @@
 import { uploadReportPhoto, updateReport } from "@/lib/api-lib/api-reports";
-import Compressor from "compressorjs";
+
 
 const uploadToCloudinary = async (form, numberOfFiles) => {
   let uploadedPhotos = [];

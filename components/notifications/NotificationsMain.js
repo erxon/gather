@@ -73,7 +73,6 @@ function Notifications(props) {
     const channel1 = pusherJS.subscribe(props.channel1);
     const channel2 = pusherJS.subscribe(props.channel2);
     pusherJS.bind_global((eventName, data) => {
-      console.log(data);
       if (!_.isEmpty(data)) {
         setNotifications([data.body, ...notifications]);
       }
@@ -180,7 +179,7 @@ function Notification(props) {
         setOpen={setOpenDialog}
       />
       <Card sx={{ display: "flex", alignItems: "flex-start", p: 2, my: 2 }} variant="outlined">
-        {props.photo ? (
+        {props.photo && (
           <CardMedia
             sx={{
               height: 100,
@@ -189,12 +188,6 @@ function Notification(props) {
           >
             <DisplayPhoto id={props.photo} />
           </CardMedia>
-        ) : (
-          <CardMedia
-            component="img"
-            image="/assets/placeholder.png"
-            sx={{ height: 100, width: 100 }}
-          />
         )}
         <Box>
           <CardContent sx={{py: 0, px: 2}}>
@@ -205,7 +198,7 @@ function Notification(props) {
             </Typography>
             <Typography variant="body2">
               Reported by{" "}
-              <span style={{ fontWeight: "bold" }}>{props.name}</span>
+              <span style={{ fontWeight: "bold" }}>{props.reporter}</span>
             </Typography>
             <Typography color="GrayText" variant="body2">
               {elapsedTime}
