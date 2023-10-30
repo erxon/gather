@@ -17,7 +17,7 @@ import Details from "@/components/reports/CreateReport/Details";
 import UpdateLocation from "@/components/reports/CreateReport/UpdateLocation";
 import _ from "lodash";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import { uploadReportPhoto } from "@/lib/api-lib/api-reports";
+import { updateReport, uploadReportPhoto } from "@/lib/api-lib/api-reports";
 import { useRouter } from "next/router";
 import DataPrivacyDialog from "@/components/reports/DataPrivacyDialog";
 import clientFileUpload from "@/utils/api-helpers/clientFileUpload";
@@ -160,12 +160,10 @@ export default function Page() {
   //Validation
   useEffect(() => {
     if (activeStep === 0) {
-      const { firstName, lastName, middleName, age, gender } =
-        formValues.basicInformation;
+      const { firstName, lastName, age, gender } = formValues.basicInformation;
       const completed =
         firstName.length > 0 &&
         lastName.length > 0 &&
-        middleName.length > 0 &&
         gender.length > 0 &&
         !isNaN(Number(age)) &&
         photoAdded.added;
@@ -260,6 +258,11 @@ export default function Page() {
           person: { [faceIDs.result.reportId]: faceIDs.result.faceIDs },
         }),
       });
+
+      await updateReport(reportId, {
+        referencePhotos: newPhotos.data._id,
+      });
+
       setSnackbar({
         open: true,
         message: "Reference Photos successfully uploaded",
@@ -291,11 +294,11 @@ export default function Page() {
       if (photoAdded.new) {
         uploadedPhoto = await uploadPhoto();
       }
+
       const data = {
         photo: photoAdded.new ? uploadedPhoto.public_id : null,
         photoId: photoAdded.new ? null : selectedImage._id,
         location: updatedPosition,
-        completed: true,
         ...formValues.basicInformation,
         ...formValues.details,
         ...collections,
@@ -308,6 +311,9 @@ export default function Page() {
       });
 
       const result = await uploadReport.json();
+
+      await uploadReferencePhotos(result.data._id);
+
       setSnackbar({
         open: true,
         message: "Report successfully created",
@@ -319,7 +325,6 @@ export default function Page() {
       }
 
       //upload reference photos
-      await uploadReferencePhotos(result.data._id);
 
       //upload photos to database
       return result;

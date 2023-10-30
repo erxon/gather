@@ -183,7 +183,6 @@ export default function ComponentNavbar(props) {
           ml: { sm: `${240}px` },
           px: 4,
         }}
-        color="default"
       >
         <Toolbar>
           <IconButton
