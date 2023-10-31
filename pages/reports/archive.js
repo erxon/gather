@@ -12,9 +12,10 @@ import {
   Grid,
 } from "@mui/material";
 import { useRouter } from "next/router";
+import ContentLayout from "@/utils/layout/ContentLayout";
 
 function Report({ report }) {
-  const router = useRouter()
+  const router = useRouter();
   return (
     <div>
       <Paper variant="outlined" sx={{ p: 3 }}>
@@ -76,8 +77,10 @@ function ArchivedReports() {
 export default function Page() {
   return (
     <div>
-      <Head title="Archived Reports" icon={<Inventory2OutlinedIcon />} />
-      <ArchivedReports />
+      <ContentLayout>
+        <Head title="Archived Reports" icon={<Inventory2OutlinedIcon />} />
+        <ArchivedReports />
+      </ContentLayout>
     </div>
   );
 }

@@ -34,6 +34,7 @@ import { ampmTimeFormat } from "@/utils/helpers/ampmTimeFormat";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Photo from "@/components/photo/Photo";
+import ContentLayout from "@/utils/layout/ContentLayout";
 
 function Layout({ children, title, icon }) {
   return (
@@ -136,7 +137,7 @@ function DisplayValidPhoto({ photo }) {
   );
 }
 
-function ContentLayout({ title, children, icon }) {
+function SectionLayout({ title, children, icon }) {
   return (
     <Box sx={{ my: 3 }}>
       <Stack direction="row" alignItems="center" spacing={1.5}>
@@ -158,7 +159,7 @@ function Content({ user }) {
           <PeopleOutlineOutlinedIcon />
           <Typography variant="h6">Social media accounts</Typography>
         </Stack>
-        <ContentLayout
+        <SectionLayout
           title="Facebook"
           icon={<FacebookOutlinedIcon color="disabled" />}
         >
@@ -173,8 +174,8 @@ function Content({ user }) {
               No Facebook account linked
             </Typography>
           )}
-        </ContentLayout>
-        <ContentLayout title="Twitter" icon={<TwitterIcon color="disabled" />}>
+        </SectionLayout>
+        <SectionLayout title="Twitter" icon={<TwitterIcon color="disabled" />}>
           {user.socialMediaAccounts.twitter !== "" ? (
             <Typography>{user.socialMediaAccounts.twitter}</Typography>
           ) : (
@@ -182,8 +183,8 @@ function Content({ user }) {
               No Twitter account linked
             </Typography>
           )}
-        </ContentLayout>
-        <ContentLayout
+        </SectionLayout>
+        <SectionLayout
           title="Instagram"
           icon={<InstagramIcon color="disabled" />}
         >
@@ -194,55 +195,55 @@ function Content({ user }) {
               No Twitter account linked
             </Typography>
           )}
-        </ContentLayout>
+        </SectionLayout>
       </Paper>
       <Paper sx={{ p: 4, mb: 1 }} variant="outlined">
         <Stack direction="row" alignItems="center" spacing={1.5}>
           <PersonOutlineOutlinedIcon />
           <Typography variant="h6">User information</Typography>
         </Stack>
-        <ContentLayout title="Username">
+        <SectionLayout title="Username">
           {user.username !== "" ? (
             <Typography>{user.username}</Typography>
           ) : (
             <Typography color="GrayText">No username</Typography>
           )}
-        </ContentLayout>
-        <ContentLayout title="First name">
+        </SectionLayout>
+        <SectionLayout title="First name">
           {user.firstName !== "" ? (
             <Typography>{user.firstName}</Typography>
           ) : (
             <Typography color="GrayText">No first name</Typography>
           )}
-        </ContentLayout>
-        <ContentLayout title="Last name">
+        </SectionLayout>
+        <SectionLayout title="Last name">
           {user.lastName !== "" ? (
             <Typography>{user.lastName}</Typography>
           ) : (
             <Typography color="GrayText">No last name</Typography>
           )}
-        </ContentLayout>
-        <ContentLayout title="Email">
+        </SectionLayout>
+        <SectionLayout title="Email">
           {user.mail !== "" ? (
             <Typography>{user.email}</Typography>
           ) : (
             <Typography color="GrayText">No Email</Typography>
           )}
-        </ContentLayout>
-        <ContentLayout title="Contact number">
+        </SectionLayout>
+        <SectionLayout title="Contact number">
           {user.contactNumber !== "" ? (
             <Typography>{user.contactNumber}</Typography>
           ) : (
             <Typography color="GrayText">No contact number given</Typography>
           )}
-        </ContentLayout>
-        <ContentLayout title="About">
+        </SectionLayout>
+        <SectionLayout title="About">
           {user.about !== "" ? (
             <Typography>{user.about}</Typography>
           ) : (
             <Typography color="GrayText">No details about the user</Typography>
           )}
-        </ContentLayout>
+        </SectionLayout>
       </Paper>
     </div>
   );
@@ -374,9 +375,19 @@ export default function Page({ data }) {
   }, [router, data._id, data.status]);
 
   if (data.status === "unverified") {
-    return <Main data={data} />;
+    return (
+      <ContentLayout>
+        <Main data={data} />
+      </ContentLayout>
+    );
   }
-  return <CircularProgress />;
+
+  return (
+    <ContentLayout>
+      {" "}
+      <CircularProgress />
+    </ContentLayout>
+  );
 }
 
 export async function getServerSideProps({ params }) {

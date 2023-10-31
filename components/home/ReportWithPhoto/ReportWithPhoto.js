@@ -82,7 +82,7 @@ export default function ReportWithPhoto() {
           <Typography sx={{ my: 1, height: "100%" }} variant="body1">
             Search for existing reports on our database.
           </Typography>
-          <Button onClick={handleUploadImage}>Upload image</Button>
+          <Button variant="contained" onClick={handleUploadImage}>Upload image</Button>
         </Stack>
       </Paper>
     </>

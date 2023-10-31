@@ -97,13 +97,12 @@ export default function Layout({ children }) {
           component="main"
           sx={{
             flexGrow: 1,
-            p: 3,
             width: { sm: `calc(100% - ${240}px)` },
           }}
         >
           <Box
             sx={{
-              marginTop: 10,
+              mt: "75px",
               borderRadius: "20px",
             }}
           >

@@ -7,6 +7,7 @@ import PeopleOutlineOutlinedIcon from "@mui/icons-material/PeopleOutlineOutlined
 import UserList from "@/components/users/UserList";
 import UserStatus from "@/components/authorization/UserStatus";
 import StackRowLayout from "@/utils/StackRowLayout";
+import ContentLayout from "@/utils/layout/ContentLayout";
 
 export default function Users() {
   const [user, { loading }] = useUser();
@@ -22,10 +23,12 @@ export default function Users() {
   if (user)
     return (
       <>
-        <UserStatus>
-          <Head title="Users" icon={<PeopleOutlineOutlinedIcon />} />
-          <UserList currentUser={user} />
-        </UserStatus>
+        <ContentLayout>
+          <UserStatus>
+            <Head title="Users" icon={<PeopleOutlineOutlinedIcon />} />
+            <UserList currentUser={user} />
+          </UserStatus>
+        </ContentLayout>
       </>
     );
 }

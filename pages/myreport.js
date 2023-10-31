@@ -9,13 +9,14 @@ import {
   CircularProgress,
   Collapse,
   Grid,
-  Box
+  Box,
 } from "@mui/material";
 
 import ArticleIcon from "@mui/icons-material/Article";
 import Head from "@/components/Head";
 import AddIcon from "@mui/icons-material/Add";
 import ReportCard from "@/components/reports/ReportCard";
+import ContentLayout from "@/utils/layout/ContentLayout";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
@@ -117,12 +118,14 @@ export default function ReportDashboard() {
   if (user)
     return (
       <>
-        <Box>
-          <Head title="Your Reports" icon={<ArticleIcon />} />
-          <Box sx={{ my: 3 }}>
-            <GetReport username={user.username} userId={user._id} />
+        <ContentLayout>
+          <Box>
+            <Head title="Your Reports" icon={<ArticleIcon />} />
+            <Box sx={{ my: 3 }}>
+              <GetReport username={user.username} userId={user._id} />
+            </Box>
           </Box>
-        </Box>
+        </ContentLayout>
       </>
     );
 }

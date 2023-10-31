@@ -4,6 +4,7 @@ import ChatMain from "@/components/ChatMain";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import UserStatus from "@/components/authorization/UserStatus";
+import ContentLayout from "@/utils/layout/ContentLayout";
 
 export default function Communicate() {
   const [user, { loading }] = useUser();
@@ -15,7 +16,9 @@ export default function Communicate() {
 
   return (
     <>
-      <UserStatus>{user && <ChatMain user={user.username} />}</UserStatus>
+      <ContentLayout>
+        <UserStatus>{user && <ChatMain user={user.username} />}</UserStatus>
+      </ContentLayout>
     </>
   );
 }

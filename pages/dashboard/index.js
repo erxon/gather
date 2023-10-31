@@ -25,6 +25,7 @@ import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
 import DynamicFeedOutlinedIcon from "@mui/icons-material/DynamicFeedOutlined";
 import AssignmentIndOutlinedIcon from "@mui/icons-material/AssignmentIndOutlined";
 import ReportOverview from "@/components/reports/ReportManagement/ReportOverview";
+import ContentLayout from "@/utils/layout/ContentLayout";
 
 function DashboardMain({ user, mutate }) {
   const router = useRouter();
@@ -36,64 +37,68 @@ function DashboardMain({ user, mutate }) {
 
   return (
     <>
-      <Stack direction="row" alignItems="center" sx={{ mb: 3 }} spacing={1}>
-        <DashboardIcon fontSize="large" />
-        <Typography sx={{ mr: 3 }} variant="h4">
-          Dashboard
-        </Typography>
-      </Stack>
-      <SearchBarReports />
-      {user.status === "unverified" && (
-        <Box sx={{ mt: 3 }}>
-          <Typography sx={{ mb: 1 }}>
-            Your account is not yet verified.
+      <ContentLayout>
+        <Stack direction="row" alignItems="center" sx={{ mb: 3 }} spacing={1}>
+          <DashboardIcon fontSize="large" />
+          <Typography sx={{ mr: 3 }} variant="h4">
+            Dashboard
           </Typography>
-          <Button
-            sx={{ mr: 1 }}
-            size="small"
-            variant="contained"
-            onClick={() => router.push("/profile/completion")}
-          >
-            Profile
-          </Button>
-          <Button size="small" variant="outlined" onClick={handleLogout}>
-            Logout
-          </Button>
-        </Box>
-      )}
-      <Grid container spacing={2} sx={{ mt: 3 }}>
-        <Grid item xs={12} sm={12} md={7}>
-          <ReportOverview username={user.username} />
-          <Paper sx={{ p: 3 }}>
-            <Typography sx={{ mb: 2 }} variant="h6">
-              Active reports
+        </Stack>
+        <SearchBarReports />
+        {user.status === "unverified" && (
+          <Box sx={{ mt: 3 }}>
+            <Typography sx={{ mb: 1 }}>
+              Your account is not yet verified.
             </Typography>
-            <ActiveReports />
-            <Button href="/reports" size="small">
-              View All
+            <Button
+              sx={{ mr: 1 }}
+              size="small"
+              variant="contained"
+              onClick={() => router.push("/profile/completion")}
+            >
+              Profile
             </Button>
-          </Paper>
-          <Paper
-            sx={user.status === "verified" ? { p: 3, mt: 3 } : { p: 3 }}
-            variant="outlined"
-          >
-            <Typography sx={{ mb: 3 }} variant="h6">
-              Data
-            </Typography>
-            <Box>
-              <Data />
-            </Box>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} md={5}>
-          {user.status === "verified" && (
-            <Paper sx={{p: 3, height: 700}}>
-              <Typography sx={{mb: 2}} variant="h6">Updates</Typography>
-              <NotificationsMain user={user} />
+            <Button size="small" variant="outlined" onClick={handleLogout}>
+              Logout
+            </Button>
+          </Box>
+        )}
+        <Grid container spacing={2} sx={{ mt: 3 }}>
+          <Grid item xs={12} sm={12} md={7}>
+            <ReportOverview username={user.username} />
+            <Paper sx={{ p: 3 }}>
+              <Typography sx={{ mb: 2 }} variant="h6">
+                Active reports
+              </Typography>
+              <ActiveReports />
+              <Button href="/reports" size="small">
+                View All
+              </Button>
             </Paper>
-          )}
+            <Paper
+              sx={user.status === "verified" ? { p: 3, mt: 3 } : { p: 3 }}
+              variant="outlined"
+            >
+              <Typography sx={{ mb: 3 }} variant="h6">
+                Data
+              </Typography>
+              <Box>
+                <Data />
+              </Box>
+            </Paper>
+          </Grid>
+          <Grid item xs={12} md={5}>
+            {user.status === "verified" && (
+              <Paper sx={{ p: 3, height: 700 }}>
+                <Typography sx={{ mb: 2 }} variant="h6">
+                  Updates
+                </Typography>
+                <NotificationsMain user={user} />
+              </Paper>
+            )}
+          </Grid>
         </Grid>
-      </Grid>
+      </ContentLayout>
     </>
   );
 }

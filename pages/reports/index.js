@@ -18,6 +18,7 @@ import { getReports } from "@/lib/api-lib/api-reports";
 import StackRowLayout from "@/utils/StackRowLayout";
 import ArticleIcon from "@mui/icons-material/Article";
 import ReportCard from "@/components/reports/ReportCard";
+import ContentLayout from "@/utils/layout/ContentLayout";
 
 export default function ReportPage({ data }) {
   const [user, { mutate }] = useUser();
@@ -34,70 +35,76 @@ export default function ReportPage({ data }) {
     }
   };
   return (
-    <div>
-      <Box sx={{ mb: 3 }}>
-        <StackRowLayout spacing={1}>
-          <ArticleIcon />
-          <Typography variant="h5">Reports</Typography>
-        </StackRowLayout>
-      </Box>
+    <ContentLayout>
       <div>
-        {user && user.status === "verified" && user.type === "authority" && (
-          <Paper sx={{ p: 3, mb: 2 }}>
-            <RadioGroup onChange={handleChange} name="filter">
-              <StackRowLayout>
-                <FormControlLabel
-                  value="pending"
-                  control={<Radio />}
-                  label="Pending"
-                />
-                <FormControlLabel
-                  value="under verification"
-                  control={<Radio />}
-                  label="Under verification"
-                />
-                <FormControlLabel
-                  value="active"
-                  control={<Radio />}
-                  label="Active"
-                />
-                <FormControlLabel
-                  value="close"
-                  control={<Radio />}
-                  label="Closed"
-                />
-                <FormControlLabel value="all" control={<Radio />} label="All" />
-              </StackRowLayout>
-            </RadioGroup>
-          </Paper>
-        )}
-        <Grid container spacing={2}>
-          {displayData.length > 0 ? (
-            displayData.map((report) => {
-              return (
-                <Grid item xs={12} md={3} sm={6} key={report._id}>
-                  <ReportCard
-                    id={report._id}
-                    photo={report.photo}
-                    firstName={report.firstName}
-                    lastName={report.lastName}
-                    lastSeen={report.lastSeen}
-                    location={report.reporter && report.reporter.location}
-                    age={report.age}
-                    gender={report.gender}
-                    status={report.status}
+        <Box sx={{ mb: 3 }}>
+          <StackRowLayout spacing={1}>
+            <ArticleIcon />
+            <Typography variant="h5">Reports</Typography>
+          </StackRowLayout>
+        </Box>
+        <div>
+          {user && user.status === "verified" && user.type === "authority" && (
+            <Paper sx={{ p: 3, mb: 2 }}>
+              <RadioGroup onChange={handleChange} name="filter">
+                <StackRowLayout>
+                  <FormControlLabel
+                    value="pending"
+                    control={<Radio />}
+                    label="Pending"
                   />
-                </Grid>
-              );
-            })
-          ) : (
-            <Typography sx={{ mt: 3, p: 3 }} color="GrayText" variant="body1">
-              Nothing to show
-            </Typography>
+                  <FormControlLabel
+                    value="under verification"
+                    control={<Radio />}
+                    label="Under verification"
+                  />
+                  <FormControlLabel
+                    value="active"
+                    control={<Radio />}
+                    label="Active"
+                  />
+                  <FormControlLabel
+                    value="close"
+                    control={<Radio />}
+                    label="Closed"
+                  />
+                  <FormControlLabel
+                    value="all"
+                    control={<Radio />}
+                    label="All"
+                  />
+                </StackRowLayout>
+              </RadioGroup>
+            </Paper>
           )}
-        </Grid>
+          <Grid container spacing={2}>
+            {displayData.length > 0 ? (
+              displayData.map((report) => {
+                return (
+                  <Grid item xs={12} md={3} sm={6} key={report._id}>
+                    <ReportCard
+                      id={report._id}
+                      photo={report.photo}
+                      firstName={report.firstName}
+                      lastName={report.lastName}
+                      lastSeen={report.lastSeen}
+                      location={report.reporter && report.reporter.location}
+                      age={report.age}
+                      gender={report.gender}
+                      status={report.status}
+                    />
+                  </Grid>
+                );
+              })
+            ) : (
+              <Typography sx={{ mt: 3, p: 3 }} color="GrayText" variant="body1">
+                Nothing to show
+              </Typography>
+            )}
+          </Grid>
+        </div>
       </div>
-    </div>
+    </ContentLayout>
   );
 }
 

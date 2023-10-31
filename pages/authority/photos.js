@@ -27,6 +27,7 @@ import { useRouter } from "next/router";
 import computeElapsedTime from "@/utils/helpers/computeElapsedTime";
 import QueryPhotoLarge from "@/components/photo/QueryPhotoLarge";
 import { useState } from "react";
+import ContentLayout from "@/utils/layout/ContentLayout";
 
 function UploadedPhoto({ photoId }) {
   const { data, error, isLoading } = useSWR(`/api/photos/${photoId}`, fetcher);
@@ -112,7 +113,7 @@ function Reports() {
       <Box>
         <Head title="Photos" icon={<InsertPhotoIcon />} />
         <Pagination
-          sx={{mb: 2}}
+          sx={{ mb: 2 }}
           onChange={handlePage}
           page={page}
           count={reporters.length - 3}
@@ -144,8 +145,10 @@ function Reports() {
 
 export default function Page() {
   return (
-    <Authenticate>
-      <Reports />
-    </Authenticate>
+    <ContentLayout>
+      <Authenticate>
+        <Reports />
+      </Authenticate>
+    </ContentLayout>
   );
 }

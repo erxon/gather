@@ -65,7 +65,7 @@ export default function ReportToManage() {
             Create a profile for your report. This will help you and the
             authorities manage missing person report.
           </Typography>
-          <Button onClick={() => setOpenDialog(true)}>Report</Button>
+          <Button variant="contained" onClick={() => setOpenDialog(true)}>Report</Button>
         </Stack>
       </Paper>
     </>

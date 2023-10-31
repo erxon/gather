@@ -19,6 +19,7 @@ export default function SearchFoundPersonReportByCode() {
   };
 
   const handleSearch = async () => {
+    if (searchValue === "") return;
     const code = "found-"+searchValue
     const response = await fetch(
       `/api/reporters/found-person-code/${code}`

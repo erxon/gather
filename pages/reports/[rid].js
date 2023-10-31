@@ -21,6 +21,7 @@ import {
 
 import { getSingleReport, deleteReport } from "@/lib/api-lib/api-reports";
 import EditIcon from "@mui/icons-material/Edit";
+import UpdateIcon from "@mui/icons-material/Update";
 import { useRouter } from "next/router";
 import TabLayout from "@/components/reports/TabLayout";
 import SectionHeader from "@/utils/SectionHeader";
@@ -33,16 +34,10 @@ import Image from "next/image";
 import computeElapsedTime from "@/utils/helpers/computeElapsedTime";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import useSWR from "swr";
-import QueryPhotoLarge from "@/components/photo/QueryPhotoLarge";
 import QueryPhoto from "@/components/photo/QueryPhoto";
 import IconText from "@/utils/components/IconText";
 import PhoneIcon from "@mui/icons-material/Phone";
 import EmailIcon from "@mui/icons-material/Email";
-import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
-import StackRowLayout from "@/utils/StackRowLayout";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
-import SmallMap from "@/components/map/SmallMap";
 
 function UpdatedBy({ updatedBy, updatedAt }) {
   const dateUpdated = new Date(updatedAt);
@@ -55,9 +50,9 @@ function UpdatedBy({ updatedBy, updatedAt }) {
   };
 
   return (
-    <Paper sx={{ p: 1, maxWidth: 300 }} variant="outlined">
-      <Typography sx={{ mb: 1 }} variant="body2">
-        Updated by
+    <Box sx={{ p: 1, maxWidth: 300 }}>
+      <Typography sx={{ mb: 1 }} color="GrayText" variant="body2">
+        Last update
       </Typography>
       <Stack direction="row" alignItems="center" spacing={1}>
         <Box>
@@ -93,7 +88,7 @@ function UpdatedBy({ updatedBy, updatedAt }) {
       >
         View Profile
       </Button>
-    </Paper>
+    </Box>
   );
 }
 
@@ -275,54 +270,53 @@ export default function ReportPage({ data }) {
                 </Button>
               </Box>
             )}
-          {data.updatedBy && (
-            <Box sx={{ mb: 3 }}>
-              <UpdatedBy
-                updatedBy={data.updatedBy}
-                updatedAt={data.updatedAt}
-              />
-            </Box>
-          )}
-          {user &&
-            ((data.editors.length > 0 && data.editors.includes(user._id)) ||
-              user.role === "reports administrator") && (
-              <Paper sx={{ p: 3 }}>
+          <Stack direction="row" alignItems="flex-start" spacing={1.5}>
+            {data.updatedBy && (
+              <Box sx={{ mb: 3, width: "75%" }}>
+                <UpdatedBy
+                  updatedBy={data.updatedBy}
+                  updatedAt={data.updatedAt}
+                />
+              </Box>
+            )}
+            {user &&
+              ((data.editors.length > 0 && data.editors.includes(user._id)) ||
+                user.role === "reports administrator") && (
                 <Button
+                  size="small"
                   startIcon={<EditIcon />}
                   onClick={() => {
                     router.push(`/reports/edit/${data._id}`);
                   }}
+                  variant="outlined"
                   sx={{ mr: 2 }}
                 >
                   Edit
                 </Button>
-              </Paper>
-            )}
-
-          {user &&
-            (data.assignedTo === user._id ||
-              user.role === "reports administrator") && (
-              <Button
-                endIcon={
-                  !updateReport ? <ArrowDropDownIcon /> : <ArrowDropUpIcon />
-                }
-                onClick={() => setUpdateReport(!updateReport)}
-              >
-                Update Report
-              </Button>
-            )}
-          <Box>
-            {user &&
-              ((user.type === "authority" &&
-                user.role === "reports administrator") ||
-                user._id === data.assignedTo) && (
-                <Box>
-                  <Collapse in={updateReport}>
-                    <ReportProcessing currentUser={user} report={data} />
-                  </Collapse>
-                </Box>
               )}
-          </Box>
+            {user &&
+              (data.assignedTo === user._id ||
+                user.role === "reports administrator") && (
+                <Button
+                  size="small"
+                  variant="outlined"
+                  startIcon={<UpdateIcon />}
+                  onClick={() => setUpdateReport(!updateReport)}
+                >
+                  Process
+                </Button>
+              )}
+          </Stack>
+          {user &&
+            ((user.type === "authority" &&
+              user.role === "reports administrator") ||
+              user._id === data.assignedTo) && (
+              <Box>
+                <Collapse in={updateReport}>
+                  <ReportProcessing currentUser={user} report={data} />
+                </Collapse>
+              </Box>
+            )}
           {/*Basic Information */}
           {user &&
           (user._id === data.account ||
