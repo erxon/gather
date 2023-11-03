@@ -14,7 +14,7 @@ import { useEffect } from "react";
 //components
 import ActiveReports from "@/components/reports/ActiveReports";
 import NotificationsMain from "@/components/notifications/NotificationsMain";
-import Data from "@/components/Data";
+import Data from "@/components/analytics/Data";
 import { useUser } from "@/lib/hooks";
 import StackRowLayout from "@/utils/StackRowLayout";
 
@@ -26,6 +26,7 @@ import DynamicFeedOutlinedIcon from "@mui/icons-material/DynamicFeedOutlined";
 import AssignmentIndOutlinedIcon from "@mui/icons-material/AssignmentIndOutlined";
 import ReportOverview from "@/components/reports/ReportManagement/ReportOverview";
 import ContentLayout from "@/utils/layout/ContentLayout";
+import ReportsSummary from "@/components/analytics/ReportsSummary";
 
 function DashboardMain({ user, mutate }) {
   const router = useRouter();
@@ -86,6 +87,9 @@ function DashboardMain({ user, mutate }) {
                 <Data />
               </Box>
             </Paper>
+            <Box sx={{mt: 2}}>
+              <ReportsSummary />
+            </Box>
           </Grid>
           <Grid item xs={12} md={5}>
             {user.status === "verified" && (
