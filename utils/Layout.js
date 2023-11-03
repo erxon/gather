@@ -102,7 +102,7 @@ export default function Layout({ children }) {
         >
           <Box
             sx={{
-              mt: "75px",
+              mt: "50px",
               borderRadius: "20px",
             }}
           >

@@ -28,6 +28,7 @@ function Suggestion({
     const retrieveSuggestionData = await retrieveSuggestion.json();
 
     setSuggestions(null);
+    
     onRetrieve(
       retrieveSuggestionData.features[0].geometry.coordinates[0],
       retrieveSuggestionData.features[0].geometry.coordinates[1]

@@ -53,13 +53,13 @@ function Reporter(props) {
   return (
     <Box>
       <Typography variant="body2">Reported by</Typography>
-      <Typography sx={{ mb: 1.5, fontWeight: "bold" }}>{name}</Typography>
+      <Typography variant="body2" sx={{ mb: 1.5, fontWeight: "bold" }}>{name}</Typography>
       <IconTypography
         customStyles={{ mb: 0.5 }}
-        Icon={<LocalPhoneIcon color="disabled" />}
+        Icon={<LocalPhoneIcon fontSize="small" color="disabled" />}
         content={contact}
       />
-      <IconTypography Icon={<EmailIcon color="disabled" />} content={email} />
+      <IconTypography Icon={<EmailIcon fontSize="small" color="disabled" />} content={email} />
     </Box>
   );
 }
@@ -68,7 +68,7 @@ function Report(props) {
   const router = useRouter();
   return (
     <Grid item xs={12} md={3} sm={6}>
-      <Card>
+      <Card variant="outlined">
         <CardMedia sx={{ bgcolor: "#F2F4F4" }}>
           <UploadedPhoto photoId={props.photoUploaded} />
         </CardMedia>

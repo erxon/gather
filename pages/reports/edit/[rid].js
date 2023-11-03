@@ -45,6 +45,7 @@ import clientFileUpload from "@/utils/api-helpers/clientFileUpload";
 import MapWithSearchBox from "@/components/map/MapWithSearchBox";
 import fileProcessing from "@/utils/file-upload/fileProcessing";
 import uploadReportToCloudinary from "@/utils/file-upload/uploadReportToCloudinary";
+import ContentLayout from "@/utils/layout/ContentLayout";
 
 function ChangePhoto({ data, setSnackbarValues }) {
   const [image, setImage] = useState({ renderImage: "", file: null });
@@ -840,7 +841,7 @@ export default function EditReport({ data }) {
 
   return (
     <>
-      <div>
+      <ContentLayout>
         <Snackbar
           open={snackbarValues.open}
           autoHideDuration={6000}
@@ -901,7 +902,7 @@ export default function EditReport({ data }) {
             )}
           </Grid>
         </Grid>
-      </div>
+      </ContentLayout>
     </>
   );
 }

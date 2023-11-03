@@ -27,6 +27,9 @@ import EmailIcon from "@mui/icons-material/Email";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import EditIcon from "@mui/icons-material/Edit";
+import ContentLayout from "@/utils/layout/ContentLayout";
+
+
 
 export default function Profile() {
   const [user, { loading }] = useUser();
@@ -39,9 +42,10 @@ export default function Profile() {
   }, [user, router, loading]);
 
   if (loading) return <CircularProgress />;
+
   if (user)
     return (
-      <Box>
+      <ContentLayout>
         <Typography variant="h5" sx={{ mb: 3 }}>
           Profile
         </Typography>
@@ -158,6 +162,6 @@ export default function Profile() {
             </Paper>
           </Grid>
         </Grid>
-      </Box>
+      </ContentLayout>
     );
 }

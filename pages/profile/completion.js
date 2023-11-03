@@ -16,6 +16,7 @@ import React, { useEffect, useState } from "react";
 import CompletionForm from "@/components/profile/CompletionForm/CompletionForm";
 import EmailVerification from "@/components/profile/EmailVerification";
 import PhoneNumberVerification from "@/components/profile/PhoneNumberVerification";
+import ContentLayout from "@/utils/layout/ContentLayout";
 
 function HorizontalLinearStepper({
   isNext,
@@ -110,7 +111,7 @@ export default function Page() {
   if (loading) return <CircularProgress />;
 
   return (
-    <div>
+    <ContentLayout>
       {user && user.status === "unverified" ? (
         !user.isEmailVerified || !user.isContactNumberVerified ? (
           <Paper variant="outlined" sx={{ p: 3 }}>
@@ -174,6 +175,6 @@ export default function Page() {
       ) : (
         <CircularProgress />
       )}{" "}
-    </div>
+    </ContentLayout>
   );
 }

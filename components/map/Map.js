@@ -3,11 +3,13 @@ import mapboxgl from "!mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useRef, useState, useEffect } from "react";
 import computeElapsedTime from "@/utils/helpers/computeElapsedTime";
+import SearchBox from "@/components/map/SearchBox";
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
 export default function Map({
   userLocation,
+  setCurrentLocation,
   reporters,
   destination,
   height,
@@ -18,10 +20,10 @@ export default function Map({
   const instructions = useRef(null);
   const [lng, setLng] = useState(userLocation.lng);
   const [lat, setLat] = useState(userLocation.lat);
-  const [zoom, setZoom] = useState(15);
+  const [zoom, setZoom] = useState(12);
+  let marker;
 
   useEffect(() => {
-    console.log("map loaded");
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: "mapbox://styles/mapbox/streets-v12",
@@ -66,16 +68,13 @@ export default function Map({
             "line-cap": "round",
           },
           paint: {
-            "line-color": "#3887be",
+            "line-color": "#32a852",
             "line-width": 5,
             "line-opacity": 0.75,
           },
         });
       }
       // add turn instructions here at the end
-      instructions.current.innerHTML = `<p> Trip duration: ${Math.floor(
-        data.duration / 60
-      )} mins</p>`;
     }
 
     if (destination) {
@@ -84,7 +83,7 @@ export default function Map({
       });
     }
 
-    new mapboxgl.Marker({
+    marker = new mapboxgl.Marker({
       color: "#00adb5",
     })
       .setLngLat([lng, lat])
@@ -117,10 +116,39 @@ export default function Map({
     zoom,
   ]);
 
+  const handleSearch = (lng, lat) => {
+    map.current.flyTo({ center: [lng, lat] });
+    setLng(lng);
+    setLat(lat);
+    setCurrentLocation({ lng: lng, lat: lat });
+    marker.setLngLat([lng, lat]).addTo(map.current);
+  };
+
   return (
     <div>
-      <Box ref={instructions}></Box>
-      <Box ref={mapContainer} sx={{ m: 0, height: height }}></Box>
+      <Box
+        sx={{
+          display: { xs: "none", md: "block" },
+          position: "absolute",
+          zIndex: 1,
+          right: 3,
+          top: 100,
+        }}
+      >
+        <SearchBox onRetrieve={handleSearch} />
+      </Box>
+      <Box
+        sx={{
+          display: { xs: "block", md: "none" },
+          position: "absolute",
+          zIndex: 1,
+          ml: 3,
+          top: 175,
+        }}
+      >
+        <SearchBox onRetrieve={handleSearch} />
+      </Box>
+      <Box ref={mapContainer} sx={{ width: "100vw", height: height }}></Box>
     </div>
   );
 }

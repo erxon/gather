@@ -180,6 +180,30 @@ function SocialMediaAccounts({ socialMediaAccounts, username, user }) {
   );
 }
 
+function ExistingPhoto({ photoId }) {
+  const { data, isLoading, error } = useSWR(`/api/photos/${photoId}`, fetcher);
+
+  if (error)
+    return (
+      <Typography variant="body2">
+        Something went wrong fetching the photo
+      </Typography>
+    );
+  if (isLoading) return <CircularProgress />;
+
+  return <ReportPhoto publicId={`query-photos/${data.image}`} />;
+}
+
+function DisplayReportPhoto({ photoId, photo }) {
+  if (photo) {
+    return <ReportPhoto publicId={photo} />;
+  } else if (photoId) {
+    return <ExistingPhoto photoId={photoId} />;
+  } else {
+    return <Image width={200} height={250} src="/assets/placeholder.png" />;
+  }
+}
+
 export default function ReportInformation({ authorized, data, user }) {
   const reportedAt = new Date(data.reportedAt);
   const timeElapsed = calculateTimeElapsed(reportedAt);
@@ -189,17 +213,7 @@ export default function ReportInformation({ authorized, data, user }) {
       <Paper sx={{ p: 3 }}>
         <Stack direction="row" spacing={3}>
           <Box>
-            {data.photo ? (
-              <ReportPhoto publicId={data.photo} />
-            ) : (
-              <Image
-                width={150}
-                height={150}
-                style={{ objectFit: "cover" }}
-                alt="placeholder"
-                src="/assets/placeholder.png"
-              />
-            )}
+            <DisplayReportPhoto photoId={data.photoId} photo={data.photo} />
           </Box>
           <Box sx={{ mb: 2 }}>
             <Stack direction="row" spacing={0.75} alignItems="center">
@@ -234,7 +248,10 @@ export default function ReportInformation({ authorized, data, user }) {
                     <Typography variant="body2">
                       This report is now closed
                     </Typography>
-                    <Typography variant="body2" sx={{ fontWeight: "bold", mt: 1 }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ fontWeight: "bold", mt: 1 }}
+                    >
                       Summary
                     </Typography>
                     <Typography variant="body2">

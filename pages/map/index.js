@@ -9,6 +9,8 @@ import {
   CircularProgress,
   Divider,
   Pagination,
+  IconButton,
+  Collapse,
 } from "@mui/material";
 import mapboxgl from "!mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -23,6 +25,9 @@ import Authenticate from "@/utils/authority/Authenticate";
 import Head from "@/components/Head";
 import PersonPinCircleOutlinedIcon from "@mui/icons-material/PersonPinCircleOutlined";
 import Map from "@/components/map/Map";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
@@ -52,61 +57,127 @@ export default function Page({ data }) {
   );
 }
 
-function DisplayMap({ data, userLocation }) {
-  const [destination, setDestination] = useState(null);
+function Reporters({ reporters, currentLocation, setDestination }) {
   const [page, setPage] = useState(1);
-  const reporters = [...data.data];
-
-  const pageLength = reporters.length - 2;
 
   const handlePage = (event, value) => {
     setPage(value);
   };
 
-  return (
-    <Grid container spacing={1}>
-      <Grid item xs={12} md={4}>
-        <Head icon={<PersonPinCircleOutlinedIcon />} title="Reports" />
-        <Paper sx={{ p: 2 }}>
-          {reporters.length > 0 ? (
-            <Box>
-              <Pagination
-                page={page}
-                onChange={handlePage}
-                size="small"
-                count={pageLength}
-              />
-              {reporters
-                .slice(page - 1, page + 2)
-                .reverse()
-                .map((reporter) => {
-                  return (
-                    <Reporter
-                      userLocation={userLocation}
-                      key={reporter._id}
-                      reporter={reporter}
-                      setDestination={setDestination}
-                    />
-                  );
-                })}
-            </Box>
-          ) : (
-            <Box>
-              <Typography color="GrayText">There we&apos;re no reports yet</Typography>
-            </Box>
-          )}
-        </Paper>
-      </Grid>
+  const pageLength = reporters.length - 2;
 
-      <Grid item xs={12} md={8}>
-        <Map
-          userLocation={userLocation}
-          reporters={data.data}
-          destination={destination}
-          height={"100vh"}
+  return (
+    <div>
+      {reporters.length > 0 ? (
+        <Box>
+          {reporters.length > 3 && (
+            <Pagination
+              page={page}
+              onChange={handlePage}
+              size="small"
+              count={pageLength}
+            />
+          )}
+          {reporters
+            .slice(page - 1, page + 2)
+            .reverse()
+            .map((reporter) => {
+              return (
+                <div key={reporter._id}>
+                  <Reporter
+                    userLocation={currentLocation}
+                    key={reporter._id}
+                    reporter={reporter}
+                    setDestination={setDestination}
+                  />
+                  <Divider />
+                </div>
+              );
+            })}
+        </Box>
+      ) : (
+        <Box>
+          <Typography color="GrayText">
+            There we&apos;re no reports yet
+          </Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
+
+function ReportersMobile({ reporters, currentLocation, setDestination }) {
+  const [show, setShow] = useState(false);
+
+  const handleDropdown = () => {
+    setShow(!show);
+  };
+
+  return (
+    <Paper
+      sx={{
+        display: { xs: "block", md: "none" },
+        p: 2,
+      }}
+    >
+      <Stack direction="row" alignItems="center" spacing={1}>
+        <Typography variant="h6">Reporters</Typography>
+        <IconButton onClick={handleDropdown}>
+          {show ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
+        </IconButton>
+      </Stack>
+      <Collapse in={show}>
+        <Reporters
+          reporters={reporters}
+          currentLocation={currentLocation}
+          setDestination={setDestination}
         />
-      </Grid>
-    </Grid>
+      </Collapse>
+    </Paper>
+  );
+}
+
+function DisplayMap({ data, userLocation }) {
+  const [destination, setDestination] = useState(null);
+  const [currentLocation, setCurrentLocation] = useState(userLocation);
+
+  const reporters = [...data.data];
+
+  return (
+    <div>
+      <Stack
+        sx={{ position: "absolute", zIndex: 2, mt: 3, ml: "5%" }}
+        direction="column"
+        alignItems="center"
+        spacing={1}
+      >
+        <Paper
+          sx={{
+            display: { xs: "none", md: "block" },
+            p: 2,
+          }}
+        >
+          <Typography variant="h6">Reporters</Typography>
+          <Reporters
+            reporters={reporters}
+            currentLocation={currentLocation}
+            setDestination={setDestination}
+          />
+        </Paper>
+        <ReportersMobile
+          reporters={reporters}
+          currentLocation={currentLocation}
+          setDestination={setDestination}
+        />
+      </Stack>
+      <Map
+        userLocation={currentLocation}
+        setCurrentLocation={setCurrentLocation}
+        reporters={data.data}
+        destination={destination}
+        height={"100vh"}
+      />
+    </div>
   );
 }
 
@@ -148,7 +219,6 @@ function Reporter({ reporter, setDestination, userLocation }) {
           </Button>
         </Box>
       </Stack>
-      <Divider />
     </Box>
   );
 }

@@ -253,7 +253,7 @@ export default function ProfileEdit() {
   };
 
   return (
-    <>
+    <ContentLayout>
       {/*Display a snackbar*/}
       <Snackbar
         open={open.open}
@@ -596,6 +596,6 @@ export default function ProfileEdit() {
           }
         `}</style>
       </Box>
-    </>
+    </ContentLayout>
   );
 }

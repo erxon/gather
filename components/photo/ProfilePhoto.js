@@ -12,7 +12,7 @@ export default function ProfilePhoto({ publicId }) {
     apiKey: process.env.NEXT_PUBLIC_CLOUDINARY_KEY,
     apiSecret: process.env.NEXT_PUBLIC_CLOUDINARY_SECRET,
   })
-    .resize(fill().width(32).height(32))
+    .resize(fill().width(56).height(56))
     .roundCorners(max())
     .delivery(format(auto()));
 

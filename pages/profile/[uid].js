@@ -29,6 +29,7 @@ import TwitterIcon from "@mui/icons-material/Twitter";
 import { getUser } from "@/lib/api-lib/api-users";
 import { useState } from "react";
 import Link from "next/link";
+import ContentLayout from "@/utils/layout/ContentLayout";
 
 function DisplayLink({ open, handleClose, url }) {
   console.log(url);
@@ -73,7 +74,7 @@ export default function ProfileIndex({ data }) {
   });
 
   return (
-    <>
+    <ContentLayout>
       <DisplayLink
         open={openFrame.open}
         url={openFrame.url}
@@ -208,7 +209,7 @@ export default function ProfileIndex({ data }) {
           </Grid>
         )}
       </Box>
-    </>
+    </ContentLayout>
   );
 }
 

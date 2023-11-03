@@ -84,6 +84,7 @@ export default function ReportPage({ data }) {
                   <Grid item xs={12} md={3} sm={6} key={report._id}>
                     <ReportCard
                       id={report._id}
+                      photoId={report.photoId}
                       photo={report.photo}
                       firstName={report.firstName}
                       lastName={report.lastName}
