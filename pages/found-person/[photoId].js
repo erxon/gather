@@ -137,7 +137,7 @@ function Report({ photo }) {
 
 function ShareDialog({ open, setOpen, photoId }) {
   const [tooltipTitle, setTooltipTitle] = useState("copy");
-  const url = process.env.API_URL || "http://localhost:3000";
+  const url = "https://gather-plum.vercel.app";
   const handleCopy = (event) => {
     event.preventDefault();
     navigator.clipboard.writeText(`${url}/found-person/${photoId}`);

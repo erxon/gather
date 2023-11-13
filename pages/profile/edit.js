@@ -19,6 +19,7 @@ import {
   Grid,
   CircularProgress,
 } from "@mui/material";
+import ContentLayout from "@/utils/layout/ContentLayout";
 
 import FacebookIcon from "@mui/icons-material/Facebook";
 import TwitterIcon from "@mui/icons-material/Twitter";

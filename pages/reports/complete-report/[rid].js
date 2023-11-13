@@ -114,6 +114,8 @@ export default function Page({ data }) {
   }, [
     formsToComplete.isReferencePhotosUploaded,
     formsToComplete.isReportProfilePhotoUploaded,
+    data._id,
+    router
   ]);
 
   return (

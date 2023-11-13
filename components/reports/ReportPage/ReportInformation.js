@@ -200,7 +200,7 @@ function DisplayReportPhoto({ photoId, photo }) {
   } else if (photoId) {
     return <ExistingPhoto photoId={photoId} />;
   } else {
-    return <Image width={200} height={250} src="/assets/placeholder.png" />;
+    return <Image alt="" width={200} height={250} src="/assets/placeholder.png" />;
   }
 }
 

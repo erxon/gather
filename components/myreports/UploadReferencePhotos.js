@@ -160,6 +160,7 @@ export default function UploadReferencePhotos({
         >
           <Image
             src={currentPhoto.src}
+            alt=""
             width={75}
             height={75}
             style={{ objectFit: "contain" }}

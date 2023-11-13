@@ -189,6 +189,8 @@ export default function Page() {
       steps[3].isComplete = !!updatedPosition;
     }
   }, [
+    activeStep,
+    photoAdded.added,
     formValues.basicInformation,
     formValues.details,
     referencePhotos,
