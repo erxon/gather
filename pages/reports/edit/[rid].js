@@ -260,9 +260,18 @@ function ContactInformation({ data, setSnackbarValues }) {
     email: data.email,
     contactNumber: data.contactNumber,
     socialMediaAccounts: {
-      facebook: data.socialMediaAccounts.facebook,
-      twitter: data.socialMediaAccounts.twitter,
-      instagram: data.socialMediaAccounts.twitter,
+      facebook:
+        data.socialMediaAccounts && data.socialMediaAccounts.facebook
+          ? data.socialMediaAccounts.facebook
+          : "",
+      twitter:
+        data.socialMediaAccounts && data.socialMediaAccounts.twitter
+          ? data.socialMediaAccounts.twitter
+          : "",
+      instagram:
+        data.socialMediaAccounts && data.socialMediaAccounts.instagram
+          ? data.socialMediaAccounts.instagram
+          : "",
     },
   });
 
@@ -643,7 +652,12 @@ function DentalAndFingerprint({ data, setSnackbarValues }) {
 function UpdateLocation({ data, setSnackbarValues }) {
   const [lastSeen, setLastSeen] = useState(data.lastSeen);
   const [location, setLocation] = useState(
-    data.location ? data.location : null
+    data.location
+      ? data.location
+      : {
+          longitude: 120.8801907,
+          latitude: 14.3824829,
+        }
   );
   const [isLocationChanged, setIsLocationChanged] = useState(false);
 
@@ -652,11 +666,11 @@ function UpdateLocation({ data, setSnackbarValues }) {
   };
 
   const handleSetLocation = (coordinates) => {
+    setIsLocationChanged(true);
     setLocation({
       longitude: coordinates.longitude,
       latitude: coordinates.latitude,
     });
-    setIsLocationChanged(true);
   };
 
   const handleSave = async () => {

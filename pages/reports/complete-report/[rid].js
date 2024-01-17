@@ -25,6 +25,7 @@ import MissingPersonMainPhoto from "../../../components/reports/CompleteReport/M
 import { getSingleReport, updateReport } from "@/lib/api-lib/api-reports";
 import ReferencePhotos from "@/components/reports/CreateReport/ReferencePhotos";
 import referencePhotoUploadProcess from "@/utils/file-upload/referencePhotoUploadProcess";
+import ContentLayout from "@/utils/layout/ContentLayout";
 
 const ReferencePhotosUpload = ({
   formsToComplete,
@@ -115,38 +116,40 @@ export default function Page({ data }) {
     formsToComplete.isReferencePhotosUploaded,
     formsToComplete.isReportProfilePhotoUploaded,
     data._id,
-    router
+    router,
   ]);
 
   return (
     <>
-      <Snackbar
-        open={snackbarValues.open}
-        autoHideDuration={6000}
-        onClose={() => setSnackbarValues({ open: false })}
-        message={snackbarValues.message}
-      />
-      <Box sx={{ margin: "auto" }}>
-        <Box sx={{ mb: 4 }}>
-          <Typography variant="h5">Finish-up your report</Typography>
-        </Box>
+      <ContentLayout>
+        <Snackbar
+          open={snackbarValues.open}
+          autoHideDuration={6000}
+          onClose={() => setSnackbarValues({ open: false })}
+          message={snackbarValues.message}
+        />
+        <Box sx={{ margin: "auto" }}>
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h5">Finish-up your report</Typography>
+          </Box>
 
-        <Report data={data} />
-        {/*Report profile photo upload */}
-        <MissingPersonMainPhoto
-          setSnackbar={setSnackbarValues}
-          reportId={data._id}
-          setUploaded={setFormsToComplete}
-          uploaded={formsToComplete.isReportProfilePhotoUploaded}
-          currentPhoto={data.photo}
-        />
-        <ReferencePhotosUpload
-          setSnackbarValues={setSnackbarValues}
-          formsToComplete={formsToComplete}
-          setFormsToComplete={setFormsToComplete}
-          report={data}
-        />
-      </Box>
+          <Report data={data} />
+          {/*Report profile photo upload */}
+          <MissingPersonMainPhoto
+            setSnackbar={setSnackbarValues}
+            reportId={data._id}
+            setUploaded={setFormsToComplete}
+            uploaded={formsToComplete.isReportProfilePhotoUploaded}
+            currentPhoto={data.photo}
+          />
+          <ReferencePhotosUpload
+            setSnackbarValues={setSnackbarValues}
+            formsToComplete={formsToComplete}
+            setFormsToComplete={setFormsToComplete}
+            report={data}
+          />
+        </Box>
+      </ContentLayout>
     </>
   );
 }

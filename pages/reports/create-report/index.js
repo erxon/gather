@@ -21,6 +21,7 @@ import { updateReport, uploadReportPhoto } from "@/lib/api-lib/api-reports";
 import { useRouter } from "next/router";
 import DataPrivacyDialog from "@/components/reports/DataPrivacyDialog";
 import clientFileUpload from "@/utils/api-helpers/clientFileUpload";
+import ContentLayout from "@/utils/layout/ContentLayout";
 
 const steps = [
   { label: "Basic information", isComplete: false, isSubmitted: false },
@@ -358,106 +359,112 @@ export default function Page() {
 
   return (
     <div>
-      <Snackbar
-        open={snackbar.open}
-        onClose={handleSnackbarClose}
-        message={snackbar.message}
-        autoHideDuration={6000}
-      />
-      <DataPrivacyDialog
-        open={openDataPrivacyDialog}
-        setOpen={setOpenDataPrivacyDialog}
-        onConfirm={handleCreateReport}
-      />
-      <Box
-        sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
-      >
-        <Paper sx={{ p: 3, mb: 2 }}>
-          <Typography sx={{ mb: 3 }} variant="h5">
-            Report profile
-          </Typography>
-          <HorizontalLinearStepper
-            handleCreateReport={handleFinish}
-            setIsSubmitted={setIsSubmitted}
-            isSubmitted={isSubmitted}
-            activeStep={activeStep}
-            setActiveStep={setActiveStep}
-          />
-        </Paper>
-        <Paper sx={{ p: 3, maxWidth: 750 }}>
-          <Box sx={{ my: 3 }}>
-            {activeStep === 0 && (
-              <BasicInformation
-                photoAdded={photoAdded}
-                setPhotoAdded={setPhotoAdded}
-                isSubmitted={isSubmitted}
-                formValues={formValues}
-                setFormValues={setFormValues}
-                collections={collections}
-                setCollections={setCollections}
-                selectedImage={selectedImage}
-                setSelectedImage={setSelectedImage}
-                photo={photo}
-                setPhoto={setPhoto}
-              />
-            )}
-            {activeStep === 1 && (
-              <Details
-                isSubmitted={isSubmitted}
-                formValues={formValues}
-                setFormValues={setFormValues}
-                collections={collections}
-                setCollections={setCollections}
-                setDentalAndFingerprint={setDentalAndFingerprint}
-                dentalAndFingerprint={dentalAndFingerprint}
-              />
-            )}
-            {activeStep === 2 && (
-              <ReferencePhotos
-                setReferencePhotos={setReferencePhotos}
-                referencePhotos={referencePhotos}
-                isSubmitted={isSubmitted}
-              />
-            )}
-            {activeStep === 3 && (
-              <UpdateLocation
-                isSubmitted={isSubmitted}
-                updatedPosition={updatedPosition}
-                setUpdatedPosition={setUpdatedPosition}
-              />
-            )}
-            {activeStep === 4 && (
-              <Box>
-                <Typography sx={{ mb: 2 }} variant="h6">
-                  Uploading
-                </Typography>
+      <ContentLayout>
+        <Snackbar
+          open={snackbar.open}
+          onClose={handleSnackbarClose}
+          message={snackbar.message}
+          autoHideDuration={6000}
+        />
+        <DataPrivacyDialog
+          open={openDataPrivacyDialog}
+          setOpen={setOpenDataPrivacyDialog}
+          onConfirm={handleCreateReport}
+        />
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Paper sx={{ p: 3, mb: 2 }}>
+            <Typography sx={{ mb: 3 }} variant="h5">
+              Report profile
+            </Typography>
+            <HorizontalLinearStepper
+              handleCreateReport={handleFinish}
+              setIsSubmitted={setIsSubmitted}
+              isSubmitted={isSubmitted}
+              activeStep={activeStep}
+              setActiveStep={setActiveStep}
+            />
+          </Paper>
+          <Paper sx={{ p: 3, maxWidth: 750 }}>
+            <Box sx={{ my: 3 }}>
+              {activeStep === 0 && (
+                <BasicInformation
+                  photoAdded={photoAdded}
+                  setPhotoAdded={setPhotoAdded}
+                  isSubmitted={isSubmitted}
+                  formValues={formValues}
+                  setFormValues={setFormValues}
+                  collections={collections}
+                  setCollections={setCollections}
+                  selectedImage={selectedImage}
+                  setSelectedImage={setSelectedImage}
+                  photo={photo}
+                  setPhoto={setPhoto}
+                />
+              )}
+              {activeStep === 1 && (
+                <Details
+                  isSubmitted={isSubmitted}
+                  formValues={formValues}
+                  setFormValues={setFormValues}
+                  collections={collections}
+                  setCollections={setCollections}
+                  setDentalAndFingerprint={setDentalAndFingerprint}
+                  dentalAndFingerprint={dentalAndFingerprint}
+                />
+              )}
+              {activeStep === 2 && (
+                <ReferencePhotos
+                  setReferencePhotos={setReferencePhotos}
+                  referencePhotos={referencePhotos}
+                  isSubmitted={isSubmitted}
+                />
+              )}
+              {activeStep === 3 && (
+                <UpdateLocation
+                  isSubmitted={isSubmitted}
+                  updatedPosition={updatedPosition}
+                  setUpdatedPosition={setUpdatedPosition}
+                />
+              )}
+              {activeStep === 4 && (
+                <Box>
+                  <Typography sx={{ mb: 2 }} variant="h6">
+                    Uploading
+                  </Typography>
 
-                {uploaded ? (
-                  <Stack
-                    direction="row"
-                    alignItems="center"
-                    sx={{ mb: 1 }}
-                    spacing={0.5}
-                  >
-                    <CheckCircleIcon color="primary" />
-                    <Typography>Report Uploaded</Typography>
-                  </Stack>
-                ) : (
-                  <Stack
-                    direction="row"
-                    alignItems="center"
-                    sx={{ mb: 1 }}
-                    spacing={0.5}
-                  >
-                    <CircularProgress size={24} />
-                    <Typography>Processing</Typography>
-                  </Stack>
-                )}
-              </Box>
-            )}
-          </Box>
-        </Paper>
-      </Box>
+                  {uploaded ? (
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      sx={{ mb: 1 }}
+                      spacing={0.5}
+                    >
+                      <CheckCircleIcon color="primary" />
+                      <Typography>Report Uploaded</Typography>
+                    </Stack>
+                  ) : (
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      sx={{ mb: 1 }}
+                      spacing={0.5}
+                    >
+                      <CircularProgress size={24} />
+                      <Typography>Processing</Typography>
+                    </Stack>
+                  )}
+                </Box>
+              )}
+            </Box>
+          </Paper>
+        </Box>
+      </ContentLayout>
     </div>
   );
 }

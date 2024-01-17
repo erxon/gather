@@ -27,7 +27,7 @@ import PersonPinCircleOutlinedIcon from "@mui/icons-material/PersonPinCircleOutl
 import Map from "@/components/map/Map";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
-
+import ContentLayout from "@/utils/layout/ContentLayout";
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
@@ -144,40 +144,43 @@ function DisplayMap({ data, userLocation }) {
   const reporters = [...data.data];
 
   return (
-    <div>
-      <Stack
-        sx={{ position: "absolute", zIndex: 2, mt: 3, ml: "5%" }}
-        direction="column"
-        alignItems="center"
-        spacing={1}
-      >
-        <Paper
-          sx={{
-            display: { xs: "none", md: "block" },
-            p: 2,
-          }}
-        >
-          <Typography variant="h6">Reporters</Typography>
-          <Reporters
-            reporters={reporters}
-            currentLocation={currentLocation}
-            setDestination={setDestination}
-          />
-        </Paper>
-        <ReportersMobile
-          reporters={reporters}
-          currentLocation={currentLocation}
-          setDestination={setDestination}
-        />
-      </Stack>
-      <Map
-        userLocation={currentLocation}
-        setCurrentLocation={setCurrentLocation}
-        reporters={data.data}
-        destination={destination}
-        height={"100vh"}
-      />
-    </div>
+    <ContentLayout>
+      <Grid container spacing={1}>
+        <Grid item xs={12} md={5} sm={12}>
+          <Stack direction="column" alignItems="center" spacing={1}>
+            <Paper
+              sx={{
+                display: { xs: "none", md: "block" },
+                p: 2,
+              }}
+            >
+              <Typography variant="h6">Reporters</Typography>
+              <Reporters
+                reporters={reporters}
+                currentLocation={currentLocation}
+                setDestination={setDestination}
+              />
+            </Paper>
+            <ReportersMobile
+              reporters={reporters}
+              currentLocation={currentLocation}
+              setDestination={setDestination}
+            />
+          </Stack>
+        </Grid>
+        <Grid item xs={12} md={7} sm={12}>
+          <Paper sx={{ p: 3 }}>
+            <Map
+              userLocation={currentLocation}
+              setCurrentLocation={setCurrentLocation}
+              reporters={data.data}
+              destination={destination}
+              height="100vh"
+            />
+          </Paper>
+        </Grid>
+      </Grid>
+    </ContentLayout>
   );
 }
 

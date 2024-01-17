@@ -41,6 +41,7 @@ import { useState } from "react";
 import SmallMap from "@/components/map/SmallMap";
 import StackRowLayout from "@/utils/StackRowLayout";
 import computeElapsedTime from "@/utils/helpers/computeElapsedTime";
+import ContentLayout from "@/utils/layout/ContentLayout";
 
 function ReportMatched({ reportId }) {
   const router = useRouter();
@@ -215,65 +216,68 @@ export default function Page({ data }) {
 
   return (
     <div>
-      <ShareDialog
-        photoId={data._id}
-        open={openShareDialog}
-        setOpen={setOpenShareDialog}
-      />
-      <Stack sx={{ mb: 2 }} direction="row" alignItems="center" spacing={0.5}>
-        <Typography variant="h6">Summary</Typography>
-        <IconButton onClick={() => setOpenShareDialog(true)}>
-          <ShareIcon />
-        </IconButton>
-      </Stack>
-      <Box sx={{ mb: 3, p: 2 }}>
-        <Reporter reporter={data} />
-      </Box>
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 2 }}>
-            <Report photo={data.photoUploaded} />
-          </Paper>
-          {data.possibleMatch && (
-            <Paper sx={{ my: 2, p: 2 }}>
-              <Typography variant="h6" sx={{ mb: 2 }}>
-                Possible Match
-              </Typography>
-              <PossibleMatch possibleMatch={data.possibleMatch} />
+      <ContentLayout>
+        <ShareDialog
+          photoId={data._id}
+          open={openShareDialog}
+          setOpen={setOpenShareDialog}
+        />
+        <Stack sx={{ mb: 2 }} direction="row" alignItems="center" spacing={0.5}>
+          <Typography variant="h6">Summary</Typography>
+          <IconButton onClick={() => setOpenShareDialog(true)}>
+            <ShareIcon />
+          </IconButton>
+        </Stack>
+        <Box sx={{ mb: 3, p: 2 }}>
+          <Reporter reporter={data} />
+        </Box>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={6}>
+            <Paper sx={{ p: 2 }}>
+              <Report photo={data.photoUploaded} />
             </Paper>
-          )}
-          <Paper sx={{ p: 2, mt: 1 }}>
-            <Stack
-              sx={{ mb: 2 }}
-              direction="row"
-              alignItems="center"
-              spacing={0.75}
-            >
-              <LocationOnIcon />
-              <Typography variant="h6">Last known location</Typography>
-            </Stack>
-            <SmallMap
-              lng={data.position.longitude}
-              lat={data.position.latitude}
-            />
-          </Paper>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 2 }}>
-            <Typography variant="h6" sx={{ mb: 1 }}>
-              Updates
-            </Typography>
-            <Typography variant="body2" sx={{mb: 2}}>
-              Found Person Code: <span style={{fontWeight: "bold"}}>{data.code}</span>
-            </Typography>
-            {data.match ? (
-              <ReportMatched reportId={data.match} />
-            ) : (
-              <Typography>No updates yet</Typography>
+            {data.possibleMatch && (
+              <Paper sx={{ my: 2, p: 2 }}>
+                <Typography variant="h6" sx={{ mb: 2 }}>
+                  Possible Match
+                </Typography>
+                <PossibleMatch possibleMatch={data.possibleMatch} />
+              </Paper>
             )}
-          </Paper>
+            <Paper sx={{ p: 2, mt: 1 }}>
+              <Stack
+                sx={{ mb: 2 }}
+                direction="row"
+                alignItems="center"
+                spacing={0.75}
+              >
+                <LocationOnIcon />
+                <Typography variant="h6">Last known location</Typography>
+              </Stack>
+              <SmallMap
+                lng={data.position.longitude}
+                lat={data.position.latitude}
+              />
+            </Paper>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Paper sx={{ p: 2 }}>
+              <Typography variant="h6" sx={{ mb: 1 }}>
+                Updates
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 2 }}>
+                Found Person Code:{" "}
+                <span style={{ fontWeight: "bold" }}>{data.code}</span>
+              </Typography>
+              {data.match ? (
+                <ReportMatched reportId={data.match} />
+              ) : (
+                <Typography>No updates yet</Typography>
+              )}
+            </Paper>
+          </Grid>
         </Grid>
-      </Grid>
+      </ContentLayout>
     </div>
   );
 }

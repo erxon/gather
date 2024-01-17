@@ -3,7 +3,7 @@ import { pusher } from "@/utils/pusher";
 import { saveConversation } from "@/lib/controllers/contactController";
 const handler = nextConnect();
 
-handler.use((req, res, next) => {
+handler.post((req, res, next) => {
   //channelId, from, message
   const body = {
     message: req.body.message,

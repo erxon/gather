@@ -55,6 +55,7 @@ import computeElapsedTime from "@/utils/helpers/computeElapsedTime";
 import IconText from "@/utils/components/IconText";
 import DisplaySnackbar from "@/components/DisplaySnackbar";
 import Link from "next/link";
+import ContentLayout from "@/utils/layout/ContentLayout";
 
 function DisplayModal({ handleClose, openModal, matchId, userId }) {
   const router = useRouter();
@@ -775,7 +776,9 @@ export default function Page() {
   const { photoId } = router.query;
   return (
     <Authenticate>
-      <RenderMatches queryPhotoId={photoId} />
+      <ContentLayout>
+        <RenderMatches queryPhotoId={photoId} />
+      </ContentLayout>
     </Authenticate>
   );
 }

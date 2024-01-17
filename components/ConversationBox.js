@@ -121,6 +121,8 @@ function Conversation(props) {
       pusherJS.unsubscribe(channel);
     };
   }, [conversation, chatLogRef, channelId]);
+
+
   return (
     <>
       <Box
@@ -138,7 +140,6 @@ function Conversation(props) {
           }}
           ref={chatLogRef}
         >
-          {console.log(conversation)}
           {conversation.map((messageObj) => {
             return (
               <MessageContainer

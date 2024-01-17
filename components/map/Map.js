@@ -126,29 +126,10 @@ export default function Map({
 
   return (
     <div>
-      <Box
-        sx={{
-          display: { xs: "none", md: "block" },
-          position: "absolute",
-          zIndex: 1,
-          right: 3,
-          top: 100,
-        }}
-      >
+      <Box sx={{mb: 2}}>
         <SearchBox onRetrieve={handleSearch} />
       </Box>
-      <Box
-        sx={{
-          display: { xs: "block", md: "none" },
-          position: "absolute",
-          zIndex: 1,
-          ml: 3,
-          top: 175,
-        }}
-      >
-        <SearchBox onRetrieve={handleSearch} />
-      </Box>
-      <Box ref={mapContainer} sx={{ width: "100vw", height: height }}></Box>
+      <Box ref={mapContainer} sx={{ width: "100%", height: height }}></Box>
     </div>
   );
 }
