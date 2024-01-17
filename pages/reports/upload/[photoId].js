@@ -102,7 +102,7 @@ function Form({ reporters, publicId, photoId }) {
   const [submitted, isSubmitted] = useState(false);
   const generatedCode =
     "found-" + generateFoundPersonReportCode(reporters.length);
-  const url = process.env.API_URL;
+  const url = "https://gather-plum.vercel.app";
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
