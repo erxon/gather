@@ -65,8 +65,8 @@ function ResultCard({ id, name, photo, link }) {
               alt="placeholder image"
               src="/assets/placeholder.png"
               style={{ borderRadius: "100%" }}
-              width={32}
-              height={32}
+              width={56}
+              height={56}
             />
           )}
         </CardMedia>
@@ -118,19 +118,21 @@ export default function SearchBar(props) {
           <ClearIcon />
         </IconButton>
       </Paper>
-      <Collapse sx={{ position: "absolute", zIndex: 1 }} in={open}>
+      <Collapse sx={{ position: "absolute", zIndex: 2 }} in={open}>
         <Paper sx={{ maxWidth: 500, p: 1 }}>
           {result &&
-            result.map((data) => {
-              return (
-                <ResultCard
-                  key={data._id}
-                  link={props.link}
-                  photo={data.photo}
-                  id={data._id}
-                  name={`${data.firstName} ${data.lastName}`}
-                />
-              );
+            result.map((data, index) => {
+              if (index < 3) {
+                return (
+                  <ResultCard
+                    key={data._id}
+                    link={props.link}
+                    photo={data.photo}
+                    id={data._id}
+                    name={`${data.firstName} ${data.lastName}`}
+                  />
+                );
+              }
             })}
           <Button
             onClick={handleClose}

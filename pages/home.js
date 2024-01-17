@@ -74,7 +74,12 @@ function Reports() {
   );
 
   if (error) return <Typography>Something went wrong.</Typography>;
-  if (isLoading) return <CircularProgress />;
+  if (isLoading)
+    return (
+      <ContentLayout>
+        <CircularProgress />
+      </ContentLayout>
+    );
 
   return (
     <Box sx={{ my: 4 }}>

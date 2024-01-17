@@ -17,6 +17,7 @@ import { useUser } from "@/lib/hooks";
 import useSWR from "swr";
 import { fetcher } from "@/lib/hooks";
 import SearchBarUsers from "../searchBars/SearchBarUsers";
+import ContentLayout from "@/utils/layout/ContentLayout";
 
 export default function UserList({ currentUser }) {
   const {
@@ -32,7 +33,12 @@ export default function UserList({ currentUser }) {
   );
 
   if (error) return <Typography>Something went wrong</Typography>;
-  if (isLoading) return <CircularProgress />;
+  if (isLoading)
+    return (
+      <ContentLayout>
+        <CircularProgress />
+      </ContentLayout>
+    );
 
   const verifiedUsers = users.filter((user) => {
     return user.status === "verified";

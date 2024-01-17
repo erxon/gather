@@ -103,7 +103,7 @@ function SearchResult({ reportId, score, setOpen }) {
           });
         }}
       >
-        <Card sx={{ display: "flex", alignItems: "flex-start", height: 100 }}>
+        <Card sx={{ mb: 1, display: "flex", alignItems: "flex-start", height: 100 }}>
           <CardMedia>
             <ReportPhotoSmall publicId={data.photo} />
           </CardMedia>
@@ -225,16 +225,18 @@ export default function SearchFoundPerson({ setPossibleMatch }) {
           )}
           {results &&
             results.result &&
-            results.result.map((result) => {
+            results.result.map((result, index) => {
               if (result.id === "undefined") return;
-              return (
-                <SearchResult
-                  key={result.id}
-                  reportId={result.id}
-                  score={result.score}
-                  setOpen={setOpenMatchFoundDialog}
-                />
-              );
+              if (index < 3) {
+                return (
+                  <SearchResult
+                    key={result.id}
+                    reportId={result.id}
+                    score={result.score}
+                    setOpen={setOpenMatchFoundDialog}
+                  />
+                );
+              }
             })}
         </Box>
       </Box>

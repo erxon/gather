@@ -16,6 +16,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import CloseIcon from "@mui/icons-material/Close";
 import TextFieldWithValidation from "@/components/forms/TextFieldWithValidation";
 import PasswordField from "@/components/forms/PasswordField";
+import ContentLayout from "@/utils/layout/ContentLayout";
 import Link from "next/link";
 
 export default function Login() {
@@ -74,85 +75,87 @@ export default function Login() {
 
   return (
     <>
-      <Paper
-        sx={{
-          p: 3,
-          margin: "auto",
-          textAlign: "center",
-          maxWidth: 300,
-        }}
-      >
-        <Stack
-          alignItems="center"
-          justifyContent="center"
-          direction="row"
-          spacing={1}
-          sx={{ mb: 1 }}
+      <ContentLayout>
+        <Paper
+          sx={{
+            p: 3,
+            margin: "auto",
+            textAlign: "center",
+            maxWidth: 300,
+          }}
         >
-          <AccountCircleIcon color="primary" />
-          <Typography variant="h5" color="primary">
+          <Stack
+            alignItems="center"
+            justifyContent="center"
+            direction="row"
+            spacing={1}
+            sx={{ mb: 1 }}
+          >
+            <AccountCircleIcon color="primary" />
+            <Typography variant="h5" color="primary">
+              Login
+            </Typography>
+          </Stack>
+          <Stack justifyContent="center" spacing={3} useFlexGap sx={{ mb: 1 }}>
+            <TextFieldWithValidation
+              variant="outlined"
+              name="username"
+              id="username"
+              type="text"
+              label="username"
+              changeHandler={handleChange}
+              value={values.username}
+              isSubmitted={isSubmitted}
+            />
+            <PasswordField
+              variant="outlined"
+              id="password"
+              name="password"
+              type="password"
+              label="password"
+              handleChange={handleChange}
+              value={values.password}
+              isSubmitted={isSubmitted}
+            />
+            {
+              <Collapse in={error.show}>
+                <Alert
+                  action={
+                    <IconButton
+                      color="inherit"
+                      size="small"
+                      onClick={() => {
+                        setError({ show: false });
+                      }}
+                    >
+                      <CloseIcon fontSize="inherit" />
+                    </IconButton>
+                  }
+                  severity="error"
+                >
+                  {error.message}
+                </Alert>
+              </Collapse>
+            }
+          </Stack>
+          <Box sx={{ mb: 1 }}>
+            <Button sx={{ mr: 1 }} size="small" href="/signup">
+              Signup
+            </Button>
+            <Button onClick={handleForgotPassword} size="small">
+              Forgot password?
+            </Button>
+          </Box>
+          <Button
+            onClick={handleSubmit}
+            fullWidth
+            variant="contained"
+            type="submit"
+          >
             Login
-          </Typography>
-        </Stack>
-        <Stack justifyContent="center" spacing={3} useFlexGap sx={{ mb: 1 }}>
-          <TextFieldWithValidation
-            variant="outlined"
-            name="username"
-            id="username"
-            type="text"
-            label="username"
-            changeHandler={handleChange}
-            value={values.username}
-            isSubmitted={isSubmitted}
-          />
-          <PasswordField
-            variant="outlined"
-            id="password"
-            name="password"
-            type="password"
-            label="password"
-            handleChange={handleChange}
-            value={values.password}
-            isSubmitted={isSubmitted}
-          />
-          {
-            <Collapse in={error.show}>
-              <Alert
-                action={
-                  <IconButton
-                    color="inherit"
-                    size="small"
-                    onClick={() => {
-                      setError({ show: false });
-                    }}
-                  >
-                    <CloseIcon fontSize="inherit" />
-                  </IconButton>
-                }
-                severity="error"
-              >
-                {error.message}
-              </Alert>
-            </Collapse>
-          }
-        </Stack>
-        <Box sx={{ mb: 1 }}>
-          <Button sx={{ mr: 1 }} size="small" href="/signup">
-            Signup
           </Button>
-          <Button onClick={handleForgotPassword} size="small">
-            Forgot password?
-          </Button>
-        </Box>
-        <Button
-          onClick={handleSubmit}
-          fullWidth
-          variant="contained"
-          type="submit"
-        >
-          Login
-        </Button>
-      </Paper>
+        </Paper>
+      </ContentLayout>
     </>
   );
 }

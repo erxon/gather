@@ -28,6 +28,7 @@ import Link from "next/link";
 import InfoIcon from "@mui/icons-material/Info";
 import SearchFoundPerson from "@/components/reports/SearchFoundPerson";
 import ReportPhotoSmall from "@/components/photo/ReportPhotoSmall";
+import ContentLayout from "@/utils/layout/ContentLayout";
 
 export default function Upload({ reporters }) {
   const router = useRouter();
@@ -37,7 +38,9 @@ export default function Upload({ reporters }) {
   if (error) return <Typography>Something went wrong</Typography>;
   if (data)
     return (
-      <Form reporters={reporters} publicId={data.image} photoId={photoId} />
+      <ContentLayout>
+        <Form reporters={reporters} publicId={data.image} photoId={photoId} />
+      </ContentLayout>
     );
 }
 
@@ -99,7 +102,7 @@ function Form({ reporters, publicId, photoId }) {
   const [submitted, isSubmitted] = useState(false);
   const generatedCode =
     "found-" + generateFoundPersonReportCode(reporters.length);
-  const url = "http://localhost:3000";
+  const url = process.env.API_URL || "http://localhost:3000";
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
@@ -165,7 +168,8 @@ function Form({ reporters, publicId, photoId }) {
               will contact you at any given moment to verify this report.
             </Typography>
             <Typography sx={{ mb: 1 }} variant="body2">
-              Found Person Code: <span style={{fontWeight: "bold"}}>{generatedCode}</span>
+              Found Person Code:{" "}
+              <span style={{ fontWeight: "bold" }}>{generatedCode}</span>
             </Typography>
             <StackRowLayout spacing={0.5}>
               <Typography variant="body2">

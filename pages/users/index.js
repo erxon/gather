@@ -19,7 +19,13 @@ export default function Users() {
     }
   }, [user, loading, router]);
 
-  if (loading) return <CircularProgress />;
+  if (loading)
+    return (
+      <ContentLayout>
+        <CircularProgress />
+      </ContentLayout>
+    );
+    
   if (user)
     return (
       <>

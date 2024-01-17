@@ -13,8 +13,8 @@ export default function Assignment({ userId, handleAssignmentOpen }) {
   const count = data.length;
   
   return (
-    <IconButton onClick={handleAssignmentOpen}>
-      <Badge badgeContent={count} color="primary">
+    <IconButton color="inherit" onClick={handleAssignmentOpen}>
+      <Badge badgeContent={count} color="error">
         <AssignmentIcon />
       </Badge>
     </IconButton>

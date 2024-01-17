@@ -60,7 +60,7 @@ export default function CreateReportForm({
       {" "}
       <DialogTitle>Create Report</DialogTitle>
       <DialogContent>
-        <Stack sx={{ mb: 3 }} direction="row" spacing={1}>
+        <Stack sx={{my: 3}} direction="row" spacing={1}>
           <TextFieldWithValidation
             id="age"
             label="Age"

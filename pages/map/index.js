@@ -175,7 +175,7 @@ function DisplayMap({ data, userLocation }) {
               setCurrentLocation={setCurrentLocation}
               reporters={data.data}
               destination={destination}
-              height="100vh"
+              height="500px"
             />
           </Paper>
         </Grid>
@@ -191,7 +191,12 @@ function Reporter({ reporter, setDestination, userLocation }) {
   );
 
   if (error) return <Typography>Something went wrong.</Typography>;
-  if (isLoading) return <CircularProgress />;
+  if (isLoading)
+    return (
+      <ContentLayout>
+        <CircularProgress />
+      </ContentLayout>
+    );
 
   const handleViewRoute = async () => {
     setDestination([reporter.position.longitude, reporter.position.latitude]);
@@ -214,7 +219,8 @@ function Reporter({ reporter, setDestination, userLocation }) {
             <DirectionsCarIcon color="primary" />
             <Typography variant="body2">Driving |</Typography>
             <Typography variant="body2">
-              {data && Math.round(data.routes[0].duration / 60)} mins
+              {data && data.routes && Math.round(data.routes[0].duration / 60)}{" "}
+              mins
             </Typography>
           </StackRowLayout>
           <Button sx={{ mt: 1 }} onClick={handleViewRoute} size="small">

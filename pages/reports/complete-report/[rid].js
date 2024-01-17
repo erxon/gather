@@ -128,7 +128,7 @@ export default function Page({ data }) {
           onClose={() => setSnackbarValues({ open: false })}
           message={snackbarValues.message}
         />
-        <Box sx={{ margin: "auto" }}>
+        <Box sx={{ margin: "auto", maxWidth: "500px" }}>
           <Box sx={{ mb: 4 }}>
             <Typography variant="h5">Finish-up your report</Typography>
           </Box>
