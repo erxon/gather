@@ -102,7 +102,7 @@ function Form({ reporters, publicId, photoId }) {
   const [submitted, isSubmitted] = useState(false);
   const generatedCode =
     "found-" + generateFoundPersonReportCode(reporters.length);
-  const url = process.env.API_URL || "http://localhost:3000";
+  const url = process.env.API_URL;
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
