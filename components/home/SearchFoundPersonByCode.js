@@ -24,7 +24,7 @@ export default function SearchFoundPersonReportByCode() {
     const response = await fetch(
       `/api/reporters/found-person-code/${code}`
     );
-    const url = process.env.API_URL || "http://localhost:3000";
+    const url = "https://gather-plum.vercel.app";
     const result = await response.json();
 
     if (result.found === false) {
