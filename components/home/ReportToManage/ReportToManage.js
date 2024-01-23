@@ -4,9 +4,11 @@ import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import DataPrivacyDialog from "../../reports/DataPrivacyDialog";
 import CreateReportForm from "./CreateReportForm";
 import SignupDialog from "./SignupDialog/SignupDialog";
+import dayjs from "dayjs";
 
 export default function ReportToManage() {
   const [gender, setGender] = useState("");
+  const [lastSeenDateTime, setLastSeenDateTime] = useState(dayjs()); 
   const [isSubmitted, setSubmissionState] = useState(false);
   const [alert, setAlert] = useState({
     open: false,
@@ -34,7 +36,7 @@ export default function ReportToManage() {
       <SignupDialog
         open={signupDialog}
         setOpen={setOpenSignupDialog}
-        report={{ ...values, gender: gender }}
+        report={{ ...values, gender: gender, lastSeenDateTime: lastSeenDateTime.toString() }}
       />
       <DataPrivacyDialog
         open={openDataPrivacyDialog}
@@ -48,6 +50,8 @@ export default function ReportToManage() {
         setValues={setValues}
         gender={gender}
         setGender={setGender}
+        lastSeenDateTime={lastSeenDateTime}
+        setLastSeenDateTime={setLastSeenDateTime}
         alert={alert}
         setAlert={setAlert}
         isSubmitted={isSubmitted}

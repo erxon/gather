@@ -148,6 +148,7 @@ export default function SignupDialog({ open, setOpen, report }) {
             <Box sx={{ mb: 1 }}>
               <Typography>Last seen</Typography>
               <Typography variant="body2">{report.lastSeen}</Typography>
+              <Typography variant="body2">{report.lastSeenDateTime}</Typography>
             </Box>
             <Box>
               <Typography>Details</Typography>

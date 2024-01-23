@@ -13,8 +13,11 @@ import {
   DialogActions,
   Button,
 } from "@mui/material";
+import dayjs from "dayjs";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import TextFieldWithValidation from "@/components/forms/TextFieldWithValidation";
 import ErrorAlert from "@/components/ErrorAlert";
+import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 
 export default function CreateReportForm({
   open,
@@ -26,13 +29,22 @@ export default function CreateReportForm({
   setAlert,
   gender,
   setGender,
+  lastSeenDateTime,
+  setLastSeenDateTime,
   setSubmissionState,
   isSubmitted,
 }) {
+  
+
   const handleChange = (event) => {
     const { value, name } = event.target;
     setValues({ ...values, [name]: value });
   };
+
+  const handleDateTimeChange = (event) => {
+    setLastSeenDateTime(event)
+  }
+
 
   const validateForm = () => {
     if (
@@ -46,7 +58,7 @@ export default function CreateReportForm({
       return;
     } else {
       setOpen(false);
-      setOpenDataPrivacyDialog(true)
+      setOpenDataPrivacyDialog(true);
     }
   };
 
@@ -60,7 +72,7 @@ export default function CreateReportForm({
       {" "}
       <DialogTitle>Create Report</DialogTitle>
       <DialogContent>
-        <Stack sx={{my: 3}} direction="row" spacing={1}>
+        <Stack sx={{ my: 3 }} direction="row" spacing={1}>
           <TextFieldWithValidation
             id="age"
             label="Age"
@@ -137,19 +149,27 @@ export default function CreateReportForm({
             sx={{ maxWidth: 175 }}
           />
         </Stack>
+        <Typography sx={{ my: 1 }} color="GrayText">
+          Please specify the approximate location or time the person was last seen
+        </Typography>
         {/*Last seen*/}
-        <TextFieldWithValidation
-          id="lastSeen"
-          label="Last Seen"
-          variant="outlined"
-          name="lastSeen"
-          type="text"
-          style={{ mb: 1 }}
-          isSubmitted={isSubmitted}
-          value={values.lastSeen}
-          isFullWidth={true}
-          changeHandler={handleChange}
-        />
+        <Stack>
+          <TextFieldWithValidation
+            id="lastSeen"
+            label="Last Seen"
+            variant="outlined"
+            name="lastSeen"
+            type="text"
+            style={{ mb: 1 }}
+            isSubmitted={isSubmitted}
+            value={values.lastSeen}
+            isFullWidth={true}
+            changeHandler={handleChange}
+          />
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DateTimePicker onChange={handleDateTimeChange} value={lastSeenDateTime} defaultValue={dayjs()} />
+          </LocalizationProvider>
+        </Stack>
         <Typography sx={{ my: 1 }} color="GrayText">
           Please state as much details as needed for your report. Adequate
           information will help investigators or authorities find the person.

@@ -34,6 +34,7 @@ import { useRouter } from "next/router";
 import useSWR from "swr";
 import { fetcher } from "@/lib/hooks";
 import SmallMap from "@/components/map/SmallMap";
+import dayjs from "dayjs";
 
 function ReferencePhotos({ reportId }) {
   const { data, error, isLoading } = useSWR(
@@ -200,7 +201,9 @@ function DisplayReportPhoto({ photoId, photo }) {
   } else if (photoId) {
     return <ExistingPhoto photoId={photoId} />;
   } else {
-    return <Image alt="" width={200} height={250} src="/assets/placeholder.png" />;
+    return (
+      <Image alt="" width={200} height={250} src="/assets/placeholder.png" />
+    );
   }
 }
 
@@ -299,7 +302,9 @@ export default function ReportInformation({ authorized, data, user }) {
                     {data.reporter.location}
                   </Typography>
                 ) : (
-                  <Typography variant="body2">{data.lastSeen}</Typography>
+                  <Typography variant="body2">
+                    {data.lastSeen}, {dayjs(data.lastSeenDateTime).toString() }
+                  </Typography>
                 )}
               </Stack>
               <Stack direction="row" alignItems="center" spacing={1}>

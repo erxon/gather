@@ -57,6 +57,7 @@ const reportSchema = new mongoose.Schema({
   lastSeen: {
     type: String,
   },
+  lastSeenDateTime: Date,
   age: {
     type: Number,
   },
